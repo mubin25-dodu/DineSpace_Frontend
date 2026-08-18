@@ -1,15 +1,20 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { loginForm, loginSchema, verifyemailSchema } from '@/schemas/auth.schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import{Loader, Lock, LogIn, MailQuestionMark, Server} from 'lucide-react'
 import { api } from '@/lib/axios';
+import ServerError from '@/components/serverError';
+import Result from '@/lib/Result';
+import AlertPopup from '@/components/alertPopup';
 
 export default function Auth(){
     const [showForm , setShowform] = useState(false);
     const [disableLoginBtn ,setdisableLoginBtn] = useState(false);
     const [disableVerifyBtn ,setdisableVerifyBtn] = useState(false);
+    const [serverError , setServerError] = useState(false);
+
     const form = useForm<loginForm>({
         resolver:zodResolver(loginSchema),
         mode:"onBlur",       
@@ -33,9 +38,9 @@ export default function Auth(){
         loginBtnClicked();
         console.log('Login data:', payload);
         try{
-            const {data} = await api.post<loginForm>("auth/login" , payload);
+            const {data} = await api.post<Result>("auth/login" , payload);
             console.log (data);
-           if(!data.Status){ if(data.Message && data.Message.includes('Wrong Password')){
+           if(!data.Success){ if(data.Message && data.Message.includes('Wrong Password')){
             form.setError('password',{
                 type:"server",
                 message:"Wrong Password"
@@ -48,6 +53,7 @@ export default function Auth(){
             setdisableLoginBtn(false);
 
         }catch(e){ 
+            setServerError(true);
             form.setError('email' , {
                 type:"server",
                 message: "Server error try again after some time"
@@ -69,7 +75,7 @@ export default function Auth(){
         console.log(payload);
         verifybtnClicked();
          try{
-            const {data} = await api.post<loginForm>("auth/Verifyemail" , payload);
+            const {data} = await api.post<Result>("auth/Verifyemail" , payload);
             console.log (data);
             verifyform.setError('email' , {
                 type:"server",
@@ -77,18 +83,20 @@ export default function Auth(){
             })
          setdisableVerifyBtn(false);
         }catch(e){  
+            setServerError(true);
             verifyform.setError('email' , {
                 type:"server",
                 message: "Internal server Error Try again After some time " 
             })
         setdisableVerifyBtn(false);
-            console.log(e);
+            console.error(e);
         }
     }
 
 
     return(
     <>
+    <ServerError error={serverError}/>
     <div className="flex justify-center items-center min-h-screen">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
             <div className="w-full h-[30%]" > <img src="./dinespace.png" className=" w-full h-full rounded-3xl" alt="" /> </div>
