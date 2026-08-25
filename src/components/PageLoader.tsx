@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 interface param{
@@ -17,7 +18,7 @@ export default function (params:param){
         <div className={`w-full h-full fixed inset-0 flex items-center justify-center bg-[#E8E4DF] ${!loading? "hidden":""}`}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 px-4">
              <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center">Cooking things up..</span> 
-             <img className="w-16 sm:w-20 md:w-24 lg:w-32 h-auto lg:mb-20" src="../Loadinggif.gif" alt="loading"></img>
+             <Image className="w-16 sm:w-20 md:w-24 lg:w-32 h-auto lg:mb-20" width={20} height={20} src="/Loadinggif.gif" alt="loading" />
             </div>
         </div>
         </>

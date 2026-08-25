@@ -1,15 +1,17 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { loginForm, loginSchema, verifyemailSchema } from '@/schemas/auth.schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import{Loader, Lock, LogIn, MailQuestionMark, Server} from 'lucide-react'
+import{Loader, Lock, LogIn, MailQuestionMark} from 'lucide-react'
 import { api } from '@/lib/axios';
 import ServerError from '@/components/serverError';
 import Result from '@/lib/Result';
-import AlertPopup from '@/components/alertPopup';
+import Image from 'next/image';
 
 export default function Auth(){
+    const router = useRouter();
     const [showForm , setShowform] = useState(false);
     const [disableLoginBtn ,setdisableLoginBtn] = useState(false);
     const [disableVerifyBtn ,setdisableVerifyBtn] = useState(false);
@@ -39,8 +41,19 @@ export default function Auth(){
         console.log('Login data:', payload);
         try{
             const {data} = await api.post<Result>("auth/login" , payload);
-            console.log (data);
-           if(!data.Success){ if(data.Message && data.Message.includes('Wrong Password')){
+            
+            if(data.Success){ 
+            if(data.Token !== undefined){
+                localStorage.setItem("accesstoken" , data.Token);
+               const cookies = document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; `;
+                console.log(cookies)
+            }
+            if(data.Data.role === "owner"){
+                router.push("/home");
+            }
+            }
+            
+            else if(data.Message && data.Message.includes('Wrong Password')){
             form.setError('password',{
                 type:"server",
                 message:"Wrong Password"
@@ -49,7 +62,7 @@ export default function Auth(){
                 type:"server",
                 message: data.Message
             })}
-            }
+
             setdisableLoginBtn(false);
 
         }catch(e){ 
@@ -59,8 +72,7 @@ export default function Auth(){
                 message: "Server error try again after some time"
             })
             setdisableLoginBtn(false);
-            console.log(e);
-
+            console.error(e);
         }
     };
 
@@ -99,7 +111,7 @@ export default function Auth(){
     <ServerError error={serverError}/>
     <div className="flex justify-center items-center min-h-screen">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
-            <div className="w-full h-[30%]" > <img src="./dinespace.png" className=" w-full h-full rounded-3xl" alt="" /> </div>
+            <div className="w-full h-[30%]" > <Image src="/dinespace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /> </div>
             <div className=" mt-1 flex flex-col p-5  gap-4 text-[#1B1C1A] text-[18px]" style={{fontWeight:"400"}}> 
                 <form onSubmit={form.handleSubmit(login)} className="flex flex-col gap-3">
                     <label htmlFor="email">Enter Email Address:</label>
