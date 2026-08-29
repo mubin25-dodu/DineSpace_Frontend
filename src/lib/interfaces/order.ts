@@ -1,5 +1,6 @@
-import { OrderStatus } from "@/lib/Enums";
+import { OrderStatus, PaymentStatus } from "@/lib/Enums";
 import { ReactNode } from "react";
+import { Files } from "./file";
 
 export interface OrderItem {
     id: string;
@@ -15,6 +16,7 @@ export interface MenuItem {
     itemName: string;
     description: string;
     catagory: string;
+    images:Files[];
     price: number;
     isAvailable: boolean;
     resturentId: string;
@@ -48,12 +50,15 @@ export interface OrderTable {
 }
 
 export interface Payment {
-    id: string;
-    orderId: string;
-    acountNumber: number;
-    paymentMethode: string;
-    status: string;
-    transectionId: string | null;
+     id: string;
+    status: PaymentStatus;
+	paymentMethode: string;
+	transectionId: string | null;
+	acountNumber: number;
+    amount:number;
+	orderId: string;
+	walletId: string | null;
+    createdat:Date;
 }
 
 export interface Order {
@@ -64,7 +69,7 @@ export interface Order {
     payable: number;
     discount: number;
     payment: Payment;
-    OrderstStatus: OrderStatus;
+    OrderStatus: OrderStatus;
     DeliveryTime: string | null;
     customerName: string;
     customerPhone: string;

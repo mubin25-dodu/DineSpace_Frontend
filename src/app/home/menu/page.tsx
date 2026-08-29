@@ -1,0 +1,3 @@
+export default function MenuPage() {
+    return <h1 className="p-8 text-3xl font-semibold text-[#27221E]">Menu</h1>;
+}

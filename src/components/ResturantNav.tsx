@@ -3,7 +3,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 
 interface Resturant{
     id:string;
-    resturantName:string;
+    resturantName?:string;
 }
 
 interface func{
@@ -55,17 +55,19 @@ export default function ResturantNav({handleDefaultResturant}:func) {
     return (
         // <resturantContext.Provider value={defaultResturant}>
         <>
-            <div className="flex flex-row font-black ml-[13.5%] border border-b-[#DEC0BA] p-5">
-                <select name="resturentName" value={defaultResturant.id} onChange={(e)=> handleresturantchange(e.target.value)} id="">
-                    <option value={defaultResturant?.id}>{defaultResturant.resturantName}</option>
+            <div className="flex flex-row font-black ml-[13.5%] border border-b-[#DEC0BA] p-5 fixed w-full bg-[#FBF9F6]">
+                <span>
+                <select name="resturentName" className="w-[120%]" value={defaultResturant.id} onChange={(e)=> handleresturantchange(e.target.value)} id="">
+                    <option value={defaultResturant.id}>{(defaultResturant.resturantName ?? "Unnamed restaurant").toUpperCase()}</option>
                     {resturants
                         .filter((restaurant) => restaurant.id !== defaultResturant.id)
                         .map((restaurant) => (
                             <option  key={restaurant.id} value={restaurant.id}>
-                                {restaurant.resturantName}
+                                {(restaurant.resturantName ?? "Unnamed restaurant").toUpperCase()}
                             </option>
                         ))}
                 </select>
+                </span>
             </div>
         </>
         // </resturantContext.Provider>

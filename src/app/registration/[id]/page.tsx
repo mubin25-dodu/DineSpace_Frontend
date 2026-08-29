@@ -1,6 +1,6 @@
 "use client"
 
-import { api } from "@/lib/axios";
+import { api } from "@/lib/api/axios";
 import { registerSchema, registrationForm } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";

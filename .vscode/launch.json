@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "DineSpace: Client (Chrome)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "skipFiles": ["${workspaceFolder}/node_modules/**/*.js"]
+    },
+    {
+      "name": "DineSpace: Server (Next.js)",
+      "type": "pwa-node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "NODE_OPTIONS": "--inspect=9229"
+      },
+      "skipFiles": ["<node_internals>/**", "${workspaceFolder}/node_modules/**/*.js"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "DineSpace: Client + Server",
+      "configurations": [
+        "DineSpace: Server (Next.js)",
+        "DineSpace: Client (Chrome)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

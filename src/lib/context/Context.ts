@@ -1,3 +1,13 @@
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 
-export  const resturantContext = createContext({});
+interface RestaurantContextValue {
+	defaultResturant: string;
+	setpopup: Dispatch<SetStateAction<string>>;
+	setservererror: Dispatch<SetStateAction<string>>;
+}
+
+export const resturantContext = createContext<RestaurantContextValue>({
+	defaultResturant: "",
+	setpopup: () => undefined,
+	setservererror:() => undefined,
+});

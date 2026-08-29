@@ -5,7 +5,7 @@ import { loginForm, loginSchema, verifyemailSchema } from '@/schemas/auth.schema
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import{Loader, Lock, LogIn, MailQuestionMark} from 'lucide-react'
-import { api } from '@/lib/axios';
+import { api } from '@/lib/api/axios';
 import ServerError from '@/components/serverError';
 import Result from '@/lib/Result';
 import Image from 'next/image';

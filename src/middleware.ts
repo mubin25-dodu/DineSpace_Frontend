@@ -10,8 +10,8 @@ interface MyTokenPayload {
 } 
 
 const rolerouter = {
-    admin:[ "/adminHome"],
-    owner:["/home"]
+    admin:[ "/adminHome" , '/adminhome/:path*'],
+    owner:["/home" , '/home/:path*']
 }
 
 
@@ -19,11 +19,11 @@ const rolerouter = {
 export async function middleware(request: NextRequest) {
     console.log("hit middleware")
     const pathName = request.nextUrl.pathname ;
-    const IsPublicPath = pathName === './auth' || pathName === '/';
+    const IsPublicPath = pathName === '/auth' || pathName === '/';
 
     const cookieStore = await cookies()
    try{
-    const token = cookieStore.get('accesstoken')?.value || "Notoken";
+    const token = cookieStore.get('accesstoken')?.value || localtoken;
         // console.log("token and path")
         // console.log(token);
         // console.log(IsPublicPath);
@@ -47,9 +47,8 @@ export async function middleware(request: NextRequest) {
     const hasAcccess = allowedpath.some( path => pathName.startsWith(path));
 
      if (!hasAcccess) {
-        // Redirect to an "Unauthorized" page or their allowed default home page
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
         cookieStore.delete('accesstoken');
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
       }
         }
     }catch(e){
@@ -61,5 +60,5 @@ export async function middleware(request: NextRequest) {
 }
  
 export const config = {
-  matcher: '/home',
+  matcher: ['/home', '/home/:path*'],
 }
