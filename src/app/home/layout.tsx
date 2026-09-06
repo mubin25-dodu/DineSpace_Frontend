@@ -13,6 +13,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     const [defaultResturant, setDefaultResturant] = useState("");
     const [popup, setPopup] = useState("");
     const [servererror , setservererror] = useState("");
+    const [Today , settoday] = useState<Date>();
 
     useEffect(() => {
         async function getUserData() {
@@ -42,6 +43,10 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
 
         getUserData();
     }, []);
+
+    useEffect(()=>{
+        settoday(new Date());
+    },[new Date().getMilliseconds])
 
     return (
         <resturantContext.Provider value={{ defaultResturant, setpopup: setPopup , setservererror }}>

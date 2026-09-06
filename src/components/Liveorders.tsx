@@ -1,10 +1,9 @@
 import { api } from "@/lib/api/axios";
 import { resturantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
-// import NewOrders from "./orderCards"
-import { Order } from "@/lib/interfaces/order";
+import { AddOnOrder, Order } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 
 interface params{
     getOrders:Order[];
@@ -13,10 +12,6 @@ interface params{
 
 
 export  default  function LiveOrders({getOrders , handleChange} :params){
-
-// console.log("Live orders data");
-// console.log(getOrders);
-
 
     return<>
     <div className="w-full bg-white h-210 p-5 mb-5 border border-[#DEC0BA] rounded-2xl shadow overflow-hidden ">
@@ -42,11 +37,12 @@ export  default  function LiveOrders({getOrders , handleChange} :params){
 
 interface OrderCardsProps {
     handler: (id:string , state:OrderStatus , payment?:PaymentStatus)=>void;
-    getOrders: Order;
+    getOrders: Order | AddOnOrder[];
 }
 
 export function  OrderCards({ handler , getOrders}: OrderCardsProps){
-
+    // console.log(getOrders);
+    // console.log("get orders");
     const {setpopup} = useContext(resturantContext);
 
     const orderBdTime = new Date(
@@ -56,10 +52,11 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
         (Date.now() - orderBdTime.getTime()) / (1000 * 60)
     );
 
-    const prevState = getOrders.OrderStatus;
-    const prevPayment = getOrders.payment.status;
+
     // console.log("check 1"+prevState);
-    const handleChange = async (e:OrderStatus , declined?:boolean , payment?:PaymentStatus) =>  {
+ const handleChange = async (e:OrderStatus , declined?:boolean , payment?:PaymentStatus) =>  {
+        const prevState = getOrders.OrderStatus ;
+        const prevPayment = getOrders.payment.status;
         // console.log("ord state button clicked");
         handler(getOrders.id , e , payment);
         try{
@@ -95,6 +92,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
 
     return (
        <>
+       {getOrders !==null ?
        <div className="flex flex-col gap-1 w-[95%] bg-[#FBF9F6] h-auto mt-4 ml-3 p-5 rounded-2xl shadow border border-[#DEC0BA]">
             <div className="flex flex-row justify-between">
                 <div>Table No- <span>{getOrders.table.tableno}</span></div>
@@ -118,7 +116,8 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
                     getOrders.OrderStatus === OrderStatus.Ready ?
                         <button onClick={()=>handleChange(OrderStatus.Completed)} className="hover:scale-95 transition-all duration-200 cursor-pointer w-full border border-[#A13924] rounded h-8 text-[#A13924]">Mark as Complete</button> : null}
             </div>
-        </div>
+        </div>:""
+        }
         </>
     );
     

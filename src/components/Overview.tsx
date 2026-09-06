@@ -40,7 +40,7 @@ export default function Overview() {
        const getNewOrders = async ()=>{
             
         try {
-            const res = await api.get<Result<Order[]>>(`/order/GetallOrders/${defaultResturant}`);
+            const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultResturant}`);
             console.log(res)
             const data = res.data.Data;
             setgetorders(data);

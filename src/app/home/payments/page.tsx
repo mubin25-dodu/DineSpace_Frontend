@@ -1,3 +1,204 @@
+"use client"
+import { api } from "@/lib/api/axios"
+import { resturantContext } from "@/lib/context/Context"
+import { Payment } from "@/lib/interfaces/payment"
+import Result from "@/lib/Result"
+import { ArrowDownUp, Landmark, Search } from "lucide-react"
+import Link from "next/link"
+import { useContext, useEffect, useState } from "react"
+import KPICard from "@/components/KPICards"
+import { PaymentStatus } from "@/lib/Enums"
 export default function PaymentsPage() {
-    return <h1 className="p-8 text-3xl font-semibold text-[#27221E]">Payments</h1>;
+    const [payments , setpayments ] = useState<Payment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [newestFirst, setNewestFirst] = useState(true);
+    const {defaultResturant } = useContext(resturantContext);
+    const getpayments = async()=>{
+        if (!defaultResturant) return;
+        setLoading(true);
+        setLoadError("");
+        try{
+            const {data} = await api.get<Result<Payment[]>>(`payment/GetpaymentByResturentId/${defaultResturant}`)
+            if(data.Success){
+                setpayments(data.Data ?? []);
+            } else {
+                setLoadError(data.Message || "Unable to load payments.");
+            }
+        }catch(e){
+            console.log(e);
+            setLoadError("Unable to load payments.");
+        } finally {
+            setLoading(false);
+        }
+     }
+     useEffect(()=>{
+        getpayments();
+     }, [defaultResturant]);
+
+      const formatDate = (date: Date) => new Date(date).toLocaleString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+      });
+
+     const statusStyle = (status: string) => status.toLowerCase() === "paid"
+        ? "bg-[#d9f7e3] text-[#176b37]"
+        : status.toLowerCase() === "failed"
+            ? "bg-[#f9e5e0] text-[#a13924]"
+            : "bg-[#fff2cc] text-[#806500]";
+
+     const filteredPayments = payments.filter((payment) => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) return true;
+        return [
+            payment.transectionId,
+            payment.id,
+            payment.orderId,
+            payment.paymentMethode,
+            payment.acountNumber,
+            payment.status,
+        ].some((value) => String(value ?? "").toLowerCase().includes(query));
+     });
+
+     const handleRefund = async (paymentId: string) => {
+        try {
+            const { data } = await api.post<Result>(`payment/ApplyRefund/${paymentId}`);
+            if (data.Success) {
+                getpayments();
+            } else {
+                console.error("Error applying refund:", data.Message);
+            }
+        }catch (error) {
+            console.error("Error applying refund:", error);
+        }
+     }
+
+      const sortedPayments = [...filteredPayments].sort((first, second) => {
+          const firstDate = new Date(first.createdat).getTime();
+          const secondDate = new Date(second.createdat).getTime();
+          return newestFirst ? secondDate - firstDate : firstDate - secondDate;
+      });
+
+      const totalPayments = payments.reduce(
+          (total, payment) => total + Math.round(Number(payment.amount) * 100),
+          0,
+      ) / 100;
+
+      const totalRefunds = payments.filter((payment) => payment.status === PaymentStatus.Refund).reduce(
+          (total, payment) => total + Math.round(Number(payment.amount) * 100),
+          0,
+      ) / 100;
+
+      const totalRefundsCount = payments.filter((payment) => payment.status === PaymentStatus.Refund).length;
+      const totalPaymentsCount = payments.length;
+      const refundPercentage = Math.round(totalPayments > 0 ? (totalRefundsCount / payments.length) * 100 : 0);
+      const onnlinepaymentsCount = payments.filter((payment) => payment.paymentMethode.toLowerCase() !== "cash").length;
+      const totalOnlinePayments = payments.filter((payment) => payment.paymentMethode.toLowerCase() !== "cash").reduce(
+          (total, payment) => total + Math.round(Number(payment.amount) * 100),
+          0,
+      ) / 100;
+      const onlinePaymentsPercentage = Math.round(totalPaymentsCount > 0 ? (onnlinepaymentsCount / totalPaymentsCount) * 100 : 0);
+
+    return (
+        <>
+        <div className="flex flex-row items-center justify-between mr-5">
+            <div className="mt-5 ">
+                <h1 className="text-[30px] font-semibold">Payment History <span className="text-[#A13924]">{new Date().toLocaleString("en-US", { month: "long" , year: "numeric" })}</span></h1>
+                <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
+            </div>
+            <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link>
+        </div>
+        <div className="mr-5 mt-6 flex items-center gap-4">
+            <label className="relative block w-full max-w-md">
+                <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b7168]" />
+                <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Search payments..."
+                    aria-label="Search payments"
+                    className="w-full rounded-lg border border-[#dec0ba] bg-white py-2.5 pl-10 pr-3 text-sm text-[#28211e] outline-none transition placeholder:text-[#a58d85] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
+                />
+            </label>
+            <span className="shrink-0 text-sm text-[#8b7168]">{filteredPayments.length} result{filteredPayments.length === 1 ? "" : "s"}</span>
+        </div>
+        {/* table */}
+        <div className="flex flex-row gap-5">
+        <div className="mr-5 mt-6 overflow-x-auto rounded-xl border border-[#dec0ba] bg-white h-[70vh] scrollbar-none">
+            <table className="w-full min-w-[980px] text-left">
+                <thead className="border-b border-[#dec0ba] bg-[#fff8f5] text-xs uppercase tracking-wide text-[#654f48] sticky top-0">
+                    <tr>
+                        <th className="px-5 py-4 font-semibold">
+                            <button
+                                type="button"
+                                onClick={() => setNewestFirst((current) => !current)}
+                                className="group inline-flex items-center gap-2 rounded-md outline-none transition-colors hover:text-[#A13924] focus-visible:ring-2 focus-visible:ring-[#A13924]"
+                                title={`Sort ${newestFirst ? "oldest" : "newest"} first`}>
+                                Date
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[#f3efed] px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal text-[#8b7168] group-hover:bg-[#ead9d4] group-hover:text-[#A13924]">
+                                    <ArrowDownUp size={11} />
+                                    {newestFirst ? "Newest" : "Oldest"}
+                                </span>
+                            </button>
+                        </th>
+                        <th className="px-5 py-4 font-semibold">Transaction</th>
+                        <th className="px-5 py-4 font-semibold">Payment method</th>
+                        <th className="px-5 py-4 font-semibold">Account</th>
+                        <th className="px-5 py-4 font-semibold">Status</th>
+                        <th className="px-5 py-4 text-right font-semibold">Amount</th>
+                        <th className="px-5 py-4 text-right font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loading ? (
+                        <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-[#8b7168]">Loading payments...</td></tr>
+                    ) : loadError ? (
+                        <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-[#a13924]">{loadError}</td></tr>
+                    ) : filteredPayments.length === 0 ? (
+                        <tr><td colSpan={7} className="px-5 py-12 text-center text-sm text-[#8b7168]">No payments found.</td></tr>
+                    ) : sortedPayments.map((payment) => (
+                        <tr key={payment.id} className="border-b border-[#ead9d4] last:border-0 hover:bg-[#fcf7f4]">
+                            <td className="px-5 py-4 text-sm text-[#554742]">{formatDate(payment.createdat)}</td>
+                            <td className="px-5 py-4 font-mono text-xs text-[#554742]">{payment.transectionId || payment.id}</td>
+                            <td className="px-5 py-4 text-sm capitalize text-[#28211e]">{payment.paymentMethode}</td>
+                            <td className="px-5 py-4 text-sm text-[#554742]">{payment.acountNumber}</td>
+                            <td className="px-5 py-4">
+                                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${statusStyle(String(payment.status))}`}>
+                                    {payment.status ? String(payment.status).toLowerCase()  : payment.status === PaymentStatus.Refund ? "Refunded" : payment.status === PaymentStatus.ProcessingRefund ? "Processing Refund" : "Unknown"}
+                                </span>
+                            </td>
+                            <td className="px-5 py-4 text-right text-sm font-semibold text-[#28211e]">${Number(payment.amount).toFixed(2)}</td>
+                            <td className="px-5 py-4 text-right">
+                                {payment.status !== PaymentStatus.Refund && payment.status !== PaymentStatus.ProcessingRefund && (
+                                    <button
+                                        type="button"
+                                        className="rounded-lg border border-[#A13924] px-3 py-1.5 text-xs font-semibold text-[#A13924] transition-colors hover:bg-[#A13924] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]"
+                                        title="Apply refund"
+                                        onClick={() => handleRefund(payment.id)}>
+                                        Apply Refund
+                                    </button>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+        </div>
+            <div className="flex flex-row gap-5 items-start justify-self-start h-fit w-[30%] flex-wrap mt-5">
+                <KPICard title="Total Payments " amount={totalPayments??0} />
+                <KPICard title="Total Transactions" amount={totalPaymentsCount ?? 0} />
+                <KPICard title="Total Refunds" amount={totalRefundsCount ?? 0} />
+                <KPICard title="Refund Percentage" amount={refundPercentage ?? 0} icon={<ArrowDownUp size={20} />} />
+                <KPICard title="Online Payments Percentage" amount={onlinePaymentsPercentage ?? 0} icon={<ArrowDownUp size={20} />} />
+                <KPICard title="Total Online Payments" amount={totalOnlinePayments ?? 0} />
+            </div>
+
+        </div> 
+        </>
+    )
 }

@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
 
     const cookieStore = await cookies()
    try{
-    const token = cookieStore.get('accesstoken')?.value || localtoken;
-        // console.log("token and path")
-        // console.log(token);
+    const token = cookieStore.get('accesstoken')?.value  || "Notoken";
+        console.log("token and path")
+        console.log(token);
         // console.log(IsPublicPath);
     if(token ==="Notoken" && !IsPublicPath){
         // console.log("hit logout notoken or path")

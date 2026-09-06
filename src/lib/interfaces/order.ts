@@ -12,14 +12,14 @@ export interface OrderItem {
 }
 
 export interface MenuItem {
-    id: string;
+    id?: string;
     itemName: string;
     description: string;
     catagory: string;
-    images:Files[];
+    images?:Files[];
     price: number;
-    isAvailable: boolean;
-    resturentId: string;
+    isAvailable?: boolean;
+    resturentId?: string;
 }
 
 export interface Restaurant {
@@ -61,11 +61,24 @@ export interface Payment {
     createdat:Date;
 }
 
+export interface AddOnOrder {
+    id: string;
+    orderId: string;
+    order?: Order;
+    addOnOrderItems?: OrderItem[];
+    payable: number;
+    discount?: number;
+    OrderStatus: OrderStatus;
+    payment: Payment;
+    OrderTime: string;
+}
+
 export interface Order {
     id: string;
     tableId: string;
     table: OrderTable;
     orderitems: OrderItem[];
+    addOnOrders?: AddOnOrder[];
     payable: number;
     discount: number;
     payment: Payment;

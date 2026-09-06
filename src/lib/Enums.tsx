@@ -17,5 +17,7 @@ export enum TableStatus{
 export enum PaymentStatus{
     Paid="paid",
     Pending = "pending",
-    Failed = "failed"
+    Failed = "failed",
+        ProcessingRefund = "processingrefund",
+    Refund = "refund"
 }

@@ -45,8 +45,8 @@ export default function Auth(){
             if(data.Success){ 
             if(data.Token !== undefined){
                 localStorage.setItem("accesstoken" , data.Token);
-               const cookies = document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; `;
-                console.log(cookies)
+                document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; path=/; SameSite=Lax`;
+                console.log('token cookie set', document.cookie)
             }
             if(data.Data.role === "owner"){
                 router.push("/home");

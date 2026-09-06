@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const api = axios.create({
-    baseURL: "http://localhost:3001/",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+    timeout: 10000,
     headers:{
         "content-Type":"application/json"
     },
@@ -18,3 +19,5 @@ config.headers.Authorization = "Bearer " + token;
 }
 return config;
 });
+
+api.interceptors.response

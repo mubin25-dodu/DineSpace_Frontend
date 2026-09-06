@@ -7,7 +7,7 @@ import Result from "@/lib/Result";
 import { resturantContext } from "@/lib/context/Context";
 import { Order, OrderItem } from "@/lib/interfaces/order";
 import { PaymentStatus } from "@/lib/Enums";
-import { Dot, PhoneOutgoing, UserRound } from "lucide-react";
+import { Dot, PhoneOutgoing, UserRound, X } from "lucide-react";
 import Pagination from "@/components/pagination";
 import SearchItems from "@/components/SearchOrders";
 
@@ -39,7 +39,9 @@ export default function Orders() {
     console.log(data);
     if (data.Data) {
       setOrders(data.Data);
-      setSelectedOrder(data.Data[0] ?? null);
+      setSelectedOrder(
+        data.Data.length > 0 ? data.Data[data.Data.length - 1] : null,
+      );
     }
   };
 
@@ -61,6 +63,7 @@ export default function Orders() {
     })
   );
 
+
   setSelectedOrder((prev) => {
     if (!prev || prev.id !== id) return prev;
 
@@ -74,7 +77,7 @@ export default function Orders() {
 
   const handleselection = (e: Order) => {
     setSelectedOrder(e);
-    console.log(selectedOrder);
+    // console.log(selectedOrder);
   };
 
   useEffect(() => {
@@ -97,10 +100,9 @@ export default function Orders() {
           <div className="flex h-full flex-col ">
             <div className="border-b border-[#DEC0BA] p-5">
               <span className="text-black font-semibold text-[25px] flex flex-col">
-                {" "}
                 <span>
-                  Order History{" "}
-                  <span className="text-[14px] text-[#A13924] ">
+                  Order History 
+                  <span className="text-[14px] text-[#A13924]">
                     {orders.length} Found
                   </span>
                 </span>
@@ -116,9 +118,9 @@ export default function Orders() {
                 </span>
               </span>
             </div>
-            <div className="min-h-0 flex-1 overflow-x-auto  overflow-y-auto scrollbar-none">
+            <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto scrollbar-none">
               <table className="w-full text-center p-5 ">
-                <thead className="sticky z-10 top-0 bg-white border-b border-[#DEC0BA]">
+                <thead className="sticky z-auto top-0 bg-white border-b border-[#DEC0BA]">
                   <tr className="font-normal">
                     <th>Order ID </th>
                     <th>Table</th>
@@ -199,9 +201,7 @@ interface order {
   selectedOrder: Order | null;
 }
 function OrderDetailsprofile({ selectedOrder }: order) {
-    const [discount , setdiscount] = useState(selectedOrder?.discount);
     const [disbtn , setdisbtn]= useState(false);
-    const [additems , setadditms] = useState(false);
     const [more , setMore]= useState(false);
 
     const handlediscount = ()=>{
@@ -263,13 +263,12 @@ function OrderDetailsprofile({ selectedOrder }: order) {
         <div className="pl-10 ">
           <div>ORDER ITEMS ({selectedOrder.orderitems.length}) <span onClick={()=>{setMore(!more)}} className="text-[15px] cursor-pointer font-bold text-[#A13924]">add more items</span>
           </div>
-
-          <span className= {`${!more? "hidden":""}`} >
-          <SearchItems/></span>         
-          <br /> <br />
+          <br />
+          <span>
           {selectedOrder.orderitems.map((e) => (
             <Items key={e.id} items = {e} />
           ))}
+          </span>
         </div>
         <div>
             <hr className="border-[#b1aeab] w-[90%] ml-[5%] mt-5"/>
@@ -305,7 +304,9 @@ function OrderDetailsprofile({ selectedOrder }: order) {
             </div>
 
         </div>
-      </div>
+      </div>          
+      <span onClick={()=>{console.log("peep peep")}} className= {`${!more? "hidden":""}`} >
+          <SearchItems setMore = {setMore} orderId={selectedOrder.id}/></span>  
     </>
   );
 }
