@@ -21,3 +21,13 @@ export enum PaymentStatus{
         ProcessingRefund = "processingrefund",
     Refund = "refund"
 }
+export enum WithdrawalStatus {
+    Pending = "pending",
+    Approved = "approved",
+    Rejected = "rejected",
+    Cancled = "cancled",
+}
+export enum WithdrawalType {
+    Withdraw = "withdraw",
+    Refund = "refund",
+}

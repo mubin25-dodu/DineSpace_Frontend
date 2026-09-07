@@ -14,13 +14,15 @@ export default function PaymentsPage() {
     const [loadError, setLoadError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [newestFirst, setNewestFirst] = useState(true);
-    const {defaultResturant } = useContext(resturantContext);
+    const {defaultResturant , setpopup} = useContext(resturantContext);
+    const [monthdata , setMonthData] = useState<Date>(new Date());
+    // console.log(monthdata.getMonth());
     const getpayments = async()=>{
         if (!defaultResturant) return;
         setLoading(true);
         setLoadError("");
         try{
-            const {data} = await api.get<Result<Payment[]>>(`payment/GetpaymentByResturentId/${defaultResturant}`)
+            const {data} = await api.get<Result<Payment[]>>(`payment/monthly/${defaultResturant}?month=${monthdata.getMonth()}&&year=${monthdata.getFullYear()+1}`)
             if(data.Success){
                 setpayments(data.Data ?? []);
             } else {
@@ -65,15 +67,31 @@ export default function PaymentsPage() {
      });
 
      const handleRefund = async (paymentId: string) => {
+        const payment = payments.find((item) => item.id === paymentId);
+        if (!payment) return;
+
+        const previousStatus = payment.status;
+        setpayments((currentPayments) => currentPayments.map((item) =>
+            item.id === paymentId ? { ...item, status: PaymentStatus.ProcessingRefund } : item,
+        ));
+
+        const revertRefundStatus = () => {
+            setpayments((currentPayments) => currentPayments.map((item) =>
+                item.id === paymentId ? { ...item, status: previousStatus } : item,
+            ));
+        };
+
         try {
-            const { data } = await api.post<Result>(`payment/ApplyRefund/${paymentId}`);
-            if (data.Success) {
-                getpayments();
-            } else {
-                console.error("Error applying refund:", data.Message);
+            const { data } = await api.post<Result>(`wallet/refund/${paymentId}`);
+            if (!data.Success) {
+                revertRefundStatus();
+                setpopup(data.Message || "Failed to apply refund.");
             }
+                // setpopup("applyed for refund successfully. Willbe notifyed when the refund is processed.");
         }catch (error) {
             console.error("Error applying refund:", error);
+            revertRefundStatus();
+            setpopup("An error occurred while applying the refund.");
         }
      }
 
@@ -110,7 +128,7 @@ export default function PaymentsPage() {
                 <h1 className="text-[30px] font-semibold">Payment History <span className="text-[#A13924]">{new Date().toLocaleString("en-US", { month: "long" , year: "numeric" })}</span></h1>
                 <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
             </div>
-            <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link>
+            {/* <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link> */}
         </div>
         <div className="mr-5 mt-6 flex items-center gap-4">
             <label className="relative block w-full max-w-md">
@@ -177,7 +195,7 @@ export default function PaymentsPage() {
                                     <button
                                         type="button"
                                         className="rounded-lg border border-[#A13924] px-3 py-1.5 text-xs font-semibold text-[#A13924] transition-colors hover:bg-[#A13924] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]"
-                                        title="Apply refund"
+                                        title="Apply for refund"
                                         onClick={() => handleRefund(payment.id)}>
                                         Apply Refund
                                     </button>
@@ -190,12 +208,12 @@ export default function PaymentsPage() {
 
         </div>
             <div className="flex flex-row gap-5 items-start justify-self-start h-fit w-[30%] flex-wrap mt-5">
-                <KPICard title="Total Payments " amount={totalPayments??0} />
-                <KPICard title="Total Transactions" amount={totalPaymentsCount ?? 0} />
-                <KPICard title="Total Refunds" amount={totalRefundsCount ?? 0} />
-                <KPICard title="Refund Percentage" amount={refundPercentage ?? 0} icon={<ArrowDownUp size={20} />} />
-                <KPICard title="Online Payments Percentage" amount={onlinePaymentsPercentage ?? 0} icon={<ArrowDownUp size={20} />} />
-                <KPICard title="Total Online Payments" amount={totalOnlinePayments ?? 0} />
+                <KPICard title="Total Payments " amount={totalPayments??0} subtitle={"BDT"} />
+                <KPICard title="Total Transactions" amount={totalPaymentsCount ?? 0}  subtitle={"BDT"}/>
+                <KPICard title="Total Refunds" amount={totalRefundsCount ?? 0} subtitle={"orders"}/>
+                <KPICard title="Refund Percentage" amount={refundPercentage ?? 0} subtitle={"%"} icon={<ArrowDownUp size={20} />} />
+                <KPICard title="Online Payments Percentage" amount={onlinePaymentsPercentage ?? 0} subtitle={"%"} icon={<ArrowDownUp size={20} />} />
+                <KPICard title="Total Online Payments" amount={totalOnlinePayments ?? 0} subtitle={"BDT"} />
             </div>
 
         </div> 

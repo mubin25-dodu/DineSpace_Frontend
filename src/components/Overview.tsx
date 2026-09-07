@@ -8,7 +8,7 @@ import { kpicard, Order, OrderTable } from "@/lib/interfaces/order";
 import { useContext, useEffect, useState } from "react";
 import { resturantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus, TableStatus } from "@/lib/Enums";
-import { CheckCircle2, Clock3, CookingPot, CreditCard, HandCoins, RotateCwFadingClock, Table, Utensils } from "lucide-react";
+import { CheckCircle2, Clock3, CookingPot, CreditCard, HandCoins, RotateCwFadingClock, Subtitles, Table, Utensils } from "lucide-react";
 import Inlinemessage from "./Inlinemessage";
 import { Payment } from "@/lib/interfaces/payment";
 
@@ -54,20 +54,20 @@ export default function Overview() {
             // console.log("payable");
             // console.log(payable);
 
-            const kpicard = [{title:"Today's Orders",icon:<CookingPot  />,amount:getorders?.length} , 
-                        {title:"Pending Orders" ,icon:<RotateCwFadingClock />,amount:getorders?.filter((e)=> e.OrderStatus == OrderStatus.Pending).length} ,
-                        {title: "Today's Revenue" , icon:<HandCoins/>,amount:amount}];
+            const kpicard = [{title:"Today's Orders",icon:<CookingPot  />,amount:getorders?.length ,subtitle:"BDT"}  , 
+                        {title:"Pending Orders" ,icon:<RotateCwFadingClock />,amount:getorders?.filter((e)=> e.OrderStatus == OrderStatus.Pending).length ,subtitle:"Orders"} ,
+                        {title: "Today's Revenue" , icon:<HandCoins/>,amount:amount ,subtitle:"BDT"}];
                     
                         setorderkpi(kpicard);
             }else{
-                 const kpicard = [{title:"Today's Orders",icon:<CookingPot  />,amount:0} , 
-                        {title:"Pending Orders" ,icon:<RotateCwFadingClock />,amount:0} ,
-                        {title: "Today's Revenue" , icon:<HandCoins/>,amount:0}];
+                 const kpicard = [{title:"Today's Orders",icon:<CookingPot  />,amount:0 , Subtitle:"BDT"} , 
+                        {title:"Pending Orders" ,icon:<RotateCwFadingClock />,amount:0 ,subtitle:"Orders"} ,
+                        {title: "Today's Revenue" , icon:<HandCoins/>,amount:0 ,subtitle:"BDT"} ];
                         setorderkpi(kpicard);
             }
 
             if (getTables){
-            const kpicard = [{title:"Active Bookings",icon:<Table />,amount:getTables.filter((e)=> e.reservationId).length} , 
+            const kpicard = [{title:"Active Bookings",icon:<Table />,amount:getTables.filter((e)=> e.reservationId).length } , 
                         {title: "Available Table" , icon:<Utensils/>,amount:getTables.filter((e)=> e.status == TableStatus.Available).length}];
                         settablekpi(kpicard);
             }else{
@@ -141,7 +141,7 @@ export default function Overview() {
     <div className="">
         <div className="text-[40px]">Today's Overview</div>
         <span className="flex flex-row gap-10 mt-10">{kpicards ? kpicards?.map((e,i)=>
-        <KPICard key={i} {...e} />): "No data found "}</span> 
+        <KPICard  key={i} {...e} />): "No data found "}</span> 
         <div className="mt-15 flex flex-row gap-6 ">
             <section className="w-[70%] " >
                 <div className="mb-3">
