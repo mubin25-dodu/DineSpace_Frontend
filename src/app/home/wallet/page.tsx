@@ -233,14 +233,14 @@ export default function WalletPage() {
                 <span className="flex flex-row gap-4">
                 <span className="flex flex-col gap-1">
                 <label htmlFor="accountNumber">Account Number</label>
-                <input type="number"  className="border border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('accountNumber')} />
+                <input type="number"  className="border pl-2 border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('accountNumber')} />
                 {form.formState.errors.accountNumber && (
                         <span className={`text-red-500 text-sm`}>{form.formState.errors.accountNumber.message as string}</span>
                     )}
                 </span>
             <span className="flex flex-col gap-1">
             <label htmlFor="paymentMethod">Payment Method</label>
-            <select  id="paymentMethod" className="border border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('paymentMethod')}>
+            <select  id="paymentMethod" className="border pl-2 border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('paymentMethod')}>
                 <option  value="">Select Method</option>
                 <option value="bkash">Bkash</option>
                 <option value="nagad">Nagad</option>
@@ -250,10 +250,10 @@ export default function WalletPage() {
                         <span className={`text-red-500 text-sm`}>{form.formState.errors.paymentMethod.message as string}</span>
                     )}
             </span>
-            <input type="hidden" value={WithdrawalType.Withdraw} {...form.register('type')} />
+            <input type="hidden"  value={WithdrawalType.Withdraw} {...form.register('type')} />
             </span>
             <label htmlFor="amount">Amount</label>
-            <input max={walletData?.balance} type="number" id="amount" className="border border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('amount', { valueAsNumber: true })} />
+            <input max={walletData?.balance} type="number" id="amount" className="pl-2 border border-[#dec0ba] focus:outline-none focus:ring-2 focus:ring-[#A13924]" {...form.register('amount', { valueAsNumber: true })} />
             {form.formState.errors.amount && (
                         <span className={`text-red-500 text-sm`}>{form.formState.errors.amount.message as string}</span>
                     )}

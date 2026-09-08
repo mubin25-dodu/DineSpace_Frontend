@@ -125,7 +125,7 @@ export default function PaymentsPage() {
         <>
         <div className="flex flex-row items-center justify-between mr-5">
             <div className="mt-5 ">
-                <h1 className="text-[30px] font-semibold">Payment History <span className="text-[#A13924]">{new Date().toLocaleString("en-US", { month: "long" , year: "numeric" })}</span></h1>
+                <h1 className="text-[30px] font-semibold">Payment History <span className="text-[#A13924]">{monthdata.toLocaleString("en-US", { month: "long" , year: "numeric" })}</span></h1>
                 <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
             </div>
             {/* <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link> */}
