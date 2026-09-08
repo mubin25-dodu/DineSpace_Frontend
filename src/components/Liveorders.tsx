@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/axios";
 import { resturantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
-import { AddOnOrder, Order } from "@/lib/interfaces/order";
+import { Order } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { useContext } from "react";
 
@@ -37,7 +37,7 @@ export  default  function LiveOrders({getOrders , handleChange} :params){
 
 interface OrderCardsProps {
     handler: (id:string , state:OrderStatus , payment?:PaymentStatus)=>void;
-    getOrders: Order | AddOnOrder[];
+    getOrders: Order;
 }
 
 export function  OrderCards({ handler , getOrders}: OrderCardsProps){

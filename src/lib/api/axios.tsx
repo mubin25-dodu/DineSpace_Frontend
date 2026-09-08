@@ -1,7 +1,13 @@
 import axios from "axios";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!apiUrl) {
+    throw new Error("NEXT_PUBLIC_API_URL is missing. Configure it before building the application.");
+}
+
 export const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+    baseURL: apiUrl,
     timeout: 10000,
     headers:{
         "content-Type":"application/json"

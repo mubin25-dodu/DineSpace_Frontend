@@ -42,7 +42,7 @@ export default function Overview() {
         try {
             const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultResturant}`);
             console.log(res)
-            const data = res.data.Data;
+            const data = res.data.Data ?? [];
             setgetorders(data);
         }catch(e){console.error(e)}
         }
@@ -82,7 +82,7 @@ export default function Overview() {
         const Gettables = async ()=>{
             try{
             const res = await api.get<Result<OrderTable[]>>(`tables/getTablesByResturantId/${defaultResturant}`);
-            const data = res.data.Data;
+            const data = res.data.Data ?? [];
             setGettables(data);
             // console.log("table data")
             // console.log(data);

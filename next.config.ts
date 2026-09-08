@@ -9,9 +9,8 @@ const nextConfig: NextConfig = {
     qualities: [75, 100],
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3001",
+        protocol: "https",
+        hostname: "api-dinespace.mu-bin.dev",
         pathname: "/**",
       },
     ],
