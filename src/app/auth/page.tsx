@@ -38,7 +38,6 @@ export default function Auth(){
 
     const login = async (payload: loginForm) => {
         loginBtnClicked();
-        console.log('Login data:', payload);
         try{
             const {data} = await api.post<Result>("auth/login" , payload);
             
@@ -46,7 +45,6 @@ export default function Auth(){
             if(data.Token !== undefined){
                 localStorage.setItem("accesstoken" , data.Token);
                 document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; path=/; SameSite=Lax`;
-                console.log('token cookie set', document.cookie)
             }
             if(data.Data.role === "owner"){
                 router.push("/home");
@@ -72,7 +70,6 @@ export default function Auth(){
                 message: "Server error try again after some time"
             })
             setdisableLoginBtn(false);
-            console.error(e);
         }
     };
 
@@ -84,11 +81,9 @@ export default function Auth(){
      };
 
     const verify = async (payload:verifyemailSchema)=>{
-        console.log(payload);
         verifybtnClicked();
          try{
             const {data} = await api.post<Result>("auth/Verifyemail" , payload);
-            console.log (data);
             verifyform.setError('email' , {
                 type:"server",
                 message: data.Message 
@@ -101,7 +96,6 @@ export default function Auth(){
                 message: "Internal server Error Try again After some time " 
             })
         setdisableVerifyBtn(false);
-            console.error(e);
         }
     }
 
