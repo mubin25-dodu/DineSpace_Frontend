@@ -11,7 +11,7 @@ interface func{
 }
 
 export default function ResturantNav({handleDefaultResturant}:func) {
-    const [defaultResturant, setdefaultResturant] = useState({ id: "", resturantName: "No resturant Found" });
+    const [defaultResturant, setdefaultResturant] = useState<Resturant>({ id: "", resturantName: "No resturant Found" });
     const [resturants , setResturants] = useState<Resturant[]>([]);
 
 

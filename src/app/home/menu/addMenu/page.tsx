@@ -4,7 +4,7 @@ import { api } from "@/lib/api/axios";
 import { resturantContext } from "@/lib/context/Context";
 import { MenuItem } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
-import { menuSchema, MenuForm } from "@/schemas/menu.schema";
+import { menuSchema, MenuForm, MenuFormInput } from "@/schemas/menu.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, NotebookPen, SaveCheck, Search, X } from "lucide-react";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export default function Addmenu() {
     const [itemPhoto, setItemPhoto] = useState<File | null>(null);
     const [itemPhotoPreview, setItemPhotoPreview] = useState<string | null>(null);
     const {defaultResturant , setpopup , setservererror} = useContext(resturantContext);
-    const menuForm = useForm<MenuForm>({
+    const menuForm = useForm<MenuFormInput, undefined, MenuForm>({
         resolver: zodResolver(menuSchema),
         mode: "onBlur",
         defaultValues: {
@@ -101,7 +101,7 @@ export default function Addmenu() {
             price: Number(payload.price),
             description: payload.description,
         } as MenuItem ]
-        const textupload = await api.post<Result<string>>("menu/CreateMenu", payloaddata);
+        const textupload = await api.post<Result<MenuItem[]>>("menu/CreateMenu", payloaddata);
         if(!textupload.data.Success){
             setStatusMessage(textupload.data.Message);
             return;
@@ -110,9 +110,13 @@ export default function Addmenu() {
         setStatusMessage("Menu item saved.. Uploading Image");
         const imageData = new FormData();
         imageData.append("file", itemPhoto);
-        console.log(textupload.data.Data![0].id);
+        const createdItemId = textupload.data.Data?.[0]?.id;
+        if (!createdItemId) {
+            setStatusMessage("Menu item was created but its ID was not returned.");
+            return;
+        }
         const {data} = await api.post<Result<string>>(
-            `files/uploadImages?menuId=${textupload.data.Data![0].id}`,
+            `files/uploadImages?menuId=${createdItemId}`,
             imageData,
             { headers: { "Content-Type": "multipart/form-data" } },
         );

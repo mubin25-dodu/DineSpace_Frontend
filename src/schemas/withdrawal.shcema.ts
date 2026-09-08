@@ -11,3 +11,4 @@ export const withdrawal = z.object({
 });
 
 export type withdrawals = z.infer<typeof withdrawal>;
+export type WithdrawalFormInput = z.input<typeof withdrawal>;

@@ -4,7 +4,7 @@ import { api } from "@/lib/api/axios";
 import { resturantContext } from "@/lib/context/Context";
 import { MenuItem } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
-import { menuSchema, MenuForm } from "@/schemas/menu.schema";
+import { menuSchema, MenuForm, MenuFormInput } from "@/schemas/menu.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, NotebookPen, SaveCheck, Search, X } from "lucide-react";
 import Image from "next/image";
@@ -56,7 +56,7 @@ export default function Addmenu() {
         getdata();
     }, [params?.id]);
 
-    const menuForm = useForm<MenuForm>({
+    const menuForm = useForm<MenuFormInput, undefined, MenuForm>({
         resolver: zodResolver(menuSchema),
         mode: "onBlur",
         defaultValues: {

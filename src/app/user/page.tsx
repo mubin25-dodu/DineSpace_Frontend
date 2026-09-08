@@ -15,7 +15,7 @@ export default function User() {
                 const {data} = await api.get<Result<Restaurant[]>>("resturant/getAllResturants");
                 console.log(data);
                 if (data?.Success) {
-                    setresturants(data.Data);
+                    setresturants(data.Data ?? []);
                 }
             } catch (e) {
                 console.log(e);

@@ -20,7 +20,7 @@ export default function MenuPage() {
         try{
         const {data} = await api.get<Result<MenuItem[]>>(`/menu/GetMenu/${defaultResturant}`);
         if(data.Success)  {
-               setmenu(data.Data);
+               setmenu(data.Data ?? []);
         }
     }catch(e){
         console.log(e);
@@ -46,7 +46,7 @@ export default function MenuPage() {
             prev?.map((e)=> e.id == id ? {...e , isAvailable:state} : e)        
         ); 
         try{
-            const {data} = await api.get<Result>(`menu/toggleAvailabel/${id}`);
+            const {data} = await api.get<Result<unknown>>(`menu/toggleAvailabel/${id}`);
             if(data.Success){
             }
             else{setpopup(data.Message);}
@@ -66,7 +66,7 @@ export default function MenuPage() {
         setmenu((prev)=>
             prev?.filter((e)=> e.id !== id)        
         );
-       try{ const {data} = await api.delete<Result>(`menu/DeleteMenuItem/${id}`);
+       try{ const {data} = await api.delete<Result<unknown>>(`menu/DeleteMenuItem/${id}`);
         if(!data.Success){
             setpopup(data.Message);
             callmenuapi();
@@ -223,7 +223,7 @@ function MenuTable({data , toggleAvailable , DeleteItem}:params){
                                 <div className="flex items-center gap-3">
                                     {item.isAvailable ? <span className="rounded-md bg-[#80f1a6] px-2.5 py-1 text-xs text-black">Available</span> : <span className="rounded-md bg-[#f19780] px-2.5 py-1 text-xs text-black" > Not Available</span>} 
                                     <span onClick={()=> toggleAvailable(!item.isAvailable , item.id)} className="">
-                                    <Togglebutton ischecked={item.isAvailable}/> </span>
+                                    <Togglebutton ischecked={item.isAvailable ?? false}/> </span>
                                 </div>
                             </td>
                             <td className="px-5 py-3 text-right text-[#A13924]">

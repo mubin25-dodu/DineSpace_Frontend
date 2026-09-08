@@ -82,7 +82,7 @@ export default function PaymentsPage() {
         };
 
         try {
-            const { data } = await api.post<Result>(`wallet/refund/${paymentId}`);
+            const { data } = await api.post<Result<unknown>>(`wallet/refund/${paymentId}`);
             if (!data.Success) {
                 revertRefundStatus();
                 setpopup(data.Message || "Failed to apply refund.");

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 interface param{
     Message:string;
     time?:number;
-    setpopup:()=>void;
+    setpopup?: (message:string)=>void;
 }
 
 export default function  AlerPopup({Message , time, setpopup}:param){

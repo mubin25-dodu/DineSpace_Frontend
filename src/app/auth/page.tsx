@@ -10,6 +10,12 @@ import ServerError from '@/components/serverError';
 import Result from '@/lib/Result';
 import Image from 'next/image';
 
+interface LoginResponse {
+    role: string;
+    email:string;
+    id:string;
+}
+
 export default function Auth(){
     const router = useRouter();
     const [showForm , setShowform] = useState(false);
@@ -39,14 +45,14 @@ export default function Auth(){
     const login = async (payload: loginForm) => {
         loginBtnClicked();
         try{
-            const {data} = await api.post<Result>("auth/login" , payload);
+            const {data} = await api.post<Result<LoginResponse>>("auth/login" , payload);
             
             if(data.Success){ 
             if(data.Token !== undefined){
                 localStorage.setItem("accesstoken" , data.Token);
                 document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; path=/; SameSite=Lax`;
             }
-            if(data.Data.role === "owner"){
+            if(data.Data?.role === "owner"){
                 router.push("/home");
             }
             }
@@ -83,7 +89,7 @@ export default function Auth(){
     const verify = async (payload:verifyemailSchema)=>{
         verifybtnClicked();
          try{
-            const {data} = await api.post<Result>("auth/Verifyemail" , payload);
+            const {data} = await api.post<Result<unknown>>("auth/Verifyemail" , payload);
             verifyform.setError('email' , {
                 type:"server",
                 message: data.Message 
@@ -102,7 +108,7 @@ export default function Auth(){
 
     return(
     <>
-    <ServerError error={serverError}/>
+    <ServerError error={serverError} setservererror={() => setServerError(false)}/>
     <div className="flex justify-center items-center min-h-screen">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
             <div className="w-full h-[30%]" > <Image src="/DineSpace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /> </div>

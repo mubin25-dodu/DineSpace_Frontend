@@ -7,7 +7,7 @@ import KPICard from "@/components/KPICards";
 import { Edit, Landmark } from "lucide-react";
 import { Wallet, WithdrawalRequest } from "@/lib/interfaces/wallet";
 import { WithdrawalStatus, WithdrawalType } from "@/lib/Enums";
-import { withdrawal, withdrawals } from "@/schemas/withdrawal.shcema";
+import { withdrawal, withdrawals, WithdrawalFormInput } from "@/schemas/withdrawal.shcema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,7 +20,7 @@ export default function WalletPage() {
     const [sortAscending, setSortAscending] = useState(false);
     const [disablewithdrawalbtn ,setdisablewithdrawalbtn] = useState(false);
 
-    const form = useForm<withdrawals>({
+    const form = useForm<WithdrawalFormInput, undefined, withdrawals>({
         resolver: zodResolver(withdrawal),
         mode: "onBlur",
     });
@@ -55,7 +55,7 @@ export default function WalletPage() {
     getapi();
     },[defaultResturant]);
 
-    const amount = walletData?.balance ? walletData.balance : 0;
+    const amount = walletData?.balance ? Number(walletData.balance) : 0;
     const pendingAmount = walletData?.withdrawalRequests?.filter((req) => req.status === WithdrawalStatus.Pending && req.type === WithdrawalType.Withdraw).reduce((total, request) => total + Number(request.amount), 0) || 0;
     const completedAmount = walletData?.withdrawalRequests?.filter((req) => req.status === WithdrawalStatus.Approved && req.type === WithdrawalType.Withdraw).reduce((total, request) => total + Number(request.amount), 0) || 0;
     

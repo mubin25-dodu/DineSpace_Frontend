@@ -18,7 +18,7 @@ export enum PaymentStatus{
     Paid="paid",
     Pending = "pending",
     Failed = "failed",
-        ProcessingRefund = "processingrefund",
+    ProcessingRefund = "processingrefund",
     Refund = "refund"
 }
 export enum WithdrawalStatus {

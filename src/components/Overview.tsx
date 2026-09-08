@@ -43,7 +43,7 @@ export default function Overview() {
             const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultResturant}`);
             console.log(res)
             const data = res.data.Data;
-            setgetorders(data);
+            setgetorders(data ?? []);
         }catch(e){console.error(e)}
         }
 
@@ -83,7 +83,7 @@ export default function Overview() {
             try{
             const res = await api.get<Result<OrderTable[]>>(`tables/getTablesByResturantId/${defaultResturant}`);
             const data = res.data.Data;
-            setGettables(data);
+            setGettables(data ?? []);
             // console.log("table data")
             // console.log(data);
            
@@ -207,18 +207,18 @@ function Tables({handlesTableState , table}:func){
         handlesTableState(table.id, state);
         try{
             if(state === TableStatus.Available){
-                const res = await api.patch<Result>(`tables/TableMakeaAvailable/${table.id}`);
+                const res = await api.patch<Result<unknown>>(`tables/TableMakeaAvailable/${table.id}`);
                 res.data.Success === true ? "" :()=> { handlesTableState(table.id , saveState ) ; setError(true)};
         }else if(state === TableStatus.Occupied){
-                const res = await api.patch<Result>(`tables/TableMakeaoccupied/${table.id}`);
+                const res = await api.patch<Result<unknown>>(`tables/TableMakeaoccupied/${table.id}`);
                 res.data.Success === true ? "" : ()=> { handlesTableState(table.id , saveState ) ; setError(true)};
         }
         else if(state === TableStatus.Reserved){
-                const res = await api.patch<Result>(`tables/TableMakereserved/${table.id}`);
+                const res = await api.patch<Result<unknown>>(`tables/TableMakereserved/${table.id}`);
                 res.data.Success === true ? "" : ()=> { handlesTableState(table.id , saveState ) ; setError(true)};
         }
         else if(state === TableStatus.Cleaning){
-                const res = await api.patch<Result>(`tables/TableMakeCleaning/${table.id}`);
+                const res = await api.patch<Result<unknown>>(`tables/TableMakeCleaning/${table.id}`);
                 res.data.Success === true ? "" : ()=> { handlesTableState(table.id , saveState ) ; setError(true)};
         }
         }catch(e){console.error(e) ; handlesTableState (table.id , saveState ); setError(true)}

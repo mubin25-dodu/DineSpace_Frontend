@@ -10,7 +10,7 @@ import { strict } from "assert";
 import { OrderStatus } from "@/lib/Enums";
 
 
-export default function SearchOrders({setMore , orderId}) {
+export default function SearchOrders({setMore , orderId}: { setMore: (value: boolean) => void; orderId: string }) {
   const [menu , setmenu] = useState<MenuItem[]>();  
   const {defaultResturant , setservererror , setpopup} = useContext(resturantContext);
   const[searchterm , setsearchterm] = useState("");
@@ -60,14 +60,14 @@ export default function SearchOrders({setMore , orderId}) {
     const obj =  {
       orderId:orderId,
       OrderStatus:OrderStatus.Preparing,
-      orderitems: selected?.map(e=> {  return {itemId:e.menu.id , orderId:orderId , quantity:e.quantity}}),
+      orderitems: selected?.map(e=> {  return {itemId:e.menu?.id ?? e.id , orderId:orderId , quantity:e.quantity}}),
       payment:{
         paymentMethode:"cash"
        }
-    } as selecteditems;
+    };
     console.log(obj);
     try{
-    const res = await api.post<Result>(`order/PlaceAddOnOrder`, obj);
+    const res = await api.post<Result<unknown>>(`order/PlaceAddOnOrder`, obj);
     console.log(res);
   }catch(e){ console.log(e)}
   }
@@ -96,11 +96,11 @@ export default function SearchOrders({setMore , orderId}) {
       console.log("sync")
       console.log(defaultResturant);
       try{
-       const {data} = await api.get<Result<MenuItem>>(`menu/GetMenu/${defaultResturant}`);
+       const {data} = await api.get<Result<MenuItem[]>>(`menu/GetMenu/${defaultResturant}`);
        console.log("menu");
       //  console.log(data);
        data.Success ?  localStorage.setItem(`menu-${defaultResturant}`, JSON.stringify(data.Data)):"";
-       setmenu(data.Data);
+       setmenu(data.Data ?? []);
       }catch(e){ console.error(e) ; setservererror("the server run into a problem try again letter")};
       // console.log(data);
      }
@@ -174,7 +174,7 @@ function Orderscard({ item, handleadding }: params) {
       <div className="relative h-36 w-full overflow-hidden bg-[#f5efe9]">
         <Image
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          src={item.images?.[0] ?? "/brokenOrderImage.jpg"}
+          src={item.images?.[0]?.Path ?? "/brokenOrderImage.jpg"}
           alt={item.itemName}
           width={260}
           height={144}
@@ -221,7 +221,7 @@ function Orderscard({ item, handleadding }: params) {
 
         <button
           className="mt-auto w-full rounded-xl bg-[#A13924] px-4 py-2.5 text-sm font-semibold text-white transition hover:scale-[0.99] hover:bg-[#8a3125]"
-          onClick={() => handleadding(count, item.id)}
+          onClick={() => item.id && handleadding(count, item.id)}
           type="button"
         >
           Add to order
@@ -247,7 +247,7 @@ function SelectedItemCard({ item , handleremove}: { item: selecteditems , handle
     <div className="flex items-center gap-3 rounded-[20px] border border-[#F0E0DB] bg-white p-3 shadow-sm w-70">
       <div className="h-16 w-16 overflow-hidden rounded-2xl bg-[#f5efe9]">
         <Image
-          src={menuItem.images?.[0] ? menuItem.images[0] : "/brokenOrderImage.jpg"}
+          src={menuItem.images?.[0]?.Path ? menuItem.images[0].Path : "/brokenOrderImage.jpg"}
           alt={menuItem.itemName || "Selected item"}
           width={64}
           height={64}

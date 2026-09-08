@@ -57,7 +57,7 @@ export  default function register(){
         try{
           const {cpass , ...newpayload} = payload;
           // console.log(`newpayload ${newpayload}`);
-          const {data} = await api.post<Result>(`/auth/register/${params.id}` , newpayload);
+          const {data} = await api.post<Result<unknown>>(`/auth/register/${params.id}` , newpayload);
             setAlertMsg(data.Message);
             setSubmitting(false);
           // console.log("data"+data);
@@ -70,9 +70,9 @@ export  default function register(){
 
     return(
         <>
-        {alertMsg.length !== 0  ? <AlertPopup Message={alertMsg}/> :""}
+        {alertMsg.length !== 0  ? <AlertPopup Message={alertMsg} setpopup={() => setAlertMsg("")}/> :""}
         <PageLoader load={loading} time={2000}/>
-        <ServerError error={serverError} />
+        <ServerError error={serverError} setservererror={() => setServerError(false)} />
         <div className={`${serverError ? 'mt-20' : 'mt-6'} mb-6 text-gray-800  flex justify-center items-start`}>
         {serverError === false ? registred === true ?
         <form onSubmit={form.handleSubmit(submitForm)} >

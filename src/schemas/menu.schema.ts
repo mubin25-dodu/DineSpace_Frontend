@@ -10,3 +10,4 @@ export const menuSchema = z.object({
 });
 
 export type MenuForm = z.infer<typeof menuSchema>;
+export type MenuFormInput = z.input<typeof menuSchema>;

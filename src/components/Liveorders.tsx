@@ -37,7 +37,7 @@ export  default  function LiveOrders({getOrders , handleChange} :params){
 
 interface OrderCardsProps {
     handler: (id:string , state:OrderStatus , payment?:PaymentStatus)=>void;
-    getOrders: Order | AddOnOrder[];
+    getOrders: Order;
 }
 
 export function  OrderCards({ handler , getOrders}: OrderCardsProps){
@@ -66,7 +66,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
                 return;
             }
             if(payment){
-                    const res = await api.patch<Result>(`payment/updatePayment`, {
+                    const res = await api.patch<Result<unknown>>(`payment/updatePayment`, {
                     id:getOrders.payment.id,
                     status:payment
                 });
@@ -75,7 +75,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
                 !res.data.Success ?  handler(getOrders.id , prevState , prevPayment) :"";
                 return 0;
             }
-            const res = await api.patch<Result>(`order/updateOrders/`, {
+            const res = await api.patch<Result<unknown>>(`order/updateOrders/`, {
                     id:getOrders.id,
                     OrderStatus: e,
                 });

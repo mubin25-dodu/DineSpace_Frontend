@@ -52,7 +52,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
         <resturantContext.Provider value={{ defaultResturant, setpopup: setPopup , setservererror }}>
             <OwnerNav handleDefaultResturant={setDefaultResturant} />
             {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
-            {servererror && <ServerError error={servererror} setservererror={setservererror}  />}
+            {servererror && <ServerError error={servererror} setservererror={() => setservererror("")}  />}
             <main className="ml-[max(16%,12.5rem)] mt-16">{children}</main>
         </resturantContext.Provider>
     );

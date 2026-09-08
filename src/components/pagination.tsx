@@ -1,4 +1,8 @@
-export default function Pagination({pageno}){
+interface PaginationProps {
+    pageno: number;
+}
+
+export default function Pagination({pageno}: PaginationProps){
     return(
     <div className="text-[#A13924] ">
     <button className="text-[25px] hover:scale-105 hover:translate-x-[-5px] duration-200 cursor-pointer  pr-1">«</button>

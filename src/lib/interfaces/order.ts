@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from "@/lib/Enums";
+import { OrderStatus, PaymentStatus, TableStatus } from "@/lib/Enums";
 import { ReactNode } from "react";
 import { Files } from "./file";
 
@@ -12,7 +12,7 @@ export interface OrderItem {
 }
 
 export interface MenuItem {
-    id?: string;
+    id: string;
     itemName: string;
     description: string;
     catagory: string;
@@ -45,7 +45,7 @@ export interface Restaurant {
 export interface OrderTable {
     id: string;
     tableno: number;
-    status: string;
+    status: TableStatus;
     seatCapacity: number;
     reservationId: string | null;
     resturantid: string;
@@ -93,5 +93,5 @@ export interface Order {
 }
 
 export interface kpicard{
-    title?:string,icon?:ReactNode,amount?:number,
+    title:string,icon?:ReactNode,amount?:number,
 }

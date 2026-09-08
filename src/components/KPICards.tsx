@@ -1,10 +1,11 @@
 import { ScrollText } from "lucide-react";
+import { ReactNode } from "react";
 import { CookingPot, HandCoins, RotateCwFadingClock, Table, Utensils } from "lucide-react";
 
 
 interface data{
     title:string;
-    icon?:string;
+    icon?:ReactNode;
     amount?:number;
     subtitle?:string | null;
 }

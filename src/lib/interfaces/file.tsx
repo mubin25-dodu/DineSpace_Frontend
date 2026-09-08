@@ -43,6 +43,7 @@ export interface items{
 export interface selecteditems{
     id:string;
     menu?: MenuItem;
+    quantity: number;
     orderitems?: items[];
     orderId?: string;
     OrderStatus?:OrderStatus;

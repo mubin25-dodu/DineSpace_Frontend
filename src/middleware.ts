@@ -9,7 +9,7 @@ interface MyTokenPayload {
   exp: number;
 } 
 
-const rolerouter = {
+const rolerouter: Record<string, string[]> = {
     admin:[ "/adminHome" , '/adminhome/:path*'],
     owner:["/home" , '/home/:path*']
 }
