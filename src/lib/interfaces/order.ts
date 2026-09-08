@@ -16,7 +16,7 @@ export interface MenuItem {
     itemName: string;
     description: string;
     catagory: string;
-    images?:Files[];
+    images?:Files[] | null;
     price: number;
     isAvailable?: boolean;
     resturentId?: string;
@@ -26,6 +26,7 @@ export interface Restaurant {
     id: string;
     resturantName: string;
     address: string;
+    files: Files[] | null;
     isopen: boolean;
     opening: string;
     phone: string;
@@ -35,6 +36,8 @@ export interface Restaurant {
     ownerid: string;
     logoFileId: string | null;
     coverFileId: string | null;
+    logoFile: Files | null;
+    coverFile: Files | null;
     createdat: string;
     updated: string;
 }

@@ -111,7 +111,7 @@ export default function Auth(){
     <ServerError error={serverError}/>
     <div className="flex justify-center items-center min-h-screen">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
-            <div className="w-full h-[30%]" > <Image src="/dinespace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /> </div>
+            <div className="w-full h-[30%]" > <Image src="/DineSpace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /> </div>
             <div className=" mt-1 flex flex-col p-5  gap-4 text-[#1B1C1A] text-[18px]" style={{fontWeight:"400"}}> 
                 <form onSubmit={form.handleSubmit(login)} className="flex flex-col gap-3">
                     <label htmlFor="email">Enter Email Address:</label>

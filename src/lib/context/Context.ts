@@ -11,3 +11,10 @@ export const resturantContext = createContext<RestaurantContextValue>({
 	setpopup: () => undefined,
 	setservererror:() => undefined,
 });
+
+interface Usercontext{
+	setActiveLink:Dispatch<SetStateAction<string>>;
+}
+export const userContext = createContext<Usercontext>({
+	setActiveLink:() => undefined,
+});
