@@ -3,12 +3,13 @@ import { ReactNode } from "react";
 import { Files } from "./file";
 
 export interface OrderItem {
-    id: string;
-    orderId: string;
-    itemId: string;
+    id?: string;
+    orderId?: string;
+    itemId?: string;
     menu: MenuItem;
     quantity: number;
-    price: string;
+    price: number;
+    resturantId?: string;
 }
 
 export interface MenuItem {
