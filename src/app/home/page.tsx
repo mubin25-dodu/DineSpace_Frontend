@@ -1,3 +1,4 @@
+"use client"
 import Overview from "@/components/Overview"
 import PageLoader from "@/components/PageLoader";
 import { useEffect, useState } from "react";
