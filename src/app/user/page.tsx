@@ -2,12 +2,19 @@
 import UserHero from "@/components/userComponents/hero"
 import ResturantCard from "@/components/userComponents/resturantcard";
 import { api } from "@/lib/api/axios";
+import { userContext } from "@/lib/context/Context";
 import { Restaurant } from "@/lib/interfaces/order"
 import Result from "@/lib/Result";
-import { useEffect, useState } from "react"
+import { Utensils } from "lucide-react";
+import { useContext, useEffect, useState } from "react"
 export default function User() {
     
     const [resturants , setresturants] = useState<Restaurant[]>();
+    const { setNavinfo } = useContext(userContext);
+
+    useEffect(() => {
+        setNavinfo({ icon1: <Utensils color="#A13924" />, title: "DineSpace" });
+    }, [setNavinfo]);
 
     useEffect(() => {
         const getresturants = async () => {

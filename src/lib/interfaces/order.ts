@@ -34,12 +34,14 @@ export interface Restaurant {
     closing: string;
     payfirst: boolean;
     ownerid: string;
+    menu: MenuItem[];
     logoFileId: string | null;
     coverFileId: string | null;
     logoFile: Files | null;
     coverFile: Files | null;
     createdat: string;
     updated: string;
+    tables: OrderTable[];
 }
 
 export interface OrderTable {

@@ -87,7 +87,7 @@ export default function ResturantCard({
           {resturant.payfirst ? "Pay before your meal" : "Pay after your meal"}
         </div>
         <Link
-          href={`/user/resturent/${resturant.id}`}
+          href={`/user/Resturents/${resturant.id}`}
           className="mt-4 block rounded-lg bg-[#8d351f] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#702a1a]"
         >
           View restaurant

@@ -14,7 +14,13 @@ export const resturantContext = createContext<RestaurantContextValue>({
 
 interface Usercontext{
 	setActiveLink:Dispatch<SetStateAction<string>>;
+	setNavinfo:Dispatch<SetStateAction<{ icon1?: React.ReactNode; icon2?: React.ReactNode; title: string , goback?:boolean }>>;
+	setPopup: Dispatch<SetStateAction<string>>;
+	setservererror: Dispatch<SetStateAction<string>>;
 }
 export const userContext = createContext<Usercontext>({
 	setActiveLink:() => undefined,
+	setNavinfo:() => undefined,
+	setPopup: () => undefined,
+	setservererror:() => undefined,
 });
