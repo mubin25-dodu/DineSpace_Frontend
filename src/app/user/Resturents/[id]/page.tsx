@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import {  Delete, MapPinCheckInside, Minus, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
+import { Resturant } from "@/lib/interfaces/file";
 
 export default function Resturants(params:{id:string}){
     const param = useParams<{ id: string }>();
@@ -21,7 +22,7 @@ export default function Resturants(params:{id:string}){
 
     useEffect(()=>{
         if(!resturent){return}
-        const cats = Array.from(new Set(resturent.menu.map(e=>e.catagory)));
+        const cats = Array.from(new Set(resturent.menu.filter((e)=> e.isAvailable).map(e=>e.catagory)));
         setcat(cats);
 
     },[resturent]);
@@ -106,7 +107,7 @@ export default function Resturants(params:{id:string}){
                 </div>
                 {/* cards load */}
                <div className="flex flex-col gap-1 p-3">
-                {cat.map(e=> <span id={e} key={e} className="flex flex-col m-2 mb-4 font-semibold"> {e}{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <Ordercard resid={param.id} key={f.id} item={f}/>:"")}</span>)}
+                {cat.map(e=> <span id={e} key={e} className="flex flex-col m-2 mb-4 font-semibold"> {e}{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/>:"")}</span>)}
                </div>
             </div>
             <div>
@@ -114,7 +115,7 @@ export default function Resturants(params:{id:string}){
                 <span className="font-bold">Total: {nextTotal} BDT</span>
                 <span className="flex flex-row gap-4 items-center justify-end">
                 <Link href={"../checkout"} className="rounded-3xl bg-[#F5F3F0] p-1 pl-2.5 pr-2.5 text-[#A13924] font-semibold">Checkout</Link> 
-                <button  onClick={()=>{handledeleteall()}} className=" border border-white">Revove all</button>
+                <button  onClick={()=>{handledeleteall()}} className=" border border-white p-1 pl-2.5 pr-2.5 rounded-2xl">Remove all</button>
                 </span></span>:""}
             </div>
         </div> : <UsersLoading time={2000}/>}
@@ -122,7 +123,7 @@ export default function Resturants(params:{id:string}){
     )
 }
 
-export function Ordercard({item , resid }:{item:MenuItem , resid:string }){
+export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:string ,resturent:string }){
     const {myBowl , setbowl} = useContext(userContext);
     const [count, setcount] = useState(1);
     const [found , setfound] = useState(false)   
@@ -151,10 +152,10 @@ export function Ordercard({item , resid }:{item:MenuItem , resid:string }){
             if (existingItemIndex ) {
                 console.log(existingItemIndex);
                 // console.log("item already exist in bowl");
-                return prev!.map(e=> e.menu.id === item.id ? { ...e, quantity: count } : e)
+                return prev!.map(e=> e.menu.id === item.id ? { ...e, quantity: count , resturantName:resturent } : e)
             } else {
                 // console.log("item added to bowl");
-                return [...prev! , {resturantId:resid, menu: item, quantity: count, price: item.price }];
+                return [...prev! , {resturantId:resid, resturantName:resturent , menu: item, quantity: count, price: item.price }];
             }
         })
             // console.log(myBowl);

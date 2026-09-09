@@ -10,6 +10,7 @@ export interface OrderItem {
     quantity: number;
     price: number;
     resturantId?: string;
+    resturantName?:string;
 }
 
 export interface MenuItem {

@@ -12,30 +12,32 @@ export default function userlayout({ children }: { children: React.ReactNode }){
     const [servererror , setservererror] = useState("");
 
     const [myBowl , setbowl] = useState<OrderItem[] >([]);
+    const [bowlHydrated, setBowlHydrated] = useState(false);
 
     const [activeLink, setActiveLink] = useState("home");
     const [navinfo, setNavinfo] = useState<{ icon1?: React.ReactNode; icon2?: React.ReactNode; title: string , goback?:boolean }>(
         { icon1: <Utensils color="#A13924" />, icon2: <ShieldQuestionMark />, title: "DineSpace" , goback:false}
     );
 
-    const getlocal =()=>{
-         if(myBowl.length === 0){
-            const storedBowl = localStorage.getItem("mybowl");
-             if (!storedBowl) return ;
-             try {
+    useEffect(()=>{
+        const storedBowl = localStorage.getItem("mybowl");
+
+        if (storedBowl) {
+            try {
                 const parsedBowl = JSON.parse(storedBowl) as OrderItem[];
                 setbowl(parsedBowl);
-             } catch (error) {
+            } catch (error) {
                 console.error("Error parsing stored bowl:", error);
-             }
+            }
         }
-    }    
-    useEffect(()=>{
-        getlocal();
-    },[])    
+
+        setBowlHydrated(true);
+    }, []);
+
     useEffect(() => {  
+        if (!bowlHydrated) return;
         localStorage.setItem("mybowl", JSON.stringify(myBowl));
-    }, [myBowl]);
+    }, [bowlHydrated, myBowl]);
 
 
     return <div className="h-svh overflow-y-auto no-scrollbar">
