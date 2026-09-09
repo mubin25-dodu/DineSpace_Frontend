@@ -11,6 +11,8 @@ export default function User() {
     
     const [resturants , setresturants] = useState<Restaurant[]>();
     const { setNavinfo } = useContext(userContext);
+   
+    
 
     useEffect(() => {
         setNavinfo({ icon1: <Utensils color="#A13924" />, title: "DineSpace" });
