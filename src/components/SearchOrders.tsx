@@ -8,6 +8,7 @@ import { RefreshCw, X } from "lucide-react";
 import { selecteditems } from "@/lib/interfaces/file";
 import { strict } from "assert";
 import { OrderStatus } from "@/lib/Enums";
+import Imagepath from "@/lib/algorithms/Imagepath";
 
 
 export default function SearchOrders({setMore , orderId}: { setMore: (value: boolean) => void; orderId: string }) {
@@ -174,7 +175,7 @@ function Orderscard({ item, handleadding }: params) {
       <div className="relative h-36 w-full overflow-hidden bg-[#f5efe9]">
         <Image
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          src={item.images?.[0]?.Path ?? "/brokenOrderImage.jpg"}
+          src={item.images?.[0]?.Path ? Imagepath(item.images[0].Path) : "/brokenOrderImage.jpg"}
           alt={item.itemName}
           width={260}
           height={144}
@@ -247,7 +248,7 @@ function SelectedItemCard({ item , handleremove}: { item: selecteditems , handle
     <div className="flex items-center gap-3 rounded-[20px] border border-[#F0E0DB] bg-white p-3 shadow-sm w-70">
       <div className="h-16 w-16 overflow-hidden rounded-2xl bg-[#f5efe9]">
         <Image
-          src={menuItem.images?.[0]?.Path ? menuItem.images[0].Path : "/brokenOrderImage.jpg"}
+          src={menuItem.images?.[0]?.Path ? Imagepath(menuItem.images[0].Path) : "/brokenOrderImage.jpg"}
           alt={menuItem.itemName || "Selected item"}
           width={64}
           height={64}

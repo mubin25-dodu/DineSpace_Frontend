@@ -94,7 +94,7 @@ export default function Resturants(params:{id:string}){
                 <p className=" p-3 text-[#A13924] font-bold">Checkout the menu</p>
                 <hr className="  border-[#97756f] w-full " />
                 
-                <div className="flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar sticky top-14 z-10 bg-[#FBF9F6] p-2">
+                <div className="flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory no-scrollbar sticky top-10 z-10 bg-[#FBF9F6] p-1">
                     <a id="allitems" href="#allitems" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "all" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("all")}>All items</a>
                     {cat.map((val) => (
                         <a href={`#${val}`}
@@ -114,7 +114,7 @@ export default function Resturants(params:{id:string}){
                 {nextTotal > 0 ? <span className="fixed bottom-15 left-0 right-0 z-50 flex h-16 w-full items-center justify-between gap-4 bg-[#A13924] p-4 text-white">
                 <span className="font-bold">Total: {nextTotal} BDT</span>
                 <span className="flex flex-row gap-4 items-center justify-end">
-                <Link href={"../checkout"} className="rounded-3xl bg-[#F5F3F0] p-1 pl-2.5 pr-2.5 text-[#A13924] font-semibold">Checkout</Link> 
+                <Link href={`../checkout/${param.id}`} className="rounded-3xl bg-[#F5F3F0] p-1 pl-2.5 pr-2.5 text-[#A13924] font-semibold">Checkout</Link> 
                 <button  onClick={()=>{handledeleteall()}} className=" border border-white p-1 pl-2.5 pr-2.5 rounded-2xl">Remove all</button>
                 </span></span>:""}
             </div>
@@ -178,7 +178,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
     return(
         <>
         {item ?
-        <div className=" m-2 flex min-h-30 min-w-0 flex-row items-center justify-between overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3">
+        <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl m-2 flex min-h-30 min-w-0 flex-row items-center justify-between overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3">
             <span className="flex min-w-0 max-w-[60%] flex-col justify-start gap-2">
             <span className="truncate font-semibold text-[#3b3939]">{item.itemName}</span>
             <span className="break-words font-normal leading-5 text-[#7a7776]">{item.description}</span>       
