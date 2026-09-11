@@ -31,3 +31,11 @@ export enum WithdrawalType {
     Withdraw = "withdraw",
     Refund = "refund",
 }
+
+export enum paymentMethods{
+    Cash="cash",
+    Card = "card",
+    Bkash = "bkash",
+    Nagad = "nagad",
+    Rocket = "rocket"
+}

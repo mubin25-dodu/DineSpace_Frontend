@@ -59,7 +59,7 @@ export default function ResturantCard({
         <h2 className="text-xl font-semibold tracking-tight text-black">
           {resturant.resturantName}
         </h2>
-        <p className="mt-2 line-clamp-2 text-sm text-gray-600">
+        <p className ="mt-2 text-sm text-gray-600">
           {resturant.address}
         </p>
 
@@ -87,9 +87,8 @@ export default function ResturantCard({
           {resturant.payfirst ? "Pay before your meal" : "Pay after your meal"}
         </div>
         <Link
-          href={`/user/Resturents/${resturant.id}`}
-          className="mt-4 block rounded-lg bg-[#8d351f] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#702a1a]"
-        >
+          href={`/user/Resturant/${resturant.id}`}
+          className="mt-4 block rounded-lg bg-[#8d351f] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#702a1a]">
           View restaurant
         </Link>
       </div>
