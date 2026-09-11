@@ -20,7 +20,7 @@ export default function Overview() {
     const [tablekpi , settablekpi] = useState<kpicard[]>()
     const [totalamount, settotalamount] = useState(0);
     const [kpicards , setkpicard ] = useState<kpicard[]>();
-    const {defaultResturant, setpopup} = useContext(resturantContext);
+    const {defaultResturant, setpopup , refreshOrders} = useContext(resturantContext);
     // const [date , setdate] = useState(()=> new Date());
 
     const handleChange = (id:string , state:OrderStatus , paymentstate?:PaymentStatus)=>{
@@ -101,25 +101,8 @@ export default function Overview() {
 
         useEffect(()=>{
          if(defaultResturant === undefined || defaultResturant === null || defaultResturant === "" ){return}
-
         loadOverview();
-        // console.log("s");
-        loadkpis();
-
-        const handleConnect = () => {
-        setSocConnect(true);
-        console.log("socket loaded id-"+socket.id)
-        };
-        console.log("default res " + defaultResturant);
-        socket.on("connect", handleConnect);
-        socket.connect();
-        return () => {
-            socket.off("connect", handleConnect);
-            socket.disconnect();
-        };
-        
-
-        },[defaultResturant])
+        },[defaultResturant , refreshOrders]);
 
         useEffect(() => {
         setkpicard([

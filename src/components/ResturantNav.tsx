@@ -9,9 +9,10 @@ interface Resturant{
 
 interface func{
     handleDefaultResturant:(id:string)=> void;
+    socConnect:boolean;
 }
 
-export default function ResturantNav({handleDefaultResturant}:func) {
+export default function ResturantNav({handleDefaultResturant , socConnect}:func) {
     const [defaultResturant, setdefaultResturant] = useState<Resturant>({ id: "", resturantName: "No resturant Found" });
     const [resturants , setResturants] = useState<Resturant[]>([]);
 
@@ -56,7 +57,7 @@ export default function ResturantNav({handleDefaultResturant}:func) {
     return (
         // <resturantContext.Provider value={defaultResturant}>
         <>
-            <div className="flex flex-row font-black ml-[13.5%] border border-b-[#DEC0BA] p-5 fixed w-full bg-[#FBF9F6]">
+            <div className="flex flex-row font-black z-auto ml-[13.5%] border border-b-[#DEC0BA] p-5 fixed w-full gap-5 items-center bg-[#FBF9F6]">
                 <span className="relative block">
                 <select
                     name="resturentName"
@@ -75,6 +76,23 @@ export default function ResturantNav({handleDefaultResturant}:func) {
                         ))}
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#A13924]" size={18}/>
+                </span>
+                <span
+                    role="status"
+                    aria-live="polite"
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold tracking-wide shadow-sm ${
+                        socConnect
+                            ? "border-[#B9E8C8] bg-[#ECFAF0] text-[#168044]"
+                            : "border-[#F1C4BE] bg-[#FFF0EE] text-[#B42318]"
+                    }`}
+                >
+                    <span
+                        aria-hidden="true"
+                        className={`h-2.5 w-2.5 rounded-full ${
+                            socConnect ? "bg-[#22A05A] shadow-[0_0_0_3px_rgba(34,160,90,0.15)]" : "bg-[#D0443E]"
+                        }`}
+                    />
+                    {socConnect ? "You are live" : "You are offline"}
                 </span>
             </div>
         </>
