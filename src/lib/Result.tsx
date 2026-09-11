@@ -3,4 +3,5 @@ export default interface Result<T> {
     Message:string;
     Success:boolean;
     Token?:string;
+    TotalOrders?:number;
 }

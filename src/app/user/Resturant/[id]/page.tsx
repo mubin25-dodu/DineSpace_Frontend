@@ -9,7 +9,6 @@ import { useContext, useEffect, useState } from "react";
 import {  Delete, MapPinCheckInside, Minus, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
-import { Resturant } from "@/lib/interfaces/file";
 
 export default function Resturants(params:{id:string}){
     const param = useParams<{ id: string }>();
@@ -110,8 +109,8 @@ export default function Resturants(params:{id:string}){
                 {cat.map(e=> <span id={e} key={e} className="flex flex-col m-2 mb-4 font-semibold"> {e}{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/>:"")}</span>)}
                </div>
             </div>
-            <div>
-                {nextTotal > 0 ? <span className="fixed bottom-15 left-0 right-0 z-50 flex h-16 w-full items-center justify-between gap-4 bg-[#A13924] p-4 text-white">
+            <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
+                {nextTotal > 0 ? <span className=" fixed bottom-15 left-0 right-0 z-50 flex h-16 w-full items-center justify-between gap-4 bg-[#A13924] p-4 text-white">
                 <span className="font-bold">Total: {nextTotal} BDT</span>
                 <span className="flex flex-row gap-4 items-center justify-end">
                 <Link href={`../checkout/${param.id}`} className="rounded-3xl bg-[#F5F3F0] p-1 pl-2.5 pr-2.5 text-[#A13924] font-semibold">Checkout</Link> 

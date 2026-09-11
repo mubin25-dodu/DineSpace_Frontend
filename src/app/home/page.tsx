@@ -13,7 +13,7 @@ export default function Home() {
 
     return (
         <>
-            {loading && <PageLoader load={true} time={500} />}
+            {/* {loading && <PageLoader load={true} time={500} />} */}
             <Overview />
         </>
     );
