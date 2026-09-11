@@ -3,7 +3,7 @@ import { api } from "@/lib/api/axios"
 import { resturantContext } from "@/lib/context/Context"
 import { Payment } from "@/lib/interfaces/payment"
 import Result from "@/lib/Result"
-import { ArrowDownUp, Landmark, Search } from "lucide-react"
+import { ArrowDownUp, CalendarSearch, Landmark, Search } from "lucide-react"
 import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 import KPICard from "@/components/KPICards"
@@ -16,15 +16,23 @@ export default function PaymentsPage() {
     const [newestFirst, setNewestFirst] = useState(true);
     const {defaultResturant , setpopup} = useContext(resturantContext);
     const [monthdata , setMonthData] = useState<Date>(new Date());
+    const [calendarOpen, setCalendarOpen] = useState(false);
+
+    useEffect(() => {
+        import("cally");
+    }, []);
+
     // console.log(monthdata.getMonth());
     const getpayments = async()=>{
         if (!defaultResturant) return;
         setLoading(true);
         setLoadError("");
         try{
-            const {data} = await api.get<Result<Payment[]>>(`payment/monthly/${defaultResturant}?month=${monthdata.getMonth()}&&year=${monthdata.getFullYear()+1}`)
+            const {data} = await api.get<Result<Payment[]>>(`payment/monthly/${defaultResturant}?month=${monthdata.getMonth()+1}&&year=${monthdata.getFullYear()}`)
             if(data.Success){
                 setpayments(data.Data ?? []);
+                console.log(data.Data);
+                console.log("Payments data loaded successfully.");
             } else {
                 setLoadError(data.Message || "Unable to load payments.");
             }
@@ -37,7 +45,7 @@ export default function PaymentsPage() {
      }
      useEffect(()=>{
         getpayments();
-     }, [defaultResturant]);
+     }, [defaultResturant , monthdata.getMonth() , monthdata.getFullYear()]);
 
       const formatDate = (date: Date) => new Date(date).toLocaleString(undefined, {
           year: "numeric",
@@ -120,12 +128,32 @@ export default function PaymentsPage() {
           0,
       ) / 100;
       const onlinePaymentsPercentage = Math.round(totalPaymentsCount > 0 ? (onnlinepaymentsCount / totalPaymentsCount) * 100 : 0);
+      const handleCalendarClick = (event: React.MouseEvent<HTMLElement>) => {
+          const value = (event.currentTarget as HTMLElement & { value: string }).value;
+          const selectedDate = new Date(value);
+
+          if (!Number.isNaN(selectedDate.getTime())) {
+              setMonthData(selectedDate);
+              setCalendarOpen(false);
+          }
+      };
 
     return (
         <>
         <div className="flex flex-row items-center justify-between mr-5">
             <div className="mt-5 ">
-                <h1 className="text-[30px] font-semibold">Payment History <span className="text-[#A13924]">{monthdata.toLocaleString("en-US", { month: "long" , year: "numeric" })}</span></h1>
+                <h1 className="text-[30px] font-semibold flex flex-row gap-3">Payment History <span onClick={() => {setCalendarOpen(!calendarOpen)}}  
+                title="Filter By Month and Year" className="text-[#A13924] flex flex-row gap-2 items-center cursor-pointer">{monthdata.toLocaleString("en-US", { month: "long" , year: "numeric" })} <CalendarSearch /></span> 
+                
+                {calendarOpen ?  
+
+                    <calendar-date onclick={handleCalendarClick} className=" cally fixed left-210 top-25 z-50 rounded-xl border border-[#DEC0BA] bg-white text-[#514947] shadow-xl [--color-accent:#A13924] [--color-text-on-accent:#FFFFFF]">
+                    <svg aria-label="Previous" className="size-5 rounded-md bg-[#A13924] p-1 text-white transition hover:bg-[#7E2C1C] hover:text-white" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+                    <svg aria-label="Next" className="size-5 rounded-md bg-[#A13924] p-1 text-white transition hover:bg-[#7E2C1C] hover:text-white" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+                    <calendar-month></calendar-month>
+                    </calendar-date>: ""}
+
+                </h1>
                 <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
             </div>
             {/* <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link> */}

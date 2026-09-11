@@ -28,7 +28,7 @@ export default function Usernav(params:UsernavProps) {
         <div className="fixed bottom-0 left-0 right-0 z-50 flex h-16 flex-row items-center justify-around border-t border-[#DEC0BA] bg-[#FBF9F6] px-4 shadow-lg">
             <Link href={"/user"} className= {`flex flex-col justify-between items-center ${pathname.startsWith('/user') ? 'text-[#A13924]' : 'text-gray-500'}`}><House /> <span>Home</span> </Link>
             <Link href={"/user/myBowl"} className= {`relative flex flex-col justify-between items-center ${pathname.startsWith('/user/myBowl') ? 'text-[#A13924]' : 'text-gray-500'}`}><Soup /> <span>My Bowl</span><span className=" absolute bg-[#A13924] p-.5 pl-1.5 pr-1.5 rounded-[100%] bottom-7 right-0 text-white">{ myBowl &&myBowl?.length > 0  ? myBowl?.length :""} </span></Link>
-            <Link href={"/user/order"} className= {`flex flex-col justify-between items-center ${pathname.startsWith('/user/order') ? 'text-[#A13924]' : 'text-gray-500'}`}><House /> <span>Order</span> </Link>
+            <Link href={"/user/myorders"} className= {`flex flex-col justify-between items-center ${pathname.startsWith('/user/myorders') ? 'text-[#A13924]' : 'text-gray-500'}`}><House /> <span>Order</span> </Link>
         </div>
         </>
     )

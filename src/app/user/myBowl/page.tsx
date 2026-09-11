@@ -80,7 +80,7 @@ export default function MyBowl(){
                                     <Trash2 size={16} /> Delete
                                 </button>
                                 <Link
-                                    href={`/user/Resturent/${restaurantId}`}
+                                    href={`/user/Resturant/${restaurantId}`}
                                     className="inline-flex items-center gap-2 rounded-full border border-[#A13924] px-4 py-2 text-sm font-semibold text-[#A13924] transition hover:bg-[#f2e3de]"
                                 >
                                     Go to restaurant <ArrowRight size={16} />

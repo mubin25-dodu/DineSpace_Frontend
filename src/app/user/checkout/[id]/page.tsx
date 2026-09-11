@@ -23,11 +23,13 @@ export default function Checkout(){
     const {setNavinfo , setPopup , myBowl , setbowl} = useContext(userContext);
     const [selectedtable, setselectedtable] = useState<OrderTable | null>(null);
     const [nextTotal, setnextTotal] = useState(0);
-    const [customerdetails , setcustomerdetails] = useState({name:"", phone:""});
+    const [customerdetails , setcustomerdetails] = useState({name:"", phone:"", email:""});
     const [paymentMethod, setPaymentMethod] = useState<paymentMethods>();
     const [accountNumber, setAccountNumber] = useState("");
     const [checkoutProgress, setCheckoutProgress] = useState(0);
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
+    const [isLoadingRestaurant, setIsLoadingRestaurant] = useState(true);
+    const [restaurantNotFound, setRestaurantNotFound] = useState(false);
     useEffect(()=>{
          const Total = myBowl?.filter(e=> e.resturantId === param.id)
             .reduce((acc, item) => acc + (Number(item.price) * item.quantity), 0) ?? 0;
@@ -38,14 +40,16 @@ export default function Checkout(){
     setNavinfo({title:"Checkout" , goback:true});
     },[]);
     const getresdata = async ()=>{
-        console.log("twaing")
-        console.log(param.id)
+        setIsLoadingRestaurant(true);
+        setRestaurantNotFound(false);
         try{
-            if(!param.id){return};
+            if(typeof param.id !== "string" || param.id.trim() === ""){
+                setRestaurantNotFound(true);
+                return;
+            }
             const {data} = await api.get<Result<Restaurant>>(`resturant/getResturentById/${param.id}`);
                 if (data?.Success && data.Data) {
                     setresturent(data.Data);
-                    console.log(data);
 
                     //holding checkout if the resturant is closed
                     setHoldcheckout(!data.Data.isopen);
@@ -53,10 +57,13 @@ export default function Checkout(){
 
                 }
                 else{
-                    setPopup(data.Message);
+                    setRestaurantNotFound(true);
                 }
         }catch(e){
-            console.log(e);
+            console.error("Unable to load restaurant for checkout:", e);
+            setRestaurantNotFound(true);
+        } finally {
+            setIsLoadingRestaurant(false);
         }
     }
 
@@ -81,8 +88,8 @@ export default function Checkout(){
             // console.log(paymentMethod);
             // console.log("paymentMethod");
             if(!paymentMethod){ setPopup("Select a Payment Method first"); return; }
-            if(customerdetails.phone.trim() === "" || customerdetails.name.trim() === ""){
-                setPopup("Enter your name and phone number first");
+            if(customerdetails.phone.trim() === "" || customerdetails.name.trim() === "" || customerdetails.email.trim() === ""){
+                setPopup("Enter your name, email, and phone number first");
                 return;
             }
             if(!customerdetails.phone.match(/^(?:\+88|0088|88)?01[3-9]\d{8}$/)){
@@ -91,6 +98,10 @@ export default function Checkout(){
             }
             if(!customerdetails.name.match(/^[a-zA-Z\s]+$/)){
                 setPopup("Enter a valid name");
+                return;
+            }
+            if(!customerdetails.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){
+                setPopup("Enter a valid email address");
                 return;
             }
             if(paymentMethod !== paymentMethods.Cash && accountNumber.trim() === ""){
@@ -154,7 +165,8 @@ export default function Checkout(){
                         payable:0,
                         discount:0,
                         customerName: customerdetails.name.trim(),
-                        customerPhone: customerdetails.phone.trim()
+                        customerPhone: customerdetails.phone.trim(),
+                        customerEmail: customerdetails.email.trim()
                     },
                     orderitems,
                     payment
@@ -186,7 +198,7 @@ export default function Checkout(){
                 }
                 setbowl((items) => items.filter((item) => item.resturantId !== param.id));
                 if(orderId){
-                    router.push(`/order/${orderId}`);
+                    router.push(`/user/myorders/${orderId}`);
                 } else {
                     setPopup(response.data.Message || "Order placed successfully");
                 }
@@ -217,7 +229,25 @@ return(
                 </div>
             </>
         )}
-        {resturent ? (
+        {isLoadingRestaurant ? (
+            <section className="mx-3 mt-4 rounded-2xl border border-[#DEC0BA] bg-white px-5 py-12 text-center shadow-sm">
+                <p className="text-lg font-semibold text-[#171717]">Loading checkout...</p>
+                <p className="mt-2 text-sm text-[#7a7776]">We are getting the restaurant details.</p>
+            </section>
+        ) : restaurantNotFound ? (
+            <section className="mx-3 mt-4 rounded-2xl border border-[#DEC0BA] bg-white px-5 py-12 text-center shadow-sm">
+                <h1 className="text-2xl font-semibold text-[#171717]">Restaurant not found</h1>
+                <p className="mx-auto mt-2 max-w-md text-sm text-[#7a7776]">
+                    This checkout link is invalid or the restaurant is no longer available.
+                </p>
+                <Link
+                    href="/user"
+                    className="mt-6 inline-flex rounded-full bg-[#A13924] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#7E2C1C]"
+                >
+                    Browse restaurants
+                </Link>
+            </section>
+        ) : resturent ? (
             <>
                 <RestaurantCheckoutHeader restaurant={resturent} />
                 <section className="mx-3 border border-[#DEC0BA] mt-4 rounded-2xl bg-white px-5 py-6 shadow-sm">
@@ -321,6 +351,22 @@ return(
                                 className="w-full rounded-xl border border-[#DEC0BA] bg-[#FBF9F6] px-4 py-3 text-base text-[#171717] outline-none transition placeholder:text-[#B9AAA5] hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-4 focus:ring-[#FAD8D0]"
                             />
                         </div>
+                        <div className="sm:col-span-2">
+                            <label htmlFor="customer-email" className="mb-2 block text-sm font-semibold text-[#514947]">
+                                Email address
+                            </label>
+                            <input
+                                id="customer-email"
+                                name="customerEmail"
+                                type="email"
+                                value={customerdetails.email}
+                                onChange={(event) => setcustomerdetails((details) => ({ ...details, email: event.target.value }))}
+                                placeholder="Enter your email address"
+                                autoComplete="email"
+                                required
+                                className="w-full rounded-xl border border-[#DEC0BA] bg-[#FBF9F6] px-4 py-3 text-base text-[#171717] outline-none transition placeholder:text-[#B9AAA5] hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-4 focus:ring-[#FAD8D0]"
+                            />
+                        </div>
                     </div>
                 </section>
                 <section className="mx-3 mt-4 h-fit rounded-2xl border border-[#DEC0BA] bg-white px-5 py-6 shadow-sm">
@@ -408,7 +454,7 @@ return(
                 </span></span>:""}
 
          </>
-        ) : ""}
+        ) : null}
         </>
 )
 }
