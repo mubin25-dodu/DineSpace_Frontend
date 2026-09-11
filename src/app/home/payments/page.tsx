@@ -8,7 +8,6 @@ import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 import KPICard from "@/components/KPICards"
 import { PaymentStatus } from "@/lib/Enums"
-import "cally";
 export default function PaymentsPage() {
     const [payments , setpayments ] = useState<Payment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -18,6 +17,11 @@ export default function PaymentsPage() {
     const {defaultResturant , setpopup} = useContext(resturantContext);
     const [monthdata , setMonthData] = useState<Date>(new Date());
     const [calendarOpen, setCalendarOpen] = useState(false);
+
+    useEffect(() => {
+        import("cally");
+    }, []);
+
     // console.log(monthdata.getMonth());
     const getpayments = async()=>{
         if (!defaultResturant) return;
