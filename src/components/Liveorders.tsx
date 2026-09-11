@@ -110,7 +110,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
             <div className="flex flex-row justify-between">
                 {getOrders.OrderStatus === OrderStatus.Pending ? <>
                     <button onClick={()=>{handleChange(OrderStatus.Preparing);}} className="hover:scale-95 transition-all duration-200 cursor-pointer w-[60%] bg-black rounded h-8 text-white">Accept</button>
-                    <button onClick={()=>handleChange(OrderStatus.Canceled , true)} className="transition-all duration-200 cursor-pointer w-[30%] text-[#A13924] rounded h-8">Decline</button>
+                    <button onClick={()=> confirm("Are you sure you want to decline this order?") && handleChange(OrderStatus.Canceled , true)} className="transition-all duration-200 cursor-pointer w-[30%] text-[#A13924] rounded h-8">Decline</button>
                     </> : getOrders.OrderStatus === OrderStatus.Preparing ?
                     <button onClick={()=>handleChange(OrderStatus.Ready)} className="hover:scale-95 transition-all duration-200 cursor-pointer w-full border border-[#A13924] rounded h-8 text-[#A13924]">Mark as ready</button> :
                     getOrders.OrderStatus === OrderStatus.Ready ?

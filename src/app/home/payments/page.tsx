@@ -7,7 +7,7 @@ import { ArrowDownUp, CalendarSearch, Landmark, Search } from "lucide-react"
 import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 import KPICard from "@/components/KPICards"
-import { PaymentStatus } from "@/lib/Enums"
+import { paymentMethods, PaymentStatus } from "@/lib/Enums"
 export default function PaymentsPage() {
     const [payments , setpayments ] = useState<Payment[]>([]);
     const [loading, setLoading] = useState(true);
@@ -23,6 +23,7 @@ export default function PaymentsPage() {
     }, []);
 
     // console.log(monthdata.getMonth());
+
     const getpayments = async()=>{
         if (!defaultResturant) return;
         setLoading(true);
@@ -89,8 +90,11 @@ export default function PaymentsPage() {
             ));
         };
 
+        // console.log(`Applying for refund for payment ID: ${paymentId}`);
         try {
             const { data } = await api.post<Result<unknown>>(`wallet/refund/${paymentId}`);
+            console.log(data);
+            console.log("Refund request result:");
             if (!data.Success) {
                 revertRefundStatus();
                 setpopup(data.Message || "Failed to apply refund.");
@@ -214,12 +218,12 @@ export default function PaymentsPage() {
                             <td className="px-5 py-4 text-sm text-[#554742]">{payment.acountNumber}</td>
                             <td className="px-5 py-4">
                                 <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${statusStyle(String(payment.status))}`}>
-                                    {payment.status ? String(payment.status).toLowerCase()  : payment.status === PaymentStatus.Refund ? "Refunded" : payment.status === PaymentStatus.ProcessingRefund ? "Processing Refund" : "Unknown"}
+                                    {payment.status ? String(payment.status).toLowerCase()  : payment.status === PaymentStatus.Refund ? "Refunded" : payment.status === PaymentStatus.ProcessingRefund ? "Processing" : "Unknown"}
                                 </span>
                             </td>
                             <td className="px-5 py-4 text-right text-sm font-semibold text-[#28211e]">${Number(payment.amount).toFixed(2)}</td>
                             <td className="px-5 py-4 text-right">
-                                {payment.status !== PaymentStatus.Refund && payment.status !== PaymentStatus.ProcessingRefund && (
+                                {payment.status !== PaymentStatus.Refund && payment.paymentMethode !== paymentMethods.Cash && payment.status !== PaymentStatus.ProcessingRefund && (
                                     <button
                                         type="button"
                                         className="rounded-lg border border-[#A13924] px-3 py-1.5 text-xs font-semibold text-[#A13924] transition-colors hover:bg-[#A13924] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]"

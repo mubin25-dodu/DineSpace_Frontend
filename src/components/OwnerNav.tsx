@@ -8,6 +8,7 @@ import ResturantNav from "./ResturantNav";
 
 interface OwnerNavProps {
     handleDefaultResturant: (id:string)=> void;
+    socConnect:boolean;
 };
 
 const navItems = [
@@ -22,11 +23,11 @@ const navItems = [
     { name: "Notification", href: "/home/notifications" },
 ];
 
-export default function OwnerNav({ handleDefaultResturant }: OwnerNavProps) {
+export default function OwnerNav({ handleDefaultResturant , socConnect}: OwnerNavProps) {
     const pathname = usePathname();
 
     return <>
-    <ResturantNav handleDefaultResturant={handleDefaultResturant} />
+    <ResturantNav handleDefaultResturant={handleDefaultResturant} socConnect ={socConnect} />
     <div className="bg-[#F5F3F0] font-semibold text-[#646468] border-r-2 border-[#DEC0BA] flex flex-col gap-2 items-start min-w-50 w-[14%] h-full p-7 fixed" >
     <div> <Image src="/Header_margin.svg" alt="logo" className="ml-7 mt-5 scale-140 " width={2000} height={10000} quality={100}/></div> 
 

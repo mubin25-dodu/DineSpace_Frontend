@@ -4,12 +4,14 @@ import { OrderItem } from "../interfaces/order";
 interface RestaurantContextValue {
 	defaultResturant: string;
 	setpopup: Dispatch<SetStateAction<string>>;
+	  refreshOrders: number;
 	setservererror: Dispatch<SetStateAction<string>>;
 }
 
 export const resturantContext = createContext<RestaurantContextValue>({
 	defaultResturant: "",
 	setpopup: () => undefined,
+	refreshOrders: 0,
 	setservererror:() => undefined,
 });
 
