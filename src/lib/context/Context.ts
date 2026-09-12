@@ -6,6 +6,7 @@ interface RestaurantContextValue {
 	setpopup: Dispatch<SetStateAction<string>>;
 	  refreshOrders: number;
 	setservererror: Dispatch<SetStateAction<string>>;
+	resturants?: { id: string; resturantName?: string }[];
 }
 
 export const resturantContext = createContext<RestaurantContextValue>({
@@ -13,6 +14,7 @@ export const resturantContext = createContext<RestaurantContextValue>({
 	setpopup: () => undefined,
 	refreshOrders: 0,
 	setservererror:() => undefined,
+	resturants: [],
 });
 
 interface Usercontext{

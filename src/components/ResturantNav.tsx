@@ -1,5 +1,5 @@
 import { resturantContext } from "@/lib/context/Context";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useContext, useEffect, useState, type ChangeEvent } from "react";
 import { ChevronDown } from "lucide-react";
 
 interface Resturant{
@@ -14,16 +14,15 @@ interface func{
 
 export default function ResturantNav({handleDefaultResturant , socConnect}:func) {
     const [defaultResturant, setdefaultResturant] = useState<Resturant>({ id: "", resturantName: "No resturant Found" });
-    const [resturants , setResturants] = useState<Resturant[]>([]);
+    const { resturants } = useContext(resturantContext);
 
 
     useEffect(() => {
+        if(!resturants.length) return;
         const defaultResturant = localStorage.getItem("defaultres");
         const allres = localStorage.getItem("resids");
 
-        if(allres){
-            setResturants(JSON.parse(allres));
-        }
+  
         if (!defaultResturant) {
             setdefaultResturant({ id: "", resturantName: "No resturant Found" });
             return;
@@ -37,7 +36,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
         }
         console.log("res loadin..")
         
-    }, []);
+    }, [resturants]);
 
     useEffect(()=>{
         handleDefaultResturant(defaultResturant.id);

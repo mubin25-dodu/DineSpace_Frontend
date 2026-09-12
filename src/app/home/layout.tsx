@@ -17,7 +17,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     const [Today , settoday] = useState<Date>();
     const [refreshOrders, setRefreshOrders] = useState(0);
     const [socConnect, setSocConnect] = useState(false);
-
+    const [resturants, setResturants] = useState<{ id: string; resturantName?: string }[]>([]);
     // for fetching users data
     useEffect(() => {
         async function getUserData() {
@@ -31,6 +31,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
                     id: restaurant.id,
                     resturantName: restaurant.resturantName,
                 }));
+                setResturants(restaurantOptions);
                 localStorage.setItem("resids", JSON.stringify(restaurantOptions));
 
                 const storedRestaurant = localStorage.getItem("defaultres");
@@ -106,7 +107,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     // },[new Date().getMilliseconds])
 
     return (
-        <resturantContext.Provider value={{ defaultResturant, setpopup: setPopup , setservererror , refreshOrders }}>
+        <resturantContext.Provider value={{ defaultResturant, setpopup: setPopup , setservererror , refreshOrders , resturants }}>
             <OwnerNav handleDefaultResturant={setDefaultResturant} socConnect = {socConnect} />
             {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
             {servererror && <ServerError error={servererror} setservererror={() => setservererror("")}  />}
