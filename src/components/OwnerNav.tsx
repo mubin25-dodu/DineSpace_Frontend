@@ -28,7 +28,7 @@ export default function OwnerNav({ handleDefaultResturant , socConnect}: OwnerNa
 
     return <>
     <ResturantNav handleDefaultResturant={handleDefaultResturant} socConnect ={socConnect} />
-    <div className="bg-[#F5F3F0] font-semibold text-[#646468] border-r-2 border-[#DEC0BA] flex flex-col gap-2 items-start min-w-50 w-[14%] h-full p-7 fixed" >
+    <div className="fixed left-0 top-0 z-30 flex h-full min-w-50 w-[14%] flex-col items-start gap-2 border-r-2 border-[#DEC0BA] bg-[#F5F3F0] p-7 font-semibold text-[#646468]" >
     <div> <Image src="/Header_margin.svg" alt="logo" className="ml-7 mt-5 scale-140 " width={2000} height={10000} quality={100}/></div> 
 
     {navItems.map((item, index)=><Link

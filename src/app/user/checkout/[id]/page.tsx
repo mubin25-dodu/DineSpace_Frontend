@@ -494,7 +494,9 @@ function OrderItemCard({ item }: { item: OrderItem }) {
         <div className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
             <div className="relative h-24 w-24 z-1 shrink-0 overflow-hidden rounded-2xl bg-[#F5F3F0]">
                 <Image
-                    src={Imagepath(item.menu.images![0].Path)}
+                    src={item.menu.images?.[0]?.Path
+                        ? Imagepath(item.menu.images[0].Path)
+                        : "/broken_resturant__logo.png"}
                     alt={item.menu.itemName}
                     fill
                     className="object-cover"
