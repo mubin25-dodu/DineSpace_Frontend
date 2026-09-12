@@ -18,7 +18,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
 
 
     useEffect(() => {
-        if(!resturants.length) return;
+        if(!resturants?.length) return;
         const defaultResturant = localStorage.getItem("defaultres");
         const allres = localStorage.getItem("resids");
 
@@ -43,7 +43,8 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
     },[defaultResturant.id]);
 
     const handleresturantchange = (id:string) => {
-        const selectedRestaurant = resturants.find((restaurant) => restaurant.id === id);
+        if(!resturants?.length) return;
+        const selectedRestaurant = resturants?.find((restaurant) => restaurant.id === id);
         if (!selectedRestaurant) return;
 
         console.log("hit resturant toggle")
@@ -66,7 +67,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
                     id="resturent-name"
                 >
                     <option value={defaultResturant.id}>{(defaultResturant.resturantName ?? "Unnamed restaurant").toUpperCase()}</option>
-                    {resturants
+                    {resturants && resturants!
                         .filter((restaurant) => restaurant.id !== defaultResturant.id)
                         .map((restaurant) => (
                             <option  key={restaurant.id} value={restaurant.id}>
