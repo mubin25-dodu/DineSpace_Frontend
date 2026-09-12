@@ -45,9 +45,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
     // console.log("get orders");
     const {setpopup} = useContext(resturantContext);
 
-    const orderBdTime = new Date(
-        new Date(getOrders.OrderTime).getTime() + 6 * 60 * 60 * 1000
-    );
+    const orderBdTime = new Date(getOrders.OrderTime);
     const minutesAgo = Math.floor(
         (Date.now() - orderBdTime.getTime()) / (1000 * 60)
     );
