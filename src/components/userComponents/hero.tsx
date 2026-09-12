@@ -12,7 +12,7 @@ export default function userHero() {
                 fill
             />
             <div className="absolute inset-0 bg-linear-to-t from-[#1b0d09]/90 via-[#1b0d09]/15 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 top-120 z-10 max-w-xl px-7 pb-20 text-[#fffaf3]">
+            <div className="absolute inset-x-0 bottom-20 z-10 max-w-xl px-7 pb-20 text-[#fffaf3]">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-[#f4b183]">
                     DineSpace
                 </p>
