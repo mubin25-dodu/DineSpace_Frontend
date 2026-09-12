@@ -5,14 +5,14 @@ export default function userHero() {
         <section className="relative h-svh w-full overflow-hidden scrollbar-none bg-[#291812]">
             <Image
                 className="h-full w-full object-cover object-center rounded-[0_0_150px_0]"
-                src="/Users-herobanner.png"
+                src="/user_hero.png"
                 alt="Guests enjoying a meal in a warmly lit restaurant"
                 sizes="100vw"
                 priority
                 fill
             />
             <div className="absolute inset-0 bg-linear-to-t from-[#1b0d09]/90 via-[#1b0d09]/15 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 z-10 max-w-xl px-7 pb-20 text-[#fffaf3]">
+            <div className="absolute inset-x-0 bottom-0 top-120 z-10 max-w-xl px-7 pb-20 text-[#fffaf3]">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-[#f4b183]">
                     DineSpace
                 </p>
