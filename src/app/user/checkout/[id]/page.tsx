@@ -496,7 +496,7 @@ function OrderItemCard({ item }: { item: OrderItem }) {
                 <Image
                     src={item.menu.images?.[0]?.Path
                         ? Imagepath(item.menu.images[0].Path)
-                        : "/brokenOrderImage.jpg"}
+                        : "/broken_resturant__logo.png"}
                     alt={item.menu.itemName}
                     fill
                     className="object-cover"
