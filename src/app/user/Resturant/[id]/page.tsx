@@ -117,7 +117,13 @@ export default function Resturants(params:{id:string}){
                 <button  onClick={()=>{handledeleteall()}} className=" border border-white p-1 pl-2.5 pr-2.5 rounded-2xl">Remove all</button>
                 </span></span>:""}
             </div>
-        </div> : <UsersLoading time={2000}/>}
+        </div> : (
+            <div className="flex flex-col items-center justify-center min-h-[70vh] p-4 text-center">
+                <UsersLoading time={2000}/>
+                <p className="mt-4 text-[#A13924] font-semibold text-lg">Failed to load restaurant details.</p>
+                <p className="text-gray-500">Please check your connection and try again.</p>
+            </div>
+        )}
         </>
     )
 }

@@ -8,6 +8,7 @@ import { Search, PenLine, SaveCheck, X, Upload, Plus, Trash2 } from "lucide-reac
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import Togglebutton from "@/components/Togglebutton";
+import QRCode from "react-qr-code";
 
 export default function RestaurantsPage() {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -22,8 +23,13 @@ export default function RestaurantsPage() {
     });
     const [createLogoFile, setCreateLogoFile] = useState<File | null>(null);
     const [createCoverFile, setCreateCoverFile] = useState<File | null>(null);
+    const [qrBaseUrl, setQrBaseUrl] = useState("");
 
     const { setpopup, setservererror } = useContext(resturantContext);
+
+    useEffect(() => {
+        setQrBaseUrl(window.location.origin);
+    }, []);
 
     const loadRestaurants = async () => {
         setLoading(true);
@@ -107,9 +113,16 @@ export default function RestaurantsPage() {
             } else {
                 setpopup(data.Message || "Failed to update restaurant.");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setpopup("Error updating restaurant details.");
+            let errorMessage = "Error updating restaurant details.";
+            if (error.response?.data?.message) {
+                const msgs = error.response.data.message;
+                errorMessage = Array.isArray(msgs) ? msgs.join(", ") : msgs;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            setpopup(errorMessage);
         }
     };
 
@@ -149,9 +162,16 @@ export default function RestaurantsPage() {
             } else {
                 setpopup(data.Message || "Failed to create restaurant.");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            setpopup("Error creating restaurant.");
+            let errorMessage = "Error creating restaurant.";
+            if (error.response?.data?.message) {
+                const msgs = error.response.data.message;
+                errorMessage = Array.isArray(msgs) ? msgs.join(", ") : msgs;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            setpopup(errorMessage);
         }
     };
 
@@ -205,8 +225,8 @@ export default function RestaurantsPage() {
     };
 
     return (
-        <div className="mt-5 mr-5 md:mr-10">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="mr-5 md:mr-10">
+            <div className="z-20 bg-[#FBF9F6] pb-4 pt-1 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-transparent shadow-[0_4px_6px_-6px_rgba(0,0,0,0.1)]">
                 <div className="flex flex-col">
                     <div className="text-[30px] font-semibold">Restaurants Management</div>
                     <div className="text-gray-600 ">Manage your restaurant profiles, addresses, and operational status.</div>
@@ -237,10 +257,10 @@ export default function RestaurantsPage() {
                 )}
             </div>
 
-            <div className="mt-8 flex flex-col gap-8 pb-10">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
                 {isCreating && (
                     /* CREATE MODE */
-                    <div className="flex flex-col rounded-xl border-2 border-[#A13924] bg-white overflow-hidden shadow-sm">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col rounded-xl border-2 border-[#A13924] bg-white overflow-hidden shadow-sm">
                         <div className="bg-[#fff8f5] px-6 py-4 border-b border-[#dec0ba] flex justify-between items-center flex-wrap gap-4">
                             <h3 className="text-lg font-bold text-[#A13924]">Create New Restaurant</h3>
                             <div className="flex gap-2">
@@ -370,12 +390,12 @@ export default function RestaurantsPage() {
                     </div>
                 )}
                 {loading ? (
-                    <div className="flex items-center justify-center p-10 text-[#654f48] font-medium">Loading restaurants...</div>
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 flex items-center justify-center p-10 text-[#654f48] font-medium">Loading restaurants...</div>
                 ) : filteredRestaurants.length === 0 ? (
-                    <div className="flex items-center justify-center p-10 text-[#654f48] font-medium border border-dashed border-[#dec0ba] rounded-xl bg-[#fff8f5]">No restaurants found matching your criteria.</div>
+                    <div className="col-span-1 md:col-span-2 lg:col-span-3 flex items-center justify-center p-10 text-[#654f48] font-medium border border-dashed border-[#dec0ba] rounded-xl bg-[#fff8f5]">No restaurants found matching your criteria.</div>
                 ) : (
                     filteredRestaurants.map((res) => (
-                        <div key={res.id}>
+                        <div key={res.id} className={editingId === res.id ? "col-span-1 md:col-span-2 lg:col-span-3" : "flex flex-col h-full"}>
                             {editingId === res.id ? (
                                 /* EDIT MODE */
                                 <div className="flex flex-col rounded-xl border-2 border-[#A13924] bg-white overflow-hidden shadow-sm">
@@ -493,7 +513,7 @@ export default function RestaurantsPage() {
                                 </div>
                             ) : (
                                 /* DISPLAY MODE */
-                                <div className="flex flex-col rounded-xl border border-[#dec0ba] bg-white overflow-hidden shadow-sm hover:shadow transition-shadow">
+                                <div className="flex flex-col rounded-xl border border-[#dec0ba] bg-white overflow-hidden shadow-sm hover:shadow transition-shadow h-full">
                                     <div className="relative h-48 w-full bg-[#f3efed]">
                                         <Image src={getImageUrl(res.coverFile?.Path)} alt="Cover" fill className="object-cover" />
                                         <div className="absolute bottom-[-24px] left-6 h-24 w-24 rounded-full border-4 border-white bg-white shadow-sm overflow-hidden flex items-center justify-center">
@@ -533,6 +553,21 @@ export default function RestaurantsPage() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {qrBaseUrl && (
+                                            <div className="mt-2 pt-4 border-t border-[#dec0ba] flex flex-row items-center gap-4">
+                                                <div className="bg-white p-1.5 rounded-lg border border-gray-200 shrink-0">
+                                                    <QRCode value={`${qrBaseUrl}/user/Resturant/${res.id}`} size={64} />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-[#28211e]">Digital Menu QR</span>
+                                                    <span className="text-xs text-[#654f48] mb-1">Scan to view menu & order</span>
+                                                    <a href={`${qrBaseUrl}/user/Resturant/${res.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#A13924] hover:underline font-medium break-all">
+                                                        {qrBaseUrl}/user/Resturant/{res.id}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}

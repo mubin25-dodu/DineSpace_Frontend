@@ -57,7 +57,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
     return (
         // <resturantContext.Provider value={defaultResturant}>
         <>
-            <div className="flex flex-row font-black z-auto ml-[13.5%] border border-b-[#DEC0BA] p-5 fixed w-full gap-5 items-center bg-[#FBF9F6]">
+            <div className="flex flex-row font-black z-50 left-0 border border-b-[#DEC0BA] py-5 pr-5 pl-[max(16%,12.5rem)] fixed w-full gap-5 items-center bg-[#FBF9F6]">
                 <span className="relative block">
                 <select
                     name="resturentName"
