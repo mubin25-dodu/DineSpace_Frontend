@@ -1,6 +1,6 @@
 "use client"
 import { userContext } from "@/lib/context/Context";
-import { ArrowLeft, House, ShieldQuestionMark, Soup } from "lucide-react";
+import { ArrowLeft, ClipboardList, House, ShieldQuestionMark, Soup } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext } from "react";
@@ -13,22 +13,58 @@ title: string;
 }
 
 export default function Usernav(params:UsernavProps) {
-    const {setActiveLink , myBowl} = useContext(userContext);
+    const {myBowl} = useContext(userContext);
     const pathname = usePathname();
     const router = useRouter();
+
+    const navItems = [
+        { href: "/user", label: "Home", icon: House, isActive: pathname === "/user" },
+        { href: "/user/myBowl", label: "My Bowl", icon: Soup, isActive: pathname.startsWith("/user/myBowl"), badge: myBowl?.length },
+        { href: "/user/myorders", label: "Orders", icon: ClipboardList, isActive: pathname.startsWith("/user/myorders") },
+    ];
+
     return(
         <>
-        <div className = "sticky top-0 z-5">
-            <div className="  flex flex-row items-center justify-between pl-4 h-15 pr-4 border-b border-[#DEC0BA] bg-[#FBF9F6] ">
-                <span onClick={params.goback ? () => router.back() : undefined}>{params.icon1 ? params.icon1 : <ArrowLeft/>}</span>
-                <span className="font-bold text-[#A13924] text-[25px]">{params.title ? params.title : "DineSpace"}</span>
-                <span >{params.icon2 ? params.icon2 : <ShieldQuestionMark />}</span>
+        <div className="sticky top-0 z-40">
+            <div className="flex h-14 items-center justify-between border-b border-[#ead8d3] bg-[#FBF9F6]/95 px-3 shadow-sm backdrop-blur-md">
+                {params.goback ? (
+                    <button
+                        type="button"
+                        onClick={() => router.back()}
+                        aria-label="Go back"
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-[#6d514b] transition-colors hover:bg-[#f1e5e1] hover:text-[#A13924]">
+                        {params.icon1 || <ArrowLeft size={22} />}
+                    </button>
+                ) : (
+                    <span className="flex h-9 w-9 items-center justify-center">{params.icon1 || <ArrowLeft size={20} />}</span>
+                )}
+                <span className="text-lg font-bold tracking-tight text-[#A13924]">{params.title || "DineSpace"}</span>
+                <span className="flex h-9 w-9 items-center justify-center text-[#6d514b]">{params.icon2 || <ShieldQuestionMark size={20} />}</span>
             </div>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 z-50 flex h-16 flex-row items-center justify-around border-t border-[#DEC0BA] bg-[#FBF9F6] px-4 shadow-lg">
-            <Link href={"/user"} className= {`flex flex-col justify-between items-center ${pathname.startsWith('/user') ? 'text-[#A13924]' : 'text-gray-500'}`}><House /> <span>Home</span> </Link>
-            <Link href={"/user/myBowl"} className= {`relative flex flex-col justify-between items-center ${pathname.startsWith('/user/myBowl') ? 'text-[#A13924]' : 'text-gray-500'}`}><Soup /> <span>My Bowl</span><span className=" absolute bg-[#A13924] p-.5 pl-1.5 pr-1.5 rounded-[100%] bottom-7 right-0 text-white">{ myBowl &&myBowl?.length > 0  ? myBowl?.length :""} </span></Link>
-            <Link href={"/user/myorders"} className= {`flex flex-col justify-between items-center ${pathname.startsWith('/user/myorders') ? 'text-[#A13924]' : 'text-gray-500'}`}><House /> <span>Order</span> </Link>
+        <div className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <nav aria-label="User navigation" className="mx-auto flex h-15 max-w-md items-center justify-around rounded-xl border border-[#ead8d3] bg-[#FBF9F6]/95 px-1.5 shadow-[0_8px_30px_rgba(115,65,52,0.16)] backdrop-blur-md">
+                {navItems.map(({ href, label, icon: Icon, isActive, badge }) => (
+                    <Link
+                        key={href}
+                        href={href}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`relative flex min-w-18 flex-col items-center gap-0.5 rounded-lg px-2 py-1 text-[11px] font-medium transition-all ${
+                            isActive
+                                ? "bg-[#f4e5e0] text-[#A13924]"
+                                : "text-[#806f6b] hover:bg-[#f8efec] hover:text-[#A13924]"
+                        }`}
+                    >
+                        <Icon size={19} strokeWidth={isActive ? 2.5 : 2} />
+                        <span>{label}</span>
+                        {badge ? (
+                            <span className="absolute -right-0.5 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#A13924] px-1 text-[10px] font-bold text-white ring-2 ring-[#FBF9F6]">
+                                {badge}
+                            </span>
+                        ) : null}
+                    </Link>
+                ))}
+            </nav>
         </div>
         </>
     )

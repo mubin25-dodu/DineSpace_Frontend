@@ -1,5 +1,5 @@
 import { resturantContext } from "@/lib/context/Context";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useContext, useEffect, useState, type ChangeEvent } from "react";
 import { ChevronDown } from "lucide-react";
 
 interface Resturant{
@@ -14,16 +14,15 @@ interface func{
 
 export default function ResturantNav({handleDefaultResturant , socConnect}:func) {
     const [defaultResturant, setdefaultResturant] = useState<Resturant>({ id: "", resturantName: "No resturant Found" });
-    const [resturants , setResturants] = useState<Resturant[]>([]);
+    const { resturants } = useContext(resturantContext);
 
 
     useEffect(() => {
+        if(!resturants?.length) return;
         const defaultResturant = localStorage.getItem("defaultres");
         const allres = localStorage.getItem("resids");
 
-        if(allres){
-            setResturants(JSON.parse(allres));
-        }
+  
         if (!defaultResturant) {
             setdefaultResturant({ id: "", resturantName: "No resturant Found" });
             return;
@@ -37,14 +36,15 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
         }
         console.log("res loadin..")
         
-    }, []);
+    }, [resturants]);
 
     useEffect(()=>{
         handleDefaultResturant(defaultResturant.id);
     },[defaultResturant.id]);
 
     const handleresturantchange = (id:string) => {
-        const selectedRestaurant = resturants.find((restaurant) => restaurant.id === id);
+        if(!resturants?.length) return;
+        const selectedRestaurant = resturants?.find((restaurant) => restaurant.id === id);
         if (!selectedRestaurant) return;
 
         console.log("hit resturant toggle")
@@ -57,7 +57,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
     return (
         // <resturantContext.Provider value={defaultResturant}>
         <>
-            <div className="flex flex-row font-black z-50 left-0 border border-b-[#DEC0BA] py-5 pr-5 pl-[max(16%,12.5rem)] fixed w-full gap-5 items-center bg-[#FBF9F6]">
+            <div className="fixed left-0 right-0 top-0 z-40 flex min-h-20 flex-row items-center gap-5 border-b border-[#DEC0BA] bg-[#FBF9F6] p-4 font-black shadow-sm sm:min-h-21 sm:p-5 md:left-[14%]">
                 <span className="relative block">
                 <select
                     name="resturentName"
@@ -67,7 +67,7 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
                     id="resturent-name"
                 >
                     <option value={defaultResturant.id}>{(defaultResturant.resturantName ?? "Unnamed restaurant").toUpperCase()}</option>
-                    {resturants
+                    {resturants && resturants!
                         .filter((restaurant) => restaurant.id !== defaultResturant.id)
                         .map((restaurant) => (
                             <option  key={restaurant.id} value={restaurant.id}>

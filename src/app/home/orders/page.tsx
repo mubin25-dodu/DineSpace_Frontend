@@ -13,8 +13,7 @@ import Pagination from "@/components/pagination";
 import SearchItems from "@/components/SearchOrders";
 
 const convertime = (time: Date | string) => {
-  const bdTimeFormatted = new Date(time).toLocaleString("en-US", {
-    timeZone: "Asia/Dhaka",
+  const formattedTime = new Date(time).toLocaleString("en-US", {
     day: "numeric", // "14"
     month: "short", // "Aug"
     year: "2-digit", // "26"
@@ -22,14 +21,14 @@ const convertime = (time: Date | string) => {
     minute: "2-digit", // "50"
     hour12: true, // Adds AM/PM
   });
-  return bdTimeFormatted;
+  return formattedTime;
 };
 
 export default function Orders() {
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [orders, setOrders] = useState<Order[]>([]);
   const [availableOrders, setAvailableOrders] = useState<number>(0);
-  const { defaultResturant, setpopup } = useContext(resturantContext);
+  const { defaultResturant, refreshOrders, setpopup } = useContext(resturantContext);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -178,7 +177,7 @@ export default function Orders() {
 
   useEffect(() => {
     loadorders();
-  }, [defaultResturant, page]);
+  }, [defaultResturant, page, refreshOrders]);
 
   useEffect(() => {
     console.log("Search term changed:", searchTerm);
