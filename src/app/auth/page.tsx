@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation';
 import { loginForm, loginSchema, verifyemailSchema } from '@/schemas/auth.schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import{Loader, Lock, LogIn, MailQuestionMark} from 'lucide-react'
+import {Eye, EyeOff, Loader, Lock, LogIn, MailQuestionMark} from 'lucide-react'
 import { api } from '@/lib/api/axios';
 import ServerError from '@/components/serverError';
 import Result from '@/lib/Result';
 import Image from 'next/image';
-
+import Link from 'next/link';
+import AlertPopup from '@/components/alertPopup';
+import AlerPopup from '@/components/alertPopup';
 interface LoginResponse {
     role: string;
     email:string;
@@ -22,6 +24,8 @@ export default function Auth(){
     const [disableLoginBtn ,setdisableLoginBtn] = useState(false);
     const [disableVerifyBtn ,setdisableVerifyBtn] = useState(false);
     const [serverError , setServerError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [popup , setpopup] = useState<string>("");
 
     const form = useForm<loginForm>({
         resolver:zodResolver(loginSchema),
@@ -93,10 +97,16 @@ export default function Auth(){
         verifybtnClicked();
          try{
             const {data} = await api.post<Result<unknown>>("auth/Verifyemail" , payload);
+            // console.log(data);
             verifyform.setError('email' , {
                 type:"server",
                 message: data.Message 
             })
+            if(data.Success){
+                setpopup("Verification Email Sent Successfully. Please check your email to verify your account.");
+                return;
+            }
+            setpopup(data.Message);
          setdisableVerifyBtn(false);
         }catch(e){  
             setServerError(true);
@@ -112,6 +122,7 @@ export default function Auth(){
     return(
     <>
     <ServerError error={serverError} setservererror={() => setServerError(false)}/>
+       {popup && <AlerPopup setpopup={() => setpopup("")} Message={popup} />}
     <div className="flex justify-center items-center min-h-screen">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
             <div className="w-full h-[30%]" > <Image src="/DineSpace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /> </div>
@@ -141,10 +152,18 @@ export default function Auth(){
                         <input
                             id="password"
                             className={`bg-transparent w-full h-full outline-none `}
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Enter Your Password"
                             {...form.register('password')}
                         />
+                        <button
+                            type="button"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            onClick={() => setShowPassword((visible) => !visible)}
+                            className="text-[#17375E] cursor-pointer"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
                     </div>
                     {form.formState.errors.password && (
                         <span className={`text-red-500 text-sm`}>{form.formState.errors.password.message as string}</span>
@@ -177,8 +196,8 @@ export default function Auth(){
                 :""}
             </div>
             <div className='h-10 w-full text-[#A13924]  cursor-pointer flex justify-around items-center' style={{borderRadius:"0px 0px 10px 10px", boxShadow:"0px -1px 0px 0px"}}>
-                <a> About DineSpace</a>
-                <a> Support@DineSpace.com</a>
+                <Link href='/'> About DineSpace</Link>
+                <a href='mailto:'> Support@DineSpace.com</a>
             </div>
 
         </div>

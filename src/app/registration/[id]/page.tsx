@@ -4,23 +4,31 @@ import { api } from "@/lib/api/axios";
 import { registerSchema, registrationForm } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import PageLoader from "@/components/PageLoader";
 import ServerError from "@/components/serverError";
 import AlertPopup from "@/components/alertPopup";
 import Result from "@/lib/Result";
+import { Eye, EyeOff } from "lucide-react";
 
 
-export  default function register(){
+export default function Register(){
         const [registred , setRegistred] = useState(true);
         const [serverError , setServerError] = useState (false);
         const [loading , setloading]  = useState(true);
         const [submitting, setSubmitting] = useState(false);
         const [alertMsg, setAlertMsg] = useState("");
         const [useremail ,setuserEmail] = useState("");
+        const [showPassword, setShowPassword] = useState(false);
+        const [showConfirmPassword, setShowConfirmPassword] = useState(false);
         const params = useParams();
+        const router = useRouter();
+        const form = useForm<registrationForm>({
+                resolver:zodResolver(registerSchema),
+                mode:"onBlur",
+            });
         
          useEffect(() => {
           if (!params.id) return;
@@ -47,11 +55,6 @@ export  default function register(){
           void getuser();
          }, [params.id]);
 
-         const form = useForm<registrationForm>({
-                resolver:zodResolver(registerSchema),
-                mode:"onBlur",
-            });
-
       const submitForm = async (payload:registrationForm)=>{
         setSubmitting(true);
         try{
@@ -60,6 +63,11 @@ export  default function register(){
           const {data} = await api.post<Result<unknown>>(`/auth/register/${params.id}` , newpayload);
             setAlertMsg(data.Message);
             setSubmitting(false);
+            if(data.Success){
+              setTimeout(()=>{
+                router.push('/auth')
+              }, 5000)
+            }
           // console.log("data"+data);
         }catch(e){
           setServerError(true);
@@ -92,17 +100,37 @@ export  default function register(){
             <div className="flex flex-col gap-1">
                 <label htmlFor="">Your Email <span className="text-red-800">*</span></label>
               <input type="email" readOnly value={useremail}  className={`${form.formState.errors.email?"border border-red-500":"" } rounded border border-gray-300 bg-gray-300 p-1 pl-5`}  placeholder="owner@dinespace.com" {...form.register('email')}/>
-              {form.formState.errors.email ? (<span className="text-red-800 text-[14px] flex flex-wrap">{form.formState.errors.email.message}</span>) : (<span className="flex flex-wrap text-gray-400 text-[14px]">At least 8 characters, one uppercase, one lowercase, one number, and one special character.</span>)}
+             
             </div>
 
             <div className="flex flex-col gap-1">
                 <label htmlFor="">Enter password <span className="text-red-800">*</span></label>
-              <input type="password" id="password" className={`${form.formState.errors.password?"border border-red-500":"" }rounded border border-gray-300 p-1 pl-5`}  placeholder="Enter your password" {...form.register('password')}/>
+              <div className={`${form.formState.errors.password?"border border-red-500":"" } rounded border border-gray-300 p-1 pl-5 flex items-center`}>
+                <input type={showPassword ? "text" : "password"} id="password" className="bg-transparent w-full outline-none" placeholder="Enter your password" {...form.register('password')}/>
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="text-[#17375E] cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {form.formState.errors.password ? (<span className="text-red-800 text-[14px] flex flex-wrap">{form.formState.errors.password.message}</span>) : (<span className="flex flex-wrap text-gray-400 text-[14px]">At least 8 characters, one uppercase, one lowercase, one number, and one special character.</span>)}
             </div>
             <div className="flex flex-col gap-1">
                 <label htmlFor="">Confirm password <span className="text-red-800">*</span></label>
-              <input type="password" id="confirmPassword" className={`${form.formState.errors.cpass?"border border-red-500":"" } rounded border border-gray-300 p-1 pl-5`}  placeholder="Enter your password again" {...form.register('cpass')} />
+              <div className={`${form.formState.errors.cpass?"border border-red-500":"" } rounded border border-gray-300 p-1 pl-5 flex items-center`}>
+                <input type={showConfirmPassword ? "text" : "password"} id="confirmPassword" className="bg-transparent w-full outline-none" placeholder="Enter your password again" {...form.register('cpass')} />
+                <button
+                  type="button"
+                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  onClick={() => setShowConfirmPassword((visible) => !visible)}
+                  className="text-[#17375E] cursor-pointer"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               {form.formState.errors.cpass && (<span className="text-red-800 text-[14px]">{form.formState.errors.cpass.message}</span>)}
             </div>
             <div>

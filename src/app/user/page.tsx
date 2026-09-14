@@ -11,9 +11,11 @@ export default function User() {
     
     const [resturants , setresturants] = useState<Restaurant[]>();
     const { setNavinfo } = useContext(userContext);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    let filteredResturants = resturants?.filter((resturant) =>
+        resturant.resturantName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
    
-    
-
     useEffect(() => {
         setNavinfo({ icon1: <Utensils color="#A13924" />, title: "DineSpace" });
     }, [setNavinfo]);
@@ -34,18 +36,27 @@ export default function User() {
         getresturants();
     }, []);
 
+   
+    useEffect(() => {
+
+        filteredResturants = resturants?.filter((resturant) =>
+            resturant.resturantName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    },[searchQuery]);
+
+
     return (
        <>
        <UserHero/>
        <section className="m-5 mb-20">
         <div className="flex flex-1 items-center justify-center">
         <span className="flex flex-row items-center">
-        <input type="text" className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <button  className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</button>
+        <input type="text" onChange={(e) => setSearchQuery(e.target.value)} className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <button  className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</button>
         </span>
         </div>        
        </section>
        <span className="flex flex-row flex-wrap m-3 gap-5">
-            {resturants?.map((resturant) => (
+            {filteredResturants?.map((resturant) => (
                 <ResturantCard key={resturant.id} resturant={resturant} />
             ))}
         </span>

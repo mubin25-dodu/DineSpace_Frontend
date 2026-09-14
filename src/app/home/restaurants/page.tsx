@@ -5,7 +5,7 @@ import { resturantContext } from "@/lib/context/Context";
 import { Restaurant } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { Search, PenLine, SaveCheck, X, Upload, Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
+import NextImage from "next/image";
 import { useContext, useEffect, useState } from "react";
 import Togglebutton from "@/components/Togglebutton";
 import QRCode from "react-qr-code";
@@ -23,13 +23,9 @@ export default function RestaurantsPage() {
     });
     const [createLogoFile, setCreateLogoFile] = useState<File | null>(null);
     const [createCoverFile, setCreateCoverFile] = useState<File | null>(null);
-    const [qrBaseUrl, setQrBaseUrl] = useState("");
+    const qrBaseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
     const { setpopup, setservererror } = useContext(resturantContext);
-
-    useEffect(() => {
-        setQrBaseUrl(window.location.origin);
-    }, []);
 
     const loadRestaurants = async () => {
         setLoading(true);
@@ -70,6 +66,63 @@ export default function RestaurantsPage() {
         if (normalizedPath.startsWith("http")) return encodeURI(normalizedPath);
         const baseUrl = api.defaults.baseURL?.replace(/\/$/, "");
         return encodeURI(`${baseUrl}/${normalizedPath}`);
+    };
+
+    const downloadRestaurantQr = (restaurantId: string, restaurantName: string) => {
+        const qrElement = document.getElementById(`restaurant-qr-${restaurantId}`);
+        const svg = qrElement instanceof SVGSVGElement ? qrElement : qrElement?.querySelector("svg");
+        if (!svg) return;
+
+        try {
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svg);
+            const svgWithNamespace = svgString.includes("xmlns") ? svgString : svgString.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+            const svgBlob = new Blob([svgWithNamespace], { type: "image/svg+xml;charset=utf-8" });
+            const svgUrl = URL.createObjectURL(svgBlob);
+            const image = document.createElement("img");
+
+            image.onload = () => {
+                const canvas = document.createElement("canvas");
+                const size = 1024;
+                canvas.width = size;
+                canvas.height = size;
+
+                const context = canvas.getContext("2d");
+                if (!context) {
+                    URL.revokeObjectURL(svgUrl);
+                    return;
+                }
+
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, size, size);
+                context.drawImage(image, 0, 0, size, size);
+
+                canvas.toBlob((pngBlob) => {
+                    if (!pngBlob) {
+                        URL.revokeObjectURL(svgUrl);
+                        return;
+                    }
+
+                    const pngUrl = URL.createObjectURL(pngBlob);
+                    const link = document.createElement("a");
+                    link.href = pngUrl;
+                    link.download = `${restaurantName.trim().replace(/\s+/g, "-").toLowerCase()}-menu-qr.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
+                    URL.revokeObjectURL(svgUrl);
+                }, "image/png");
+            };
+
+            image.onerror = () => {
+                URL.revokeObjectURL(svgUrl);
+            };
+
+            image.src = svgUrl;
+        } catch (error) {
+            console.error("Failed to download restaurant QR code:", error);
+        }
     };
 
     const startEdit = (res: Restaurant) => {
@@ -355,7 +408,7 @@ export default function RestaurantsPage() {
                                         <div className="flex items-center gap-4">
                                             <div className="relative h-20 w-20 rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
                                                 {createLogoFile ? (
-                                                    <Image src={URL.createObjectURL(createLogoFile)} alt="Logo Preview" fill className="object-cover" />
+                                                    <NextImage src={URL.createObjectURL(createLogoFile)} alt="Logo Preview" fill className="object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-300">Logo</div>
                                                 )}
@@ -373,7 +426,7 @@ export default function RestaurantsPage() {
                                         <div className="flex flex-col gap-4">
                                             <div className="relative h-40 w-full max-w-sm rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
                                                 {createCoverFile ? (
-                                                    <Image src={URL.createObjectURL(createCoverFile)} alt="Cover Preview" fill className="object-cover" />
+                                                    <NextImage src={URL.createObjectURL(createCoverFile)} alt="Cover Preview" fill className="object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center text-gray-300">Cover Image</div>
                                                 )}
@@ -486,7 +539,7 @@ export default function RestaurantsPage() {
                                                 <div className="text-xs text-gray-500 mb-1">Recommended dimension: 1:1 ratio (e.g. 500x500px)</div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="relative h-20 w-20 rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
-                                                        <Image src={getImageUrl(res.logoFile?.Path)} alt="Logo" fill className="object-cover" />
+                                                        <NextImage src={getImageUrl(res.logoFile?.Path)} alt="Logo" fill className="object-cover" />
                                                     </div>
                                                     <label className="cursor-pointer flex items-center gap-2 bg-[#f7e9e5] text-[#A13924] px-4 py-2 rounded-lg hover:bg-[#ead9d4] transition-colors text-sm font-semibold">
                                                         <Upload size={16} /> Upload New Logo
@@ -500,7 +553,7 @@ export default function RestaurantsPage() {
                                                 <div className="text-xs text-gray-500 mb-1">Recommended dimension: 16:9 ratio (e.g. 1920x1080px)</div>
                                                 <div className="flex flex-col gap-4">
                                                     <div className="relative h-40 w-full max-w-sm rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
-                                                        <Image src={getImageUrl(res.coverFile?.Path)} alt="Cover" fill className="object-cover" />
+                                                        <NextImage src={getImageUrl(res.coverFile?.Path)} alt="Cover" fill className="object-cover" />
                                                     </div>
                                                     <label className="cursor-pointer flex items-center justify-center gap-2 bg-[#f7e9e5] text-[#A13924] px-4 py-2 rounded-lg hover:bg-[#ead9d4] transition-colors text-sm font-semibold w-fit">
                                                         <Upload size={16} /> Upload New Cover
@@ -515,9 +568,9 @@ export default function RestaurantsPage() {
                                 /* DISPLAY MODE */
                                 <div className="flex flex-col rounded-xl border border-[#dec0ba] bg-white overflow-hidden shadow-sm hover:shadow transition-shadow h-full">
                                     <div className="relative h-48 w-full bg-[#f3efed]">
-                                        <Image src={getImageUrl(res.coverFile?.Path)} alt="Cover" fill className="object-cover" />
+                                        <NextImage src={getImageUrl(res.coverFile?.Path)} alt="Cover" fill className="object-cover" />
                                         <div className="absolute bottom-[-24px] left-6 h-24 w-24 rounded-full border-4 border-white bg-white shadow-sm overflow-hidden flex items-center justify-center">
-                                            <Image src={getImageUrl(res.logoFile?.Path)} alt="Logo" fill className="object-cover" />
+                                            <NextImage src={getImageUrl(res.logoFile?.Path)} alt="Logo" fill className="object-cover" />
                                         </div>
                                     </div>
                                     <div className="pt-10 pb-6 px-6 flex flex-col gap-4">
@@ -557,14 +610,25 @@ export default function RestaurantsPage() {
                                         {qrBaseUrl && (
                                             <div className="mt-2 pt-4 border-t border-[#dec0ba] flex flex-row items-center gap-4">
                                                 <div className="bg-white p-1.5 rounded-lg border border-gray-200 shrink-0">
-                                                    <QRCode value={`${qrBaseUrl}/user/Resturant/${res.id}`} size={64} />
+                                                    <QRCode
+                                                        id={`restaurant-qr-${res.id}`}
+                                                        value={`${qrBaseUrl}/user/Resturant/${res.id}`}
+                                                        size={64}
+                                                    />
                                                 </div>
-                                                <div className="flex flex-col">
+                                                <div className="flex flex-col flex-1 min-w-0">
                                                     <span className="text-sm font-bold text-[#28211e]">Digital Menu QR</span>
                                                     <span className="text-xs text-[#654f48] mb-1">Scan to view menu & order</span>
                                                     <a href={`${qrBaseUrl}/user/Resturant/${res.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#A13924] hover:underline font-medium break-all">
                                                         {qrBaseUrl}/user/Resturant/{res.id}
                                                     </a>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => downloadRestaurantQr(res.id, res.resturantName)}
+                                                        className="mt-2 w-fit inline-flex items-center justify-center rounded-md bg-[#A13924] px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-[#8a2f1e]"
+                                                    >
+                                                        Download QR
+                                                    </button>
                                                 </div>
                                             </div>
                                         )}
