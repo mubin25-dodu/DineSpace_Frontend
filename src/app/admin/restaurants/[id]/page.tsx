@@ -37,9 +37,18 @@ const formatAmount = (value: number | undefined) =>
     })} BDT`;
 
 async function getAnalytics(id: string) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accesstoken")?.value;
+
     const response = await api.get<{ Success: boolean; Data?: AdminAnalytics }>(
         `/resturant/AdminAnalytics/${id}`,
-        
+        token
+            ? {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            : undefined,
     );
 
     return response.data.Success ? response.data.Data ?? null : null;
