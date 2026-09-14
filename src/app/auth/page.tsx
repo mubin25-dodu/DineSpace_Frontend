@@ -171,6 +171,19 @@ export default function Auth(){
 
                     <button type="submit" disabled = {disableLoginBtn} className="bg-[#A13924] flex items-center justify-center rounded h-8 text-white cursor-pointer hover:scale-98 transition-all duration-500 " 
                     >Sign In {disableLoginBtn?<Loader  className={`ml-2 animate-spin `}  />:<LogIn className='ml-2' />}</button>
+
+                    <button
+                        type="button"
+                        disabled={disableLoginBtn}
+                        onClick={() => {
+                            form.setValue("email", "mubin9516@gmail.com");
+                            form.setValue("password", "Mubin@11");
+                            login({ email: "mubin9516@gmail.com", password: "Mubin@11" });
+                        }}
+                        className="flex h-8 items-center justify-center rounded border border-[#DEC0BA] bg-[#FFF8F6] text-xs font-semibold text-[#A13924] cursor-pointer hover:bg-[#FBECE8] transition-all hover:scale-98"
+                    >
+                        ⚡ One-Click Dummy Login (Demo Owner)
+                    </button>
                 </form>
 
                 <button  className=" rounded h-8 text-[#040505] border-2 border-[#17375E] cursor-pointer hover:scale-98 transition-all duration-500" 

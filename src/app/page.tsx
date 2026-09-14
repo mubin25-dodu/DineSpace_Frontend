@@ -2,11 +2,52 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChefHat, CircleCheck, ClipboardList, Utensils } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, ChefHat, CircleCheck, ClipboardList, Loader2, LogIn, Sparkles, Utensils } from "lucide-react";
 import { useState } from "react";
+import { api } from "@/lib/api/axios";
+import Result from "@/lib/Result";
+
+interface LoginResponse {
+  role: string;
+  email: string;
+  id: string;
+}
 
 export default function Home() {
+  const router = useRouter();
   const [showDeveloperStory, setShowDeveloperStory] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [dummyLoginError, setDummyLoginError] = useState<string | null>(null);
+
+  const handleDummyLogin = async () => {
+    setIsLoggingIn(true);
+    setDummyLoginError(null);
+    try {
+      const { data } = await api.post<Result<LoginResponse>>("auth/login", {
+        email: "mubin9516@gmail.com",
+        password: "Mubin@11",
+      });
+
+      if (data.Success && data.Token) {
+        localStorage.setItem("accesstoken", data.Token);
+        document.cookie = `accesstoken=${encodeURIComponent(data.Token)}; path=/; SameSite=Lax`;
+
+        if (data.Data?.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/home");
+        }
+      } else {
+        setDummyLoginError(data.Message || "Login failed. Please try again.");
+        setIsLoggingIn(false);
+      }
+    } catch (error) {
+      console.error("Dummy login error:", error);
+      setDummyLoginError("Server error. Please try again in a moment.");
+      setIsLoggingIn(false);
+    }
+  };
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#FBF9F6] text-[#171717]">
@@ -18,6 +59,25 @@ export default function Home() {
           DineSpace
         </Link>
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
+          <button
+            type="button"
+            onClick={handleDummyLogin}
+            disabled={isLoggingIn}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#DEC0BA] bg-white px-2.5 py-2 text-xs font-semibold text-[#A13924] shadow-xs transition hover:bg-[#FDF7F5] disabled:cursor-not-allowed disabled:opacity-60 sm:px-3.5 sm:text-sm"
+            title="Instant login as Demo Restaurant Owner (mubin9516@gmail.com)"
+          >
+            {isLoggingIn ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                <span>Logging in...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles size={15} className="text-[#C86A52]" />
+                <span>Dummy Login</span>
+              </>
+            )}
+          </button>
           <Link
             href="/auth"
             className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] sm:block sm:px-4 sm:text-sm"
@@ -57,6 +117,25 @@ export default function Home() {
               Explore restaurants
               <ArrowRight size={18} />
             </Link>
+            <button
+              type="button"
+              onClick={handleDummyLogin}
+              disabled={isLoggingIn}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#28211E] px-6 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#3D332F] focus:outline-none focus:ring-2 focus:ring-[#28211E]/30 disabled:cursor-not-allowed disabled:opacity-75 sm:w-auto"
+              title="One-click demo login: mubin9516@gmail.com"
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                <>
+                  <LogIn size={18} />
+                  <span>Dummy Login</span>
+                </>
+              )}
+            </button>
             <Link
               href="/auth"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDBDB3] bg-white px-6 py-3.5 font-semibold text-[#A13924] transition hover:bg-[#FFF3EE] sm:w-auto"
@@ -71,6 +150,12 @@ export default function Home() {
               Developer Story
             </button>
           </div>
+          {dummyLoginError && (
+            <div className="mt-3 max-w-md rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-medium text-red-700">
+              {dummyLoginError}
+            </div>
+          )}
+
           <div className="mt-8 grid max-w-md grid-cols-1 gap-3 border-t border-[#EAD8D2] pt-5 text-sm text-[#735B53] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6">
             <span className="flex items-center gap-2">
               <CircleCheck size={17} className="text-[#A13924]" />
