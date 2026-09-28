@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useContext, useState, type Dispatch, type SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { loginForm, loginSchema, verifyemailSchema } from '@/schemas/auth.schema';
 import { useForm } from 'react-hook-form';
@@ -10,7 +10,6 @@ import ServerError from '@/components/serverError';
 import Result from '@/lib/Result';
 import Image from 'next/image';
 import Link from 'next/link';
-import AlertPopup from '@/components/alertPopup';
 import AlerPopup from '@/components/alertPopup';
 interface LoginResponse {
     role: string;
@@ -125,9 +124,10 @@ export default function Auth(){
     <>
     <ServerError error={serverError} setservererror={() => setServerError(false)}/>
     
-    {/* {btns.forget && btns.forget === true && <Forgetpass />} */}
-       {popup && <AlerPopup setpopup={() => setpopup("")} Message={popup} />}
-    <div className="flex justify-center items-center min-h-screen">
+    {btns.forget && btns.forget === true && <Forgetpass setpopup={setpopup} setbuttons = {setbuttons} />}
+    {popup && <AlerPopup setpopup={() => setpopup("")} Message={popup} />}
+    <div className="flex min-h-screen flex-col">
+        <div className="flex flex-1 items-center justify-center py-6">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
             <div className="w-full h-[30%]" > <Link href={"./"}><Image src="/DineSpace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /></Link> </div>
             <div className=" mt-1 flex flex-col p-5  gap-4 text-[#1B1C1A] text-[18px]" style={{fontWeight:"400"}}> 
@@ -218,26 +218,65 @@ export default function Auth(){
             </div>
 
         </div>
+        </div>
     </div>
     </>
     );
 }
 
-// function Forgetpass(){
-//     return (
-//         <>
-//         <div className='fixed inset-0 flex items-center  justify-center bg-[#0000005d]'>
-//             <div className='bg-[#FFF5F1] min-w-[20vw] w-fit h-fit p-5 text-[#a13924] rounded shadow flex flex-col gap-3'>
-//             <span className='flex justify-between flex-col gap-2'>
-//             <label htmlFor="email" className='font-semibold'>Enter Your Email:</label>
-//             <input type="text"  className='border border-[#]'/>
-//             <span>
-//                 <button className='bg-[#A13924] text-white rounded h-8 w-20 '>Send</button>
-//                 <button className='border border-[#A13924] hover:bg-[#A13924] hover:text-white duration-200 cursor-pointer rounded h-8 w-20'>Cancel</button>
-//             </span>
-//             </span>
-//             </div>
-//         </div>
-//         </>
-//     )
-// }
+interface ForgetpassProps {
+    setbuttons: Dispatch<SetStateAction<{ login: boolean; verify: boolean; forget: boolean }>>;
+    setpopup: Dispatch<SetStateAction<string>>;
+}
+function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
+    const [email, setEmail] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleforgetpass = async () => {
+        setError(null);
+        if(email.trim() === ""){
+            setError("Please enter your email address.");
+            return;
+        }
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+            setError("Please enter a valid email address.");
+            return;
+        }
+        try {
+            setIsSubmitting(true);
+            const {data} = await api.get<Result<unknown>>("auth/forgetpassword/" + email);
+            if(data.Success){
+                setpopup("Password reset link sent to your email. Please check your inbox.");
+                setbuttons((e) => ({ ...e, forget: false }));
+            }
+            setpopup(data.Message);
+            console.log(data);
+        }catch (error) {
+            console.error("Error handling forget password:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <>
+        <div className='fixed inset-0 flex items-center  justify-center bg-[#0000005d]'>
+            <div className='bg-[#FFF5F1] min-w-[20vw] w-fit h-fit p-5 text-[#a13924] rounded shadow flex flex-col gap-5 '>
+            <span className='flex justify-between flex-col gap-2'>
+            <label htmlFor="email" className='font-semibold'>Enter Your Email:</label>
+            <input type="text"  className='border border-[#] p-2' onChange={(e) => setEmail(e.target.value)}/>
+            {error && <span className='text-[12px] text-[#A13924]'>{error}</span>}
+            <span className='flex gap-5 justify-end'>
+                <button className='bg-[#A13924] text-white rounded h-8 pl-4 pr-4 flex flex-row items-center justify-center' onClick={()=>{handleforgetpass()}} disabled={isSubmitting}>
+                    {isSubmitting ? <span className='flex flex-row justify-center items-center gap-2'>Sending <Loader className='animate-spin' /></span> : "Send"}
+                </button>
+                <button className='border border-[#A13924] hover:bg-[#A13924] hover:text-white duration-200 cursor-pointer rounded h-8 w-20' onClick={() => 
+                     setbuttons((e: { login: boolean; verify: boolean; forget: boolean }) => ({ ...e, forget: false }))}>Cancel</button>
+            </span>
+            </span>
+            </div>
+        </div>
+        </>
+    )
+}
