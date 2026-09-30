@@ -3,5 +3,6 @@ export default interface Result<T> {
     Message:string;
     Success:boolean;
     Token?:string;
+    VerificationType?:string;
     TotalOrders?:number;
 }
