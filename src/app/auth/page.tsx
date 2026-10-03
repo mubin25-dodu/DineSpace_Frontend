@@ -260,23 +260,85 @@ function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
     };
 
     return (
-        <>
-        <div className='fixed inset-0 flex items-center  justify-center bg-[#0000005d]'>
-            <div className='bg-[#FFF5F1] min-w-[20vw] w-fit h-fit p-5 text-[#a13924] rounded shadow flex flex-col gap-5 '>
-            <span className='flex justify-between flex-col gap-2'>
-            <label htmlFor="email" className='font-semibold'>Enter Your Email:</label>
-            <input type="text"  className='border border-[#] p-2' onChange={(e) => setEmail(e.target.value)}/>
-            {error && <span className='text-[12px] text-[#A13924]'>{error}</span>}
-            <span className='flex gap-5 justify-end'>
-                <button className='bg-[#A13924] text-white rounded h-8 pl-4 pr-4 flex flex-row items-center justify-center' onClick={()=>{handleforgetpass()}} disabled={isSubmitting}>
-                    {isSubmitting ? <span className='flex flex-row justify-center items-center gap-2'>Sending <Loader className='animate-spin' /></span> : "Send"}
-                </button>
-                <button className='border border-[#A13924] hover:bg-[#A13924] hover:text-white duration-200 cursor-pointer rounded h-8 w-20' onClick={() => 
-                     setbuttons((e: { login: boolean; verify: boolean; forget: boolean }) => ({ ...e, forget: false }))}>Cancel</button>
-            </span>
-            </span>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/55 p-4 backdrop-blur-sm">
+            <section
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="forgot-password-title"
+                aria-describedby="forgot-password-description"
+                className="w-full max-w-md overflow-hidden rounded-3xl border border-[#E6C5BC] bg-[#FBF9F6] shadow-2xl"
+            >
+                <div className="border-b border-[#EAD8D2] bg-[#FFF5F1] px-6 py-5">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F5DED7] text-[#A13924]">
+                        <MailQuestionMark size={23} />
+                    </div>
+                    <h2 id="forgot-password-title" className="text-xl font-bold text-[#2F2724]">
+                        Forgot your password?
+                    </h2>
+                    <p id="forgot-password-description" className="mt-1 text-sm leading-6 text-[#735B53]">
+                        Enter the email address linked to your account and we’ll send you a reset link.
+                    </p>
+                </div>
+
+                <form
+                    className="space-y-5 px-6 py-6"
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        void handleforgetpass();
+                    }}
+                >
+                    <div className="space-y-2">
+                        <label htmlFor="forgot-password-email" className="block text-sm font-semibold text-[#352C29]">
+                            Email address
+                        </label>
+                        <input
+                            id="forgot-password-email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(event) => setEmail(event.target.value)}
+                            aria-invalid={Boolean(error)}
+                            aria-describedby={error ? "forgot-password-error" : undefined}
+                            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-[#2F2724] outline-none transition placeholder:text-[#A9958D] focus:ring-4 ${
+                                error
+                                    ? "border-red-400 focus:border-red-400 focus:ring-red-100"
+                                    : "border-[#E6D7D1] focus:border-[#A13924] focus:ring-[#A13924]/10"
+                            }`}
+                        />
+                        {error && (
+                            <p id="forgot-password-error" role="alert" className="text-sm text-[#A13924]">
+                                {error}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <button
+                            type="button"
+                            disabled={isSubmitting}
+                            onClick={() => setbuttons((state) => ({ ...state, forget: false }))}
+                            className="rounded-xl border border-[#D9B7AD] px-5 py-2.5 text-sm font-semibold text-[#7A3426] transition hover:bg-[#F8EAE5] focus:outline-none focus:ring-4 focus:ring-[#A13924]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="inline-flex min-w-32 items-center justify-center gap-2 rounded-xl bg-[#A13924] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#842F1E] focus:outline-none focus:ring-4 focus:ring-[#A13924]/20 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    Sending
+                                    <Loader size={17} className="animate-spin" />
+                                </>
+                            ) : (
+                                "Send reset link"
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </section>
         </div>
-        </>
     )
 }

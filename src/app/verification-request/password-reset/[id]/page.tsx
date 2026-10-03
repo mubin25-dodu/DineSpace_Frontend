@@ -8,8 +8,7 @@ import { CheckCircle2, Eye, EyeOff, LockKeyhole, ShieldCheck, Sparkles } from "l
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { set } from "zod";
-import { da } from "zod/v4/locales";
+
 
 export default function PasswordResetPage() {
     const [resetpassword, setResetPassword] = useState<{ password: string; confirmPassword: string }>({
