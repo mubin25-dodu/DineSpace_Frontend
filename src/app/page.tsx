@@ -1,12 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import FlexCarousel from "@/components/FlexCarousel/FlexCarousel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ChefHat, CircleCheck, ClipboardList, GitBranch, Loader2, LogIn, Sparkles, Utensils } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
+import { Restaurant } from "@/lib/interfaces/order";
+import Imagepath from "@/lib/algorithms/Imagepath";
+import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
 
 interface LoginResponse {
   role: string;
@@ -14,12 +18,42 @@ interface LoginResponse {
   id: string;
 }
 
+
 export default function Home() {
   const router = useRouter();
   const [showDeveloperStory, setShowDeveloperStory] = useState(false);
   const [showProjectPlan, setShowProjectPlan] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [dummyLoginError, setDummyLoginError] = useState<string | null>(null);
+  const [resturants, setresturants] = useState<Restaurant[]>();
+  const [items, setItems] = useState([
+    { src: '/images/one.jpg', alt: 'A chrome sculpture', title: 'Iridescence', resturentLink: '/user' },
+  ]);
+
+  const getresturants = async () => {
+              try {
+                  const {data} = await api.get<Result<Restaurant[]>>("resturant/getAllResturants");
+                  console.log(data);
+                  if (data?.Success) {
+                      setresturants(data.Data ?? []);
+                  }
+              } catch (e) {
+                  console.log(e);
+              }
+          };
+
+          useEffect(() => {
+              setItems(resturants?.filter((e)=>e.coverFile).map((resturant) => ({
+                  src: Imagepath(resturant.coverFile!.Path),
+                  alt: resturant.resturantName,
+                  title: resturant.resturantName,
+                  resturentLink: `/resturant/${resturant.id}`
+              })) ?? []);
+          }, [resturants]);
+
+  useEffect(() => {
+    getresturants();
+  }, []);
 
   const handleDummyLogin = async () => {
     setIsLoggingIn(true);
@@ -113,8 +147,8 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-14 pt-8 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-28 lg:pt-16">
-        <div>
+      <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-4 pb-14 pt-8 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-28 lg:pt-16">
+        <div className="min-w-0">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#F1D8D0] bg-[#FDF7F5] px-3 py-1.5 text-xs font-medium text-[#A13924] sm:mb-6 sm:text-sm">
             <span className="h-2 w-2 rounded-full bg-[#C86A52]" />
             Restaurant ordering, automated
@@ -187,8 +221,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative mt-2 sm:mt-0">
-          <div className="absolute -inset-4 rounded-4xl bg-[#EFD8CF] opacity-60 blur-2xl" />
+        <div className="relative mt-2 min-w-0 sm:mt-0">
+          {/* <div className="absolute -inset-4 rounded-4xl bg-[#EFD8CF] opacity-60 blur-2xl" />
           <div className="relative overflow-hidden rounded-4xl border-8 border-white bg-white shadow-2xl">
             <Image
               src="/dinespace-landing.png"
@@ -202,7 +236,53 @@ export default function Home() {
               <p className="text-sm font-medium text-[#F3D4C9]">Your next favorite place</p>
               <p className="mt-1 text-lg font-semibold">Good food is better together.</p>
             </div>
-          </div>
+          </div> */}
+  {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-150">
+  <FlexCarousel
+    items={items}
+    preset="liquid"
+    intro="rise"
+    cardHeight={0.5}
+    gap={12}
+    squeeze={0.2}
+    focusOnClick
+    captions
+    fit="natural"
+    radius={0}
+    lensWidth={0.74}
+    lensHeight={1.18}
+    tilt={62}
+    roundness={1}
+    bend={0.34}
+    reach={0.38}
+    curl="twist"
+    dispersion={0.45}
+    liquid={0}
+    followCursor={false}
+    autoplay={false}
+    interval={4}
+    captureWheel
+/>
+</div> : <LatticeLoader
+  status="working"
+  label="Loading restaurants..."
+  doneLabel="Done in"
+  errorLabel="Failed after"
+  pattern="arrow"
+  grid={3}
+  shape="round"
+  doneColor="#22c55e"
+  errorColor="#ef4444"
+  cellSize={6}
+  gap={2}
+  fontSize={14}
+  step={90}
+  idleOpacity={0.15}
+  glow={false}
+  glowColor="#f5f5f5"
+  showTimer
+  color="#A13924"
+/>   }
         </div>
       </section>
 
