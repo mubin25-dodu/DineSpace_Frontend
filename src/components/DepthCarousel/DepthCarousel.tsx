@@ -11,7 +11,7 @@ import {
 } from 'react';
 import gsap from 'gsap';
 
-export type DepthCarouselItem = string | { image: string; alt?: string };
+export type DepthCarouselItem = string | { image: string; alt?: string; title?: string; description?: string };
 type TiltDirection = 'left' | 'right';
 
 export interface DepthCarouselProps {
@@ -35,6 +35,7 @@ export interface DepthCarouselProps {
   loop?: boolean;
   showControls?: boolean;
   showIndicators?: boolean;
+  showCaptions?: boolean;
   onChange?: (index: number, item: { image: string; alt?: string }) => void;
   className?: string;
 }
@@ -98,6 +99,7 @@ const DepthCarousel = ({
   loop = true,
   showControls = true,
   showIndicators = true,
+  showCaptions = true,
   onChange,
   className = ''
 }: DepthCarouselProps) => {
@@ -421,7 +423,7 @@ const DepthCarousel = ({
         {data.map((item, i) => (
           <div
             key={i}
-            className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden bg-[#0b0d12] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.65),0_8px_20px_-10px_rgba(0,0,0,0.5)] [transform:translate(-50%,-50%)] [transform-origin:center] [will-change:transform,opacity,filter]"
+            className="absolute left-1/2 top-1/2 cursor-pointer overflow-hidden bg-transparent shadow-[0_30px_60px_-20px_rgba(0,0,0,0.42),0_8px_20px_-10px_rgba(0,0,0,0.3)] [transform:translate(-50%,-50%)] [transform-origin:center] [will-change:transform,opacity,filter]"
             ref={el => {
               cardRefs.current[i] = el;
             }}
@@ -437,6 +439,12 @@ const DepthCarousel = ({
               alt={item.alt || ''}
               draggable={false}
             />
+            {showCaptions && (item.title || item.description) && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/65 to-transparent px-5 pb-5 pt-16 text-white">
+                {item.title && <h3 className="text-xl font-semibold">{item.title}</h3>}
+                {item.description && <p className="mt-1 text-sm leading-5 text-white/90">{item.description}</p>}
+              </div>
+            )}
             <span
               className="pointer-events-none absolute inset-0 opacity-0 mix-blend-multiply"
               ref={el => {

@@ -28,12 +28,24 @@ export default function Home() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [dummyLoginError, setDummyLoginError] = useState<string | null>(null);
   const [resturants, setresturants] = useState<Restaurant[]>();
-  const userFlowItems = [
-    { src: 'public/Diner/mobile-ordering.jpg', alt: 'User flow step 1', title: 'Browse menu', description: 'Guests can browse the restaurant menu from their table, seeing all available items and specials.' },
-    { src: 'public/images/user-flow-2.png', alt: 'User flow step 2', title: 'Place order', description: 'Once they have selected their items, guests can place their order directly through the platform.' },
-    { src: 'public/images/user-flow-3.png', alt: 'User flow step 3', title: 'Order confirmation', description: 'Guests receive an order confirmation and estimated preparation time for their meal.' },
-    { src: 'public/images/user-flow-4.png', alt: 'User flow step 4', title: 'Live order status', description: 'Guests can track the status of their order in real-time, from preparation to delivery to their table.' },
+  const dinerFlowItems = [
+    { image: "/Diner/restaurant-browsing.jpg", alt: "A diner browsing nearby restaurants", title: "Discover restaurants", description: "Explore restaurants and find a place that suits your next meal." },
+    { image: "/Diner/table-qr-scan.jpg", alt: "A diner scanning a QR code at their table", title: "Scan your table", description: "Scan the table QR code to get started with your in-restaurant order." },
+    { image: "/Diner/mobile-ordering.jpg", alt: "A diner placing an order on a phone", title: "Browse and order", description: "Browse the menu, choose your favorites, and place your order from your phone." },
+    { image: "/Diner/diner-restaurant-connection.jpg", alt: "A diner connected to the restaurant team", title: "Connect with the restaurant", description: "Your order is shared with the restaurant team as soon as you place it." },
+    { image: "/Diner/live-order-tracking.jpg", alt: "A diner checking live order progress", title: "Track your order", description: "Stay informed while the restaurant prepares your order." },
+    { image: "/Diner/diner-journeys.jpg", alt: "A diner enjoying the restaurant experience", title: "Enjoy your dining journey", description: "Follow a smoother experience from choosing a restaurant to enjoying your meal." },
   ];
+  const restaurantFlowItems = [
+    { image: "/Resturent/Staff_managing_restaurant_orders…_20261004172446.jpg", alt: "Restaurant staff managing incoming orders", title: "Manage incoming orders", description: "Restaurant staff can review and manage diner orders as they arrive." },
+    { image: "/Resturent/Staff_managing_restaurant_order_…_20261004172442.jpg", alt: "Restaurant staff processing restaurant orders", title: "Process orders", description: "Keep the team coordinated as orders move through preparation and service." },
+    { image: "/Resturent/Manager_updating_digital_restaur…_20261004172439.jpg", alt: "A manager updating a restaurant's digital setup", title: "Keep restaurant details up to date", description: "Managers can maintain the digital information diners use when ordering." },
+    { image: "/Resturent/Manager_managing_table_QR_codes_20261004172521.jpg", alt: "A manager managing restaurant table QR codes", title: "Manage table QR codes", description: "Organize table QR codes so diners can connect their orders to the right table." },
+    { image: "/Resturent/Manager_using_restaurant_workflo…_20261004172529.jpg", alt: "A manager using the restaurant workflow", title: "Run the restaurant workflow", description: "Use connected tools to keep day-to-day restaurant operations moving." },
+  ];
+  const [selectedFlow, setSelectedFlow] = useState<"diner" | "restaurant">("diner");
+  const [activeFlowStep, setActiveFlowStep] = useState(0);
+  const activeFlowItems = selectedFlow === "diner" ? dinerFlowItems : restaurantFlowItems;
   const [items, setItems] = useState([
     { src: 'public/images/one.jpg', alt: 'A chrome sculpture', title: 'Iridescence', resturentLink: '/user' },
   ]);
@@ -250,7 +262,7 @@ export default function Home() {
               <p className="mt-1 text-lg font-semibold">Good food is better together.</p>
             </div>
           </div> */}
-  {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-150">
+  {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-155">
   <FlexCarousel
     items={items}
     preset="liquid"
@@ -276,7 +288,7 @@ export default function Home() {
     interval={4}
     captureWheel
 />
-</div> : <span className="flex items-center justify-center sm:pl-[40%]"> <LatticeLoader
+</div> : <span className="flex items-center justify-center sm:pl-[40%] lg:h-155"> <LatticeLoader
   status="working"
   label="Loading restaurants..."
   doneLabel="Done in"
@@ -299,33 +311,84 @@ export default function Home() {
         </div>
       </section>
 
-      {/* user flow */}
-
-      <section className="border-t border-[#EAD8D2] bg-[#FFF9F3]">
-        <div style={{ height: '500px', position: 'relative' }}>
-            <DepthCarousel
-              items={userFlowItems}
-              depth={220}
-              spread={100}
-              tilt={22}
-              tiltDirection="right"
-              perspective={1400}
-              visibleCards={4}
-              falloff={0.2}
-              blur={6}
-              autoplay={false}
-              loop
-              cardWidth={420}
-              cardHeight={300}
-              radius={18}
-              tint="#000000"
-              duration={700}
-              ease="power3.out"
-              autoplayDelay={3200}
-              showControls
-              showIndicators
-          />
+      <section className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-6 flex justify-center gap-2" role="tablist" aria-label="Choose a product flow">
+            <button
+              id="diner-flow-tab"
+              type="button"
+              role="tab"
+              aria-selected={selectedFlow === "diner"}
+              aria-controls="product-flow-panel"
+              onClick={() => {
+                setSelectedFlow("diner");
+                setActiveFlowStep(0);
+              }}
+              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${selectedFlow === "diner" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
+            >
+              Diner flow
+            </button>
+            <button
+              id="restaurant-flow-tab"
+              type="button"
+              role="tab"
+              aria-selected={selectedFlow === "restaurant"}
+              aria-controls="product-flow-panel"
+              onClick={() => {
+                setSelectedFlow("restaurant");
+                setActiveFlowStep(0);
+              }}
+              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${selectedFlow === "restaurant" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
+            >
+              Restaurant flow
+            </button>
           </div>
+
+          <div
+            id="product-flow-panel"
+            role="tabpanel"
+            aria-labelledby={selectedFlow === "diner" ? "diner-flow-tab" : "restaurant-flow-tab"}
+            className="grid grid-cols-1 items-center lg:grid-cols-12"
+          >
+            <div className={`h-[480px] min-w-0 px-2 py-6 sm:h-[540px] sm:px-4 sm:py-8 lg:col-span-9 lg:px-6 ${selectedFlow === "diner" ? "order-1" : "order-2"}`}>
+              <DepthCarousel
+                key={selectedFlow}
+                items={activeFlowItems}
+                depth={170}
+                spread={20}
+                tilt={18}
+                tiltDirection={selectedFlow === "diner" ? "right" : "left"}
+                perspective={1400}
+                visibleCards={1.5}
+                falloff={0.2}
+                blur={4}
+                autoplay
+                loop
+                cardWidth={760}
+                cardHeight={480}
+                radius={18}
+                tint="#000000"
+                duration={700}
+                ease="power3.out"
+                autoplayDelay={3000}
+                showControls
+                showIndicators
+                showCaptions={false}
+                onChange={(index) => setActiveFlowStep(index)}
+              />
+            </div>
+            <div className={`px-4 py-5 sm:px-8 lg:col-span-3 lg:px-6 ${selectedFlow === "diner" ? "order-2" : "order-1"}`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#A13924]">
+                {selectedFlow === "diner" ? "Diner" : "Restaurant"} flow · {activeFlowStep + 1} of {activeFlowItems.length}
+              </p>
+              <h3 className="mt-3 text-2xl font-bold text-[#291812] sm:text-3xl">{activeFlowItems[activeFlowStep].title}</h3>
+              <p className="mt-4 max-w-lg text-base leading-7 text-[#735B53]">{activeFlowItems[activeFlowStep].description}</p>
+              <Link href={selectedFlow === "diner" ? "/user" : "/auth"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
+                {selectedFlow === "diner" ? "Explore restaurants" : "Manage your restaurant"} <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="border-t border-[#EAD8D2] bg-white/60">
