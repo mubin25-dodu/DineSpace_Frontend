@@ -4,13 +4,15 @@ import Image from "next/image";
 import FlexCarousel from "@/components/FlexCarousel/FlexCarousel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ChefHat, CircleCheck, ClipboardList, GitBranch, Loader2, LogIn, Sparkles, Utensils } from "lucide-react";
+import { ArrowRight, ChefHat, CircleCheck, ClipboardList, GitBranch, Loader2, LogIn, Sparkles, Store, Utensils } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
 import { Restaurant } from "@/lib/interfaces/order";
 import Imagepath from "@/lib/algorithms/Imagepath";
 import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
+import Counter from "@/components/Counter/Counter";
+import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
 
 interface LoginResponse {
   role: string;
@@ -26,8 +28,14 @@ export default function Home() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [dummyLoginError, setDummyLoginError] = useState<string | null>(null);
   const [resturants, setresturants] = useState<Restaurant[]>();
+  const userFlowItems = [
+    { src: 'public/Diner/mobile-ordering.jpg', alt: 'User flow step 1', title: 'Browse menu', description: 'Guests can browse the restaurant menu from their table, seeing all available items and specials.' },
+    { src: 'public/images/user-flow-2.png', alt: 'User flow step 2', title: 'Place order', description: 'Once they have selected their items, guests can place their order directly through the platform.' },
+    { src: 'public/images/user-flow-3.png', alt: 'User flow step 3', title: 'Order confirmation', description: 'Guests receive an order confirmation and estimated preparation time for their meal.' },
+    { src: 'public/images/user-flow-4.png', alt: 'User flow step 4', title: 'Live order status', description: 'Guests can track the status of their order in real-time, from preparation to delivery to their table.' },
+  ];
   const [items, setItems] = useState([
-    { src: '/images/one.jpg', alt: 'A chrome sculpture', title: 'Iridescence', resturentLink: '/user' },
+    { src: 'public/images/one.jpg', alt: 'A chrome sculpture', title: 'Iridescence', resturentLink: '/user' },
   ]);
 
   const getresturants = async () => {
@@ -85,6 +93,8 @@ export default function Home() {
   };
 
   return (
+
+
     <main className="min-h-screen overflow-hidden bg-[#FBF9F6] text-[#171717]">
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight text-[#A13924] sm:text-2xl">
@@ -147,6 +157,8 @@ export default function Home() {
         </div>
       </div>
 
+ 
+
       <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-4 pb-14 pt-8 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-28 lg:pt-16">
         <div className="min-w-0">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#F1D8D0] bg-[#FDF7F5] px-3 py-1.5 text-xs font-medium text-[#A13924] sm:mb-6 sm:text-sm">
@@ -157,11 +169,36 @@ export default function Home() {
             Order what you want.{" "}
             <span className="text-[#A13924]">Without waiting for a waiter.</span>
           </h1>
-          <p className="mt-5 max-w-lg text-base leading-7 text-[#514947] sm:mt-6 sm:text-lg sm:leading-8">
+
+          <div className="mt-6 flex w-fit max-w-lg items-center gap-4 rounded-2xl border border-[#EAD8D2] bg-white/80 px-4 py-3 shadow-sm sm:mt-7 sm:px-5">
+           
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="shrink-0" aria-hidden="true">
+                <Counter
+                  value={resturants?.length ?? 0}
+                  fontSize={28}
+                  padding={4}
+                  gap={1}
+                  textColor="#A13924"
+                  fontWeight={800}
+                />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-[#291812] sm:text-base">
+                  Restaurants are currently using DineSpace
+                </span>
+                <span className="mt-0.5 block text-xs leading-5 text-[#735B53] sm:text-sm">
+                  To automate their ordering experience.
+                </span>
+                <span className="sr-only">{resturants?.length ?? 0} restaurants on DineSpace.</span>
+              </span>
+            </span>
+          </div>
+          {/* <p className="mt-5 max-w-lg text-base leading-7 text-[#514947] sm:mt-6 sm:text-lg sm:leading-8">
             DineSpace automates the restaurant ordering experience. Browse the menu from your
             table, see what is special today, and place your order whenever you are ready.
             No repeated calls, no waiting just to ask a question.
-          </p>
+          </p> */}
           <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Link
               href="/user"
@@ -170,38 +207,14 @@ export default function Home() {
               Explore restaurants
               <ArrowRight size={18} />
             </Link>
-            <button
-              type="button"
-              onClick={handleDummyLogin}
-              disabled={isLoggingIn}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#28211E] px-6 py-3.5 font-semibold text-white shadow-md transition hover:bg-[#3D332F] focus:outline-none focus:ring-2 focus:ring-[#28211E]/30 disabled:cursor-not-allowed disabled:opacity-75 sm:w-auto"
-              title="One-click demo login: mubin9516@gmail.com"
-            >
-              {isLoggingIn ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  <span>Logging in...</span>
-                </>
-              ) : (
-                <>
-                  <LogIn size={18} />
-                  <span>Dummy Login</span>
-                </>
-              )}
-            </button>
+            
             <Link
               href="/auth"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDBDB3] bg-white px-6 py-3.5 font-semibold text-[#A13924] transition hover:bg-[#FFF3EE] sm:w-auto"
             >
               Manage your restaurant
             </Link>
-            <button
-              type="button"
-              onClick={() => setShowDeveloperStory(true)}
-              className="inline-flex w-full items-center justify-center rounded-xl px-5 py-3.5 font-semibold text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] sm:w-auto"
-            >
-              Developer Story
-            </button>
+           
           </div>
           {dummyLoginError && (
             <div className="mt-3 max-w-md rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-medium text-red-700">
@@ -221,7 +234,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative mt-2 min-w-0 sm:mt-0">
+        <div className="relative mt-2 min-w-0 sm:mt-0 flex">
           {/* <div className="absolute -inset-4 rounded-4xl bg-[#EFD8CF] opacity-60 blur-2xl" />
           <div className="relative overflow-hidden rounded-4xl border-8 border-white bg-white shadow-2xl">
             <Image
@@ -263,7 +276,7 @@ export default function Home() {
     interval={4}
     captureWheel
 />
-</div> : <LatticeLoader
+</div> : <span className="flex items-center justify-center sm:pl-[40%]"> <LatticeLoader
   status="working"
   label="Loading restaurants..."
   doneLabel="Done in"
@@ -282,8 +295,37 @@ export default function Home() {
   glowColor="#f5f5f5"
   showTimer
   color="#A13924"
-/>   }
+/>   </span> }
         </div>
+      </section>
+
+      {/* user flow */}
+
+      <section className="border-t border-[#EAD8D2] bg-[#FFF9F3]">
+        <div style={{ height: '500px', position: 'relative' }}>
+            <DepthCarousel
+              items={userFlowItems}
+              depth={220}
+              spread={100}
+              tilt={22}
+              tiltDirection="right"
+              perspective={1400}
+              visibleCards={4}
+              falloff={0.2}
+              blur={6}
+              autoplay={false}
+              loop
+              cardWidth={420}
+              cardHeight={300}
+              radius={18}
+              tint="#000000"
+              duration={700}
+              ease="power3.out"
+              autoplayDelay={3200}
+              showControls
+              showIndicators
+          />
+          </div>
       </section>
 
       <section className="border-t border-[#EAD8D2] bg-white/60">
@@ -421,66 +463,7 @@ export default function Home() {
         </div>
       )}
 
-      {showDeveloperStory && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#171717]/60 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-6"
-          role="presentation"
-          onClick={() => setShowDeveloperStory(false)}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="developer-story-title"
-            className="flex max-h-[calc(100svh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#EAD8D2] bg-[#FBF9F6] p-5 shadow-2xl sm:max-h-[calc(100svh-3rem)] sm:rounded-3xl sm:p-10"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex shrink-0 items-start justify-between gap-3 sm:gap-5">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#A13924] sm:text-sm sm:tracking-[0.16em]">
-                  Why DineSpace exists
-                </p>
-                <h2 id="developer-story-title" className="mt-2 text-2xl font-bold leading-tight text-[#171717] sm:text-3xl">
-                  A small frustration became a better way to dine.
-                </h2>
-              </div>
-              <button
-                type="button"
-                aria-label="Close developer story"
-                onClick={() => setShowDeveloperStory(false)}
-                className="shrink-0 rounded-full px-2 py-1 text-2xl leading-none text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] sm:px-3"
-              >
-                &times;
-              </button>
-            </div>
-            <div className="mt-5 min-h-0 overflow-y-auto space-y-4 pr-1 text-sm leading-7 text-[#514947] sm:mt-6 sm:text-base sm:leading-8">
-              <p>
-                I built DineSpace from a simple personal frustration: having to call a waiter
-                whenever I wanted to see the menu, ask what was special today, or place another
-                order.
-              </p>
-              <p>
-                Sometimes the restaurant was busy, sometimes I had to wait, and sometimes I felt
-                uncomfortable calling someone over for something that should have been simple.
-                Dining should feel relaxed, not like a series of interruptions.
-              </p>
-              <p>
-                DineSpace is my attempt to solve that problem. Guests can explore the menu,
-                discover specials, and order when they are ready, while restaurant teams receive
-                organized orders without repeating the same information at every table.
-              </p>
-            </div>
-            <div className="mt-6 flex shrink-0 justify-stretch sm:mt-8 sm:justify-end">
-              <button
-                type="button"
-                onClick={() => setShowDeveloperStory(false)}
-                className="w-full rounded-xl bg-[#A13924] px-5 py-3 font-semibold text-white transition hover:bg-[#842F1E] sm:w-auto"
-              >
-                Back to DineSpace
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
+      
 
       <footer className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-7 text-sm text-[#8B7168] sm:flex-row sm:items-center sm:justify-between lg:px-10">
         <span>© {new Date().getFullYear()} DineSpace</span>
