@@ -29,5 +29,5 @@ export function UserHeroPhone() {
     )
 }
 export function UserHeroDesktop() {
-    return (<>sdasdasdasd</>)
+    return (<></>)
 }
