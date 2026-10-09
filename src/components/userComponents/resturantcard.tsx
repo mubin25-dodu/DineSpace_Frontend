@@ -27,7 +27,7 @@ export default function ResturantCard({
   const logoPath = resturant.logoFile?.Path ?? resturant.files?.[0]?.Path;
 
   return (
-    <SpotlightCard className="h-fit w-full transition hover:-translate-y-1 sm:max-w-[390px]">
+    <SpotlightCard className="h-fit w-full transition hover:-translate-y-1 md:max-w-[360px] lg:max-w-[375px] sm:max-w-[390px]">
       <div className="relative h-36 w-full bg-[#f3e9df]">
         <Image
           src={getFileUrl(coverPath)}
