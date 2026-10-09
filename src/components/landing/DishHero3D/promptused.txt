@@ -1,0 +1,364 @@
+I want you to implement a new interactive 3D hero animation for my existing DineSpace landing page.
+
+IMPORTANT:
+
+* Do NOT create this as a video.
+* Do NOT use a sequence of generated images/frames.
+* Build it as a real-time interactive 3D scene.
+* First inspect my existing DineSpace frontend architecture, landing page, dependencies, styling, and current hero section before making changes.
+* Do not unnecessarily rewrite or restructure existing components.
+
+## Goal
+
+When a user opens the DineSpace landing page, I want the hero section to visually "assemble" a beautiful food dish inside a bowl.
+
+The experience should feel premium, modern, smooth, and restaurant/food-tech focused.
+
+The animation should work like this:
+
+1. The page loads.
+2. A bowl/plate appears in the center of the hero.
+3. Food ingredients/toppings fall from above one by one.
+4. Each ingredient has its own trajectory, rotation, timing, and small bounce when it lands.
+5. The ingredients gradually build the complete dish.
+6. Once the dish is assembled, it remains as the main hero visual.
+7. After assembly, the dish becomes interactive.
+8. When the user moves their mouse around the dish, the 3D dish subtly reacts to the cursor direction.
+9. The interaction should feel like the user is physically looking around/rotating the dish, not like a cheap CSS hover effect.
+
+## Technical direction
+
+Use a proper WebGL-based 3D implementation.
+
+Preferred stack:
+
+* React
+* TypeScript
+* Next.js
+* React Three Fiber
+* Three.js
+* @react-three/drei
+* GSAP if useful for sequencing/timing
+
+Before installing anything, inspect package.json and determine what is already available.
+
+If React Three Fiber / Three.js is not installed, install the minimum required dependencies.
+
+Do NOT introduce unnecessary libraries.
+
+## 3D scene
+
+Create a reusable component, for example:
+
+components/landing/DishHero3D.tsx
+
+or whatever component structure best matches the existing project.
+
+The scene should contain separate objects for:
+
+* Bowl/plate
+* Base food
+* Main protein
+* Vegetables
+* Sauce
+* Garnish/toppings
+
+Do not make the entire dish a single flat image.
+
+The individual objects need to be independently animated during the assembly sequence.
+
+Use GLTF/GLB models where appropriate.
+
+If suitable existing 3D assets are not available in the project, create a clean placeholder implementation using procedural Three.js geometry so that the complete interaction and animation can be tested.
+
+Keep the 3D asset system modular so real GLB models can later replace the placeholders without rewriting the animation logic.
+
+## Opening animation
+
+Create a sequence similar to:
+
+0.0s
+
+* Bowl/plate fades/scales into view.
+* Slight upward movement.
+* Soft lighting/shadow.
+
+0.3s
+
+* Base food falls from above.
+
+0.6s
+
+* First topping falls.
+
+0.9s
+
+* Main protein falls.
+
+1.2s
+
+* Vegetables fall.
+
+1.5s
+
+* Sauce/topping appears.
+
+1.8s
+
+* Garnish falls.
+
+2.0–2.5s
+
+* Everything settles naturally.
+* Add subtle bounce/damping.
+* Dish becomes fully assembled.
+
+Do not make every ingredient fall vertically at exactly the same speed.
+
+Give each object:
+
+* Slightly different starting X/Y/Z position
+* Different rotation
+* Different fall duration
+* Slight random rotation
+* Small landing bounce
+* Smooth easing
+
+The result should feel organic rather than mechanically generated.
+
+## 3D interaction
+
+After the assembly animation finishes, enable mouse interaction.
+
+Track the mouse position relative to the hero container.
+
+The dish should respond approximately like:
+
+Mouse moves left
+→ dish subtly rotates left.
+
+Mouse moves right
+→ dish subtly rotates right.
+
+Mouse moves upward
+→ dish subtly tilts upward.
+
+Mouse moves downward
+→ dish subtly tilts downward.
+
+Mouse near center
+→ dish gradually returns toward its neutral position.
+
+Use interpolation/damping so the movement is smooth.
+
+Do NOT directly map mouse coordinates to rotation.
+
+Use something like:
+
+currentRotation → lerp → targetRotation
+
+with a limited maximum rotation.
+
+The movement should be subtle and premium.
+
+Do not make the dish spin wildly.
+
+## Idle movement
+
+When the user is not moving the mouse, add an extremely subtle idle animation:
+
+* Very small floating movement
+* Very small rotation
+* Slow breathing/hover effect
+
+This should be barely noticeable.
+
+The dish should feel alive without distracting from the landing page.
+
+## Lighting
+
+Create attractive restaurant-style lighting.
+
+Use:
+
+* Ambient light
+* Key light
+* Fill/rim light
+* Soft shadows where practical
+
+The food should have enough depth and highlights to clearly read as 3D.
+
+Avoid excessive bloom or flashy effects.
+
+The visual style should fit DineSpace's existing branding.
+
+## Camera
+
+Use a perspective camera.
+
+The initial camera angle should show the dish from a slightly elevated three-quarter perspective.
+
+Do not use an extreme top-down view.
+
+The dish should feel like a premium 3D food product render.
+
+## Hero layout
+
+Do not replace my existing hero content.
+
+Integrate the 3D dish into the existing landing page.
+
+The likely structure should be:
+
+LEFT:
+Existing DineSpace headline
+Description
+CTA buttons
+
+RIGHT:
+Interactive 3D dish
+
+However, inspect the existing design first and adapt the placement to the current layout rather than blindly following this.
+
+The 3D object should not cover text or buttons.
+
+## Performance
+
+This is extremely important.
+
+The DineSpace landing page needs to remain fast.
+
+Implement:
+
+* Lazy loading for the 3D scene where appropriate
+* Proper disposal of Three.js resources
+* Reasonable model polygon counts
+* Compressed textures where possible
+* Avoid unnecessary re-renders
+* Avoid excessive lights
+* Avoid expensive post-processing unless absolutely necessary
+* Respect device performance
+
+For mobile:
+
+Do NOT simply force the same desktop-quality 3D scene.
+
+Create a responsive fallback.
+
+Possible behavior:
+
+Desktop:
+Full interactive 3D scene.
+
+Tablet:
+Reduced 3D complexity and interaction.
+
+Mobile:
+Simplified 3D scene or a lightweight static/animated fallback depending on performance.
+
+## Accessibility
+
+Respect:
+
+prefers-reduced-motion
+
+If the user has reduced motion enabled:
+
+* Skip the falling/assembly animation.
+* Show the completed dish immediately.
+* Disable or heavily reduce mouse movement.
+* Keep the page fully usable.
+
+The animation must never block access to the hero content.
+
+## Loading behavior
+
+Do not make the entire landing page wait indefinitely for 3D assets.
+
+The hero text and CTA should remain usable while the 3D scene loads.
+
+Show a subtle loading state if necessary.
+
+Once the 3D assets are ready, smoothly introduce the scene.
+
+## Important visual detail
+
+The final dish should look like an actual composed meal.
+
+The bowl should remain visible underneath the food.
+
+Ingredients should visually sit inside/on top of the bowl rather than floating.
+
+The final result should feel similar to a premium restaurant/product 3D render.
+
+## Architecture
+
+Keep the implementation modular.
+
+Suggested structure:
+
+DishHero3D
+├── DishScene
+├── Bowl
+├── BaseFood
+├── Protein
+├── Vegetables
+├── Sauce
+├── Garnish
+├── DishLighting
+├── DishCamera
+└── animation / interaction logic
+
+Do not put the entire implementation into one huge component.
+
+Separate:
+
+* 3D rendering
+* animation sequencing
+* mouse interaction
+* responsive behavior
+* asset loading
+
+where practical.
+
+## Important: inspect before coding
+
+Before making changes:
+
+1. Inspect the current DineSpace frontend.
+2. Find the landing page.
+3. Find the current hero component.
+4. Inspect package.json.
+5. Inspect existing styling/theme.
+6. Determine whether Three.js/R3F already exists.
+7. Understand the current responsive layout.
+8. Then implement the feature in a way that matches the existing architecture.
+
+Do not destroy or unnecessarily modify existing functionality.
+
+## Final requirement
+
+After implementation:
+
+* Run the project.
+* Check for TypeScript errors.
+* Check for lint/build errors.
+* Test desktop behavior.
+* Test responsive behavior.
+* Test mouse interaction.
+* Test the initial assembly animation.
+* Test prefers-reduced-motion.
+* Make sure the existing hero text and CTA still work.
+* Fix any issues you encounter.
+
+The final result should feel like a polished production landing-page feature, not a technical Three.js demo.
+
+Most importantly:
+
+I want the user to feel:
+
+"Something is being prepared specifically for me."
+
+The dish gets assembled in front of them, then they can interact with the finished dish.
+
+Make it visually impressive, but keep it tasteful, performant, and consistent with DineSpace.
