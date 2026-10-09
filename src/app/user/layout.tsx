@@ -40,10 +40,10 @@ export default function UserLayout({ children }: { children: React.ReactNode }){
 
     return <div className="h-svh overflow-y-auto no-scrollbar">
     <userContext.Provider value={{setActiveLink, setNavinfo , setPopup , setservererror , setbowl , myBowl}}  >
-    <div className="md:hidden">
+    <div className=" sticky top-0 z-10 md:hidden">
         <UsernavPhone title={navinfo.title} icon1={navinfo.icon1} icon2={navinfo.icon2} goback={navinfo.goback}/>
     </div>
-    <div className="hidden md:block">
+    <div className="sticky top-0 z-10 hidden md:block">
         <UsernavDesktop title={navinfo.title} icon1={navinfo.icon1} icon2={navinfo.icon2} goback={navinfo.goback}/>
     </div>
     

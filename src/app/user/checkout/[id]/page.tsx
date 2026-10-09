@@ -449,7 +449,7 @@ return(
                     ) : null}
                 </section>
                 <div className="mb-38"></div>
-                {nextTotal > 0 ? <span className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 flex h-16 w-full items-center justify-between gap-4 bg-[#A13924] p-4 text-white">
+                {nextTotal > 0 ? <span className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 min-h-16 bg-[#A13924] px-4 py-3 text-sm text-white sm:text-base md:bottom-4 lg-bottom-0 md:left-1/2 md:right-auto md:w-[calc(100%-2rem)] md:max-w-5xl md:-translate-x-1/2 md:rounded-2xl">
                 <span className="font-bold">Total: {nextTotal} BDT</span>
                 <span className="flex flex-row gap-4 items-center justify-end">
                 <button disabled={isProcessingOrder || holdcheckout } className= {`rounded-3xl bg-[#F5F3F0] p-1 pl-2.5 pr-2.5 text-[#A13924] font-semibold disabled:cursor-not-allowed disabled:opacity-60`} onClick={()=>handleOrderAndPayment()}>Pay Now</button> 

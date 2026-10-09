@@ -108,8 +108,8 @@ export default function Home() {
   return (
 
 
-    <main className="min-h-screen overflow-hidden bg-[#FBF9F6] text-[#171717]">
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
+    <main className="min-h-screen bg-[#FBF9F6] text-[#171717]">
+      <header className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between gap-3 bg-[#FBF9F6]/95 px-4 py-4 backdrop-blur-md sm:px-6 sm:py-5 lg:px-10">
        <DinespaceLogo/>
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
           <button

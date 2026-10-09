@@ -74,7 +74,7 @@ export default function Resturants(params:{id:string}){
     return(
         <>
         {
-        resturent? <div className="mx-auto flex w-full max-w-5xl flex-col scroll-smooth duration-200">
+        resturent? <div className="mx-auto flex w-full max-w-7xl flex-col scroll-smooth duration-200">
             <Image className="h-48 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
             ? resturent.coverFile?.Path?.replace(/\\/g, "/")
             : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant_cover.png"} width={1000} height={600} alt="cover"></Image>
@@ -105,17 +105,18 @@ export default function Resturants(params:{id:string}){
                     ))}
                 </div>
                 {/* cards load */}
-               <div className="flex flex-col gap-1 p-2 sm:p-4">
+               <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
                 {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
-                {nextTotal > 0 ? <span className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 flex min-h-16 w-full flex-wrap items-center justify-between gap-2 bg-[#A13924] px-4 py-3 text-sm text-white sm:text-base">
+                {nextTotal > 0 ? <span className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 min-h-16 bg-[#A13924] px-4 py-3 text-sm text-white sm:text-base md:bottom-4 lg-bottom-0 md:left-1/2 md:right-auto md:w-[calc(100%-2rem)] md:max-w-5xl md:-translate-x-1/2 md:rounded-2xl">
+                <span className="mx-auto flex w-full flex-wrap items-center justify-between gap-2">
                 <span className="font-bold">Total: {nextTotal} BDT</span>
                 <span className="flex items-center justify-end gap-2 sm:gap-4">
                 <Link href={`../checkout/${param.id}`} className="rounded-3xl bg-[#F5F3F0] px-3 py-1.5 font-semibold text-[#A13924]">Checkout</Link> 
                 <button  onClick={()=>{handledeleteall()}} className="rounded-2xl border border-white px-3 py-1.5">Remove all</button>
-                </span></span>:""}
+                </span></span></span>:""}
             </div>
         </div> : <UsersLoading time={2000}/>}
         </>
