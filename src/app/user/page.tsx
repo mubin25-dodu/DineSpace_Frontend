@@ -17,17 +17,17 @@ export default function User() {
         resturant.resturantName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const [windowWidth, setWindowWidth] = useState(0);
+    // const [windowWidth, setWindowWidth] = useState(0);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         setWindowWidth(window.innerWidth);
+    //     };
+    //     window.addEventListener('resize', handleResize);
+    //     return () => {
+    //         window.removeEventListener('resize', handleResize);
+    //     };
+    // }, []);
 
     useEffect(() => {
         setNavinfo({ icon1: <Utensils color="#A13924" />, title: "DineSpace" });
@@ -60,7 +60,8 @@ export default function User() {
 
     return (
        <>
-       {windowWidth > 0 && windowWidth < 768 ? <UserHeroPhone/> : <UserHeroDesktop/>}
+       <span className="block sm:hidden"><UserHeroPhone /></span>
+        <span className="hidden lg:block"><UserHeroDesktop /></span>
        <section className="m-5 mb-20">
         <div className="flex flex-1 items-center justify-center">
         <span className="flex flex-row items-center">
@@ -69,7 +70,7 @@ export default function User() {
         </div>        
        </section>
        {filteredResturants && filteredResturants?.length > 0 ? <><div className="flex flex-row "> 
-       <p className="text-gray-500">Showing {filteredResturants?.length} Resturents</p></div>
+       <p className="text-gray-500 ml-5">Showing {filteredResturants?.length} Resturents</p></div>
        <span className="flex flex-row flex-wrap m-3 gap-5 min-h-[50vh] ">
             {filteredResturants?.map((resturant) => (
                 <ResturantCard key={resturant.id} resturant={resturant} />
