@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-export default function userHero() {
+export function UserHeroPhone() {
     return (
         <section className="relative h-svh w-full overflow-hidden scrollbar-none bg-[#291812]">
             <Image
@@ -27,4 +27,7 @@ export default function userHero() {
            
         </section>
     )
+}
+export function UserHeroDesktop() {
+    return (<>sdasdasdasd</>)
 }

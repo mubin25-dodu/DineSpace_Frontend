@@ -1,5 +1,7 @@
 import { api } from "@/lib/api/axios";
+import SpotlightCard from "@/components/SpotlightCard";
 import { Restaurant } from "@/lib/interfaces/order";
+import { Clock3, CreditCard, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,12 +27,12 @@ export default function ResturantCard({
   const logoPath = resturant.logoFile?.Path ?? resturant.files?.[0]?.Path;
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-[#eadfd5] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg sm:max-w-md">
-      <div className="relative h-48 w-full bg-[#f3e9df]">
+    <SpotlightCard className="h-fit w-full transition hover:-translate-y-1 sm:max-w-[390px]">
+      <div className="relative h-36 w-full bg-[#f3e9df]">
         <Image
           src={getFileUrl(coverPath)}
           fill
-          sizes="(max-width: 640px) 100vw, 448px"
+          sizes="(max-width: 640px) 100vw, 390px"
           alt={`${resturant.resturantName} cover`}
           className="object-cover"
         />
@@ -44,54 +46,68 @@ export default function ResturantCard({
         >
           {resturant.isopen ? "Open now" : "Closed"}
         </span>
-        <div className="absolute -bottom-10 left-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border-4 border-white bg-[#f8efe7] shadow-md">
+        <div className="absolute -bottom-8 left-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border-4 border-white bg-[#f8efe7] shadow-md">
           <Image
             src={getFileUrl(logoPath)}
             fill
-            sizes="80px"
+            sizes="64px"
             alt={`${resturant.resturantName} logo`}
             className="object-cover"
           />
         </div>
       </div>
 
-      <div className="px-5 pb-5 pt-14">
-        <h2 className="text-xl font-semibold tracking-tight text-black">
+      <div className="px-4 pb-3 pt-9">
+        <h2 className="truncate text-lg font-semibold tracking-tight text-[#291812]">
           {resturant.resturantName}
         </h2>
-        <p className ="mt-2 text-sm text-gray-600">
-          {resturant.address}
-        </p>
 
-        <div className="mt-4 grid gap-2 text-sm text-gray-700">
-          <p>
-            <span className="font-medium text-[#291812]">Hours:</span>{" "}
-            {resturant.opening} - {resturant.closing}
-          </p>
-          <p>
-            <span className="font-medium text-[#291812]">Phone:</span>{" "}
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <div className="col-span-2 flex min-h-9 min-w-0 items-center gap-2 rounded-lg bg-[#fbf5f1] px-2 py-1.5 text-xs text-[#6d514b]">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-white text-[#A13924] shadow-sm">
+              <MapPin size={14} aria-hidden="true" />
+            </span>
+            <span className="truncate">{resturant.address}</span>
+          </div>
+          <div className="flex min-h-12 min-w-0 items-center gap-2 rounded-lg border border-[#f0e2dc] bg-white px-2 py-1.5 text-xs text-[#6d514b]">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[#f8e9e4] text-[#A13924]">
+              <Clock3 size={14} aria-hidden="true" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[9px] font-semibold uppercase tracking-wide text-[#9a8178]">Hours</span>
+              <span className="block truncate font-medium text-[#4b3731]">{resturant.opening} - {resturant.closing}</span>
+            </span>
+          </div>
+          <div className="flex min-h-12 min-w-0 items-center gap-2 rounded-lg border border-[#f0e2dc] bg-white px-2 py-1.5 text-xs text-[#6d514b]">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[#f8e9e4] text-[#A13924]">
+              <Phone size={14} aria-hidden="true" />
+            </span>
             <a
               href={`tel:${resturant.phone}`}
-              className="text-[#8d351f] hover:underline"
+              className="min-w-0 truncate font-medium text-[#8d351f] hover:underline"
             >
               {resturant.phone}
             </a>
-          </p>
-          <p className="truncate">
-            <span className="font-medium text-[#291812]">Email:</span>{" "}
-            {resturant.resturantemail}
-          </p>
+          </div>
+          <div className="col-span-2 flex min-h-6 min-w-0 items-center gap-2 px-1 text-xs text-[#806f6b]">
+            <Mail size={14} className="shrink-0 text-[#A13924]" aria-hidden="true" />
+            <span className="truncate">{resturant.resturantemail}</span>
+          </div>
         </div>
 
-        <div className="mt-5 border-t border-[#eee3da] pt-4 text-sm font-medium text-[#8d351f]">
-          {resturant.payfirst ? "Pay before your meal" : "Pay after your meal"}
+        <div className="mt-2.5 flex items-center justify-between gap-3 border-t border-[#eee3da] pt-2.5">
+          <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-semibold text-[#8d351f]">
+            <CreditCard size={13} aria-hidden="true" />
+            <span className="truncate">{resturant.payfirst ? "Pay before meal" : "Pay after meal"}</span>
+          </span>
+          <Link
+            href={`/user/Resturant/${resturant.id}`}
+            className="shrink-0 rounded-lg bg-[#8d351f] px-3.5 py-2 text-center text-xs font-semibold text-white transition hover:bg-[#702a1a]"
+          >
+            View restaurant
+          </Link>
         </div>
-        <Link
-          href={`/user/Resturant/${resturant.id}`}
-          className="mt-4 block rounded-lg bg-[#8d351f] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-[#702a1a]">
-          View restaurant
-        </Link>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

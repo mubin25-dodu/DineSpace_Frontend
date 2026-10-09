@@ -1,5 +1,6 @@
 "use client"
-import UserHero from "@/components/userComponents/hero"
+import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
+import { UserHeroPhone , UserHeroDesktop } from "@/components/userComponents/hero"
 import ResturantCard from "@/components/userComponents/resturantcard";
 import { api } from "@/lib/api/axios";
 import { userContext } from "@/lib/context/Context";
@@ -15,7 +16,19 @@ export default function User() {
     let filteredResturants = resturants?.filter((resturant) =>
         resturant.resturantName.toLowerCase().includes(searchQuery.toLowerCase())
     );
-   
+
+    const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     useEffect(() => {
         setNavinfo({ icon1: <Utensils color="#A13924" />, title: "DineSpace" });
     }, [setNavinfo]);
@@ -47,7 +60,7 @@ export default function User() {
 
     return (
        <>
-       <UserHero/>
+       {windowWidth > 0 && windowWidth < 768 ? <UserHeroPhone/> : <UserHeroDesktop/>}
        <section className="m-5 mb-20">
         <div className="flex flex-1 items-center justify-center">
         <span className="flex flex-row items-center">
@@ -55,11 +68,32 @@ export default function User() {
         </span>
         </div>        
        </section>
-       <span className="flex flex-row flex-wrap m-3 gap-5">
+       {filteredResturants && filteredResturants?.length > 0 ? <><div className="flex flex-row "> 
+       <p className="text-gray-500">Showing {filteredResturants?.length} Resturents</p></div>
+       <span className="flex flex-row flex-wrap m-3 gap-5 min-h-[50vh] ">
             {filteredResturants?.map((resturant) => (
                 <ResturantCard key={resturant.id} resturant={resturant} />
             ))}
-        </span>
+        </span></> : <span className="flex items-center min-h-20 justify-center"><LatticeLoader
+        status="working"
+        label="Loading restaurants..."
+        doneLabel="Done in"
+        errorLabel="Failed after"
+        pattern="arrow"
+        grid={3}
+        shape="round"
+        doneColor="#22c55e"
+        errorColor="#ef4444"
+        cellSize={6}
+        gap={2}
+        fontSize={14}
+        step={90}
+        idleOpacity={0.15}
+        glow={false}
+        glowColor="#f5f5f5"
+        showTimer
+        color="#A13924"
+        /></span>}
        </>
     )
 }

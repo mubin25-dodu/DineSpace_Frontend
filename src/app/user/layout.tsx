@@ -1,5 +1,5 @@
 "use client"
-import Usernav from "@/components/userComponents/usernav"
+import UsernavPhone, { UsernavDesktop } from "@/components/userComponents/usernav"
 import { OrderItem, Restaurant } from "@/lib/interfaces/order";
 import { useEffect, useState } from "react"
 import { userContext } from "@/lib/context/Context";
@@ -10,6 +10,17 @@ import ServerError from "@/components/serverError";
 export default function userlayout({ children }: { children: React.ReactNode }){
     const [popup, setPopup] = useState("");
     const [servererror , setservererror] = useState("");
+    const [windowWidth, setWindowWidth] = useState(0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    },[]);
 
     const [myBowl , setbowl] = useState<OrderItem[] >([]);
     const [bowlHydrated, setBowlHydrated] = useState(false);
@@ -39,14 +50,15 @@ export default function userlayout({ children }: { children: React.ReactNode }){
         localStorage.setItem("mybowl", JSON.stringify(myBowl));
     }, [bowlHydrated, myBowl]);
 
-
     return <div className="h-svh overflow-y-auto no-scrollbar">
     <userContext.Provider value={{setActiveLink, setNavinfo , setPopup , setservererror , setbowl , myBowl}}  >
-    <Usernav title={navinfo.title} icon1={navinfo.icon1} icon2={navinfo.icon2}  goback={navinfo.goback}/>
+   {windowWidth > 0 && windowWidth < 768 ? <UsernavPhone title={navinfo.title} icon1={navinfo.icon1} icon2={navinfo.icon2}  goback={navinfo.goback}/> :  <UsernavDesktop title={navinfo.title} icon1={navinfo.icon1} icon2={navinfo.icon2}  goback={navinfo.goback}/>}
+    
     {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
     {servererror && <ServerError error={servererror} setservererror={() => setservererror}  />}
    
-    <main className="mb-22">{children}</main>
+    {windowWidth > 0 && windowWidth < 768 ? <main className="mb-22">{children}</main> : <main className="ml-80 mr-80">{children}</main>}
+    
     </userContext.Provider>
     </div>
 }

@@ -4,8 +4,8 @@ import { ArrowLeft, ClipboardList, House, ShieldQuestionMark, Soup } from "lucid
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-
+import { useContext, useState } from "react";
+import DinespaceLogo  from "../DinespaceLogo";
 interface UsernavProps {
 icon1?: React.ReactNode;
 goback?: boolean;
@@ -17,24 +17,30 @@ interface TokenPayload {
     role?: string;
 }
 
-export default function Usernav(params:UsernavProps) {
+function readIsOwner() {
+    if (typeof window === "undefined") return false;
+
+    const token = document.cookie
+        .split("; ")
+        .find((cookie) => cookie.startsWith("accesstoken="))
+        ?.slice("accesstoken=".length);
+
+    if (!token) return false;
+
+    try {
+        const payload = jwtDecode<TokenPayload>(decodeURIComponent(token));
+        return payload.role?.toLowerCase() === "owner";
+    } catch (error) {
+        console.error("Unable to read the access token role:", error);
+        return false;
+    }
+}
+
+export default function UsernavPhone(params:UsernavProps) {
     const {myBowl} = useContext(userContext);
     const pathname = usePathname();
     const router = useRouter();
-    const [isOwner, setIsOwner] = useState(false);
-
-    useEffect(() => {
-        const token = localStorage.getItem("accesstoken");
-
-        if (!token) return;
-
-        try {
-            const payload = jwtDecode<TokenPayload>(token);
-            setIsOwner(payload.role?.toLowerCase() === "owner");
-        } catch (error) {
-            console.error("Unable to read the access token role:", error);
-        }
-    }, []);
+    const [isOwner] = useState(readIsOwner);
 
     const navItems = [
         { href: "/user", label: "Home", icon: House, isActive: pathname === "/user" },
@@ -55,15 +61,17 @@ export default function Usernav(params:UsernavProps) {
                         {params.icon1 || <ArrowLeft size={22} />}
                     </button>
                 ) : (
-                    <span className="flex h-9 w-9 items-center justify-center">{params.icon1 || <ArrowLeft size={20} />}</span>
+                    <DinespaceLogo />
                 )}
-                <span className="text-lg font-bold tracking-tight text-[#A13924]">{params.title || "DineSpace"}</span>
+                {params.goback ? (
+                    <span className="text-lg font-bold tracking-tight text-[#A13924]">{params.title}</span>
+                ) : null}
                 {isOwner ? (
                     <Link
                         href="/home"
                         className="rounded-lg px-2 py-1 text-right text-xs font-semibold text-[#A13924] transition-colors hover:bg-[#f1e5e1]"
                     >
-                        Back to my restaurant
+                        Back to restaurant
                     </Link>
                 ) : (
                     <span className="flex h-9 w-9 items-center justify-center text-[#6d514b]">{params.icon2 || <ShieldQuestionMark size={20} />}</span>
@@ -96,4 +104,80 @@ export default function Usernav(params:UsernavProps) {
         </div>
         </>
     )
+}
+
+export function UsernavDesktop(params:UsernavProps) {
+    const { myBowl } = useContext(userContext);
+    const pathname = usePathname();
+    const router = useRouter();
+    const [isOwner] = useState(readIsOwner);
+
+    const navItems = [
+        { href: "/user", label: "Home", icon: House, isActive: pathname === "/user" },
+        { href: "/user/myBowl", label: "My Bowl", icon: Soup, isActive: pathname.startsWith("/user/myBowl"), badge: myBowl?.length },
+        { href: "/user/myorders", label: "Orders", icon: ClipboardList, isActive: pathname.startsWith("/user/myorders") },
+    ];
+
+    return (
+        <header className="sticky top-0 z-40 border-b border-[#ead8d3] bg-[#FBF9F6]/95 shadow-sm backdrop-blur-md">
+            <div className="mx-auto flex h-18 w-full max-w-7xl items-center gap-8 px-6 lg:px-10">
+                <div className="flex min-w-fit items-center gap-3">
+                    {params.goback ? (
+                        <button
+                            type="button"
+                            onClick={() => router.back()}
+                            aria-label="Go back"
+                            className="flex h-10 w-10 items-center justify-center rounded-full text-[#6d514b] transition-colors hover:bg-[#f1e5e1] hover:text-[#A13924]"
+                        >
+                            {params.icon1 || <ArrowLeft size={21} />}
+                        </button>
+                    ) : (
+                        <DinespaceLogo />
+                    )}
+                    {params.goback ? (
+                        <span className="text-xl font-bold tracking-tight text-[#A13924]">{params.title}</span>
+                    ) : null}
+                </div>
+
+                <nav aria-label="User navigation" className="flex flex-1 items-center justify-center gap-1">
+                    {navItems.map(({ href, label, icon: Icon, isActive, badge }) => (
+                        <Link
+                            key={href}
+                            href={href}
+                            aria-current={isActive ? "page" : undefined}
+                            className={`relative inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                                isActive
+                                    ? "bg-[#f4e5e0] text-[#A13924]"
+                                    : "text-[#806f6b] hover:bg-[#f8efec] hover:text-[#A13924]"
+                            }`}
+                        >
+                            <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                            <span>{label}</span>
+                            {badge ? (
+                                <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#A13924] px-1 text-[10px] font-bold text-white">
+                                    {badge}
+                                </span>
+                            ) : null}
+                        </Link>
+                    ))}
+                </nav>
+
+                <div className="flex min-w-fit items-center justify-end">
+                    {isOwner ? (
+                        <Link
+                            href="/home"
+                            className="rounded-xl border border-[#dec0ba] bg-white px-4 py-2.5 text-sm font-semibold text-[#A13924] shadow-sm transition-colors hover:border-[#A13924] hover:bg-[#f5f3f0]"
+                        >
+                            Back to restaurant
+                        </Link>
+                    ) : (
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full text-[#6d514b]">
+                            {params.icon2 || <ShieldQuestionMark size={20} />}
+                        </span>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
+
 }

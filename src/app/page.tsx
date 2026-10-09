@@ -13,6 +13,7 @@ import Imagepath from "@/lib/algorithms/Imagepath";
 import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
 import Counter from "@/components/Counter/Counter";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
+import  DinespaceLogo  from "@/components/DinespaceLogo";
 
 interface LoginResponse {
   role: string;
@@ -109,12 +110,7 @@ export default function Home() {
 
     <main className="min-h-screen overflow-hidden bg-[#FBF9F6] text-[#171717]">
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
-        <Link href="/" className="flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight text-[#A13924] sm:text-2xl">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#A13924] text-white sm:h-10 sm:w-10 sm:rounded-xl">
-            <Utensils size={19} />
-          </span>
-          DineSpace
-        </Link>
+       <DinespaceLogo/>
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
           <button
             type="button"
