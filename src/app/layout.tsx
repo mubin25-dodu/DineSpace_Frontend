@@ -81,6 +81,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   category: "Food & Dining",
+  verification: {
+    google: "google6033545ec43517b3",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
