@@ -159,6 +159,12 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
         })
             // console.log(myBowl);
     }
+    useEffect(()=>{
+        const existingItemIndex = myBowl?.find((orderItem) => orderItem.menu.id === item.id);
+        if(count > 1 && existingItemIndex){
+            handleadd();
+        }
+    },[count])
     const handleremove =()=>{
         setbowl((prev:OrderItem[])=>{
             const existingItemIndex = prev!.find((orderItem) => orderItem.menu.id === item.id);
