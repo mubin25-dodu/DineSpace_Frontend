@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { motion } from "motion/react";
 import { Bell, X } from "lucide-react";
 interface param{
     Message:string;
@@ -22,7 +23,7 @@ export default function  AlerPopup({Message , time, setpopup}:param){
     return (
         <>
         {isVisible?
-        <div
+        <motion.div exit={{ opacity: 0 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/45 p-4 backdrop-blur-[2px]"
             role="presentation"
             onClick={() => { setIsVisible(false); setpopup?.(""); }} >
@@ -67,7 +68,7 @@ export default function  AlerPopup({Message , time, setpopup}:param){
                 </button>
             </div>
             </div>
-        </div>:null}
+        </motion.div>:null}
         </>
     );
 }

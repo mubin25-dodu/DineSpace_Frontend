@@ -98,6 +98,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Analytics />
         <SpeedInsights />
       </body>
+      
     </html>
   );
 }

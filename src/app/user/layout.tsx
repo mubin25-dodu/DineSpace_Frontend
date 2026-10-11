@@ -50,8 +50,8 @@ export default function UserLayout({ children }: { children: React.ReactNode }){
     {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
     {servererror && <ServerError error={servererror} setservererror={() => setservererror}  />}
    
-    <main className="mb-22 mx-auto w-full max-w-7xl md:px-0 lg:px-10">{children}</main>
-    
+    <main className=" mx-auto w-full max-w-7xl md:px-0 lg:px-10 min-h-[100vh]">{children}</main>
+    {/* <footer><p className="text-center text-sm text-gray-500">© 2023 DineSpace. All rights reserved.</p></footer> */}
     </userContext.Provider>
     </div>
 }

@@ -11,6 +11,7 @@ import Result from '@/lib/Result';
 import Image from 'next/image';
 import Link from 'next/link';
 import AlerPopup from '@/components/alertPopup';
+import { AnimatePresence, motion } from 'motion/react';
 interface LoginResponse {
     role: string;
     email:string;
@@ -124,7 +125,7 @@ export default function Auth(){
     <>
     <ServerError error={serverError} setservererror={() => setServerError(false)}/>
     
-    {btns.forget && btns.forget === true && <Forgetpass setpopup={setpopup} setbuttons = {setbuttons} />}
+    {btns.forget && btns.forget === true && <AnimatePresence initial={btns.forget} ><Forgetpass setpopup={setpopup} setbuttons = {setbuttons} /></AnimatePresence>}
     {popup && <AlerPopup setpopup={() => setpopup("")} Message={popup} />}
     <div className="flex min-h-screen flex-col">
         <div className="flex flex-1 items-center justify-center py-6">
@@ -260,7 +261,7 @@ function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/55 p-4 backdrop-blur-sm">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration:5}} className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/55 p-4 backdrop-blur-sm">
             <section
                 role="dialog"
                 aria-modal="true"
@@ -339,6 +340,6 @@ function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
                     </div>
                 </form>
             </section>
-        </div>
+        </motion.div>
     )
 }

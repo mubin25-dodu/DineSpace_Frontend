@@ -9,7 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import {  Delete, MapPinCheckInside, Minus, Plus, Shrink, Trash } from "lucide-react";
 import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
-import { motion } from "motion/react";
+import { motion, vh } from "motion/react";
 import CountUp from "@/components/countUp/countUp";
 import Counter from "@/components/Counter/Counter";
 
@@ -39,10 +39,11 @@ export default function Resturants(params:{id:string}){
                 const {data} = await api.get<Result<Restaurant>>(`resturant/getResturentById/${param.id}`);
                 if (data?.Success && data.Data) {
                     setResturent(data.Data);
-                console.log(data)
+                // console.log(data)
                 }
             } catch (e) {
-                console.error(e);
+                // console.error(e);
+                new Error("Failed to fetch resturent");
             }
         };
 
@@ -50,7 +51,7 @@ export default function Resturants(params:{id:string}){
     }, [param.id, setNavinfo]);
 
     const handlemenucatagory =(cat:string)=>{
-        console.log(cat);
+        // console.log(cat);
         setcatbtn(cat);
     }
     
@@ -78,7 +79,7 @@ export default function Resturants(params:{id:string}){
     return(
         <>
         {
-        resturent? <div className="mx-auto flex w-full max-w-7xl flex-col scroll-smooth duration-200">
+        resturent? <div className="mx-auto flex w-full min-h-[100vh] max-w-7xl flex-col scroll-smooth duration-200">
             <Image className="h-48 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
             ? resturent.coverFile?.Path?.replace(/\\/g, "/")
             : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant_cover.png"} width={1000} height={600} alt="cover"></Image>
@@ -97,11 +98,12 @@ export default function Resturants(params:{id:string}){
                 <p className="px-4 pb-3 text-[#A13924] font-bold sm:px-6">Checkout the menu</p>
                 <hr className="w-full border-[#97756f]" />
                 
-                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-20 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
+                <motion.div initial={{ x: 20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-20 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
                     <a id="allitems" href="#allitems" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "all" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("all")}>All items</a>
                    
                     {cat.map((val) => (
-                        <motion.a drag href={`#${val}`}
+                        <motion.a                         
+                       href={`#${val}`}
                             key={val}
                             className={`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn === val ? "bg-[#A13924] text-white" : "bg-[#F5F3F0] border border-[#DEC0BA]"}`}
                             onClick={() => handlemenucatagory(val)} >
@@ -112,12 +114,18 @@ export default function Resturants(params:{id:string}){
                 
                 {/* cards load */}
                <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
-                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
+                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
+                        drag
+                        dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+                        dragElastic={0.2}  key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
                 {nextTotal > 0 ? isCartExpanded ? (
                     <motion.div
+                        drag
+                        dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+                        dragElastic={0.5}
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.5 }}
@@ -142,6 +150,9 @@ export default function Resturants(params:{id:string}){
                 ) : (
                     <motion.button
                         type="button"
+                        drag
+                        dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+                        dragElastic={0.5}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.3 }}
@@ -186,7 +197,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
         setbowl((prev:OrderItem[])=>{
             const existingItemIndex = prev!.find((orderItem) => orderItem.menu.id === item.id);
             if (existingItemIndex ) {
-                console.log(existingItemIndex);
+                // console.log(existingItemIndex);
                 // console.log("item already exist in bowl");
                 return prev!.map(e=> e.menu.id === item.id ? { ...e, quantity: count , resturantName:resturent } : e)
             } else {
@@ -223,7 +234,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
         <div className="m-1 flex min-h-30 min-w-0 flex-row items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3 text-sm sm:m-2 sm:text-base">
             <span className="flex min-w-0 flex-1 flex-col justify-start gap-2">
             <span className="truncate font-semibold text-[#3b3939]">{item.itemName}</span>
-            <span className="break-words font-normal leading-5 text-[#7a7776]">{item.description}</span>       
+            <span className="break-words font-normal leading-5 text-[#7a7776]">{seemore ? item.description : item.description.substring(0, 90) + "..."} {item.description.length > 90 ? <span className="cursor-pointer"><button onClick={() => setseemore(!seemore)} className="text-[#A13924] bold text-[12px] ">Read more</button></span> : null}</span>       
             {/* counter button */}
         <span className="flex flex-row items-center gap-2">
         <span className="font-bold text-[#A13924]">{item.price} BDT</span>

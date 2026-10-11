@@ -14,6 +14,7 @@ import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
 import Counter from "@/components/Counter/Counter";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
 import  DinespaceLogo  from "@/components/DinespaceLogo";
+import TextType from "@/components/TextType ";
 
 interface LoginResponse {
   role: string;
@@ -168,6 +169,8 @@ export default function Home() {
  
 
       <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-4 pb-14 pt-8 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-28 lg:pt-16">
+
+        
         <div className="min-w-0">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#F1D8D0] bg-[#FDF7F5] px-3 py-1.5 text-xs font-medium text-[#A13924] sm:mb-6 sm:text-sm">
             <span className="h-2 w-2 rounded-full bg-[#C86A52]" />
@@ -522,10 +525,8 @@ export default function Home() {
         </div>
       )}
 
-      
-
       <footer className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-7 text-sm text-[#8B7168] sm:flex-row sm:items-center sm:justify-between lg:px-10">
-        <span>© {new Date().getFullYear()} DineSpace</span>
+        <span>© { new Date().getFullYear() > 2025 ? `${2025} - ${new Date().getFullYear()}` : new Date().getFullYear() } DineSpace</span>
         <span className="flex flex-wrap items-center gap-1">
           Made for better dining experiences by
           <a
@@ -534,7 +535,19 @@ export default function Home() {
             rel="noreferrer"
             className="font-semibold text-[#A13924] underline decoration-[#DDBDB3] underline-offset-4 transition hover:text-[#842F1E]"
           >
-            Abdullah Al Mubin
+           <TextType 
+              text={["Mu-bin.dev", "MD. Abdullah Al Mubin", "Happy coding!"]}
+              typingSpeed={75}
+              pauseDuration={1500}
+              showCursor
+              cursorCharacter="_"
+              texts={["Mu-bin.dev", "MD. Abdullah Al Mubin", "Happy coding!"]}
+              deletingSpeed={50}
+              variableSpeedEnabled={false}
+              variableSpeedMin={60}
+              variableSpeedMax={120}
+              cursorBlinkDuration={0.5}
+            />
           </a>
           .
         </span>

@@ -38,12 +38,12 @@ export default function User() {
         const getresturants = async () => {
             try {
                 const {data} = await api.get<Result<Restaurant[]>>("resturant/getAllResturants");
-                console.log(data);
+                // console.log(data);
                 if (data?.Success) {
                     setresturants(data.Data ?? []);
                 }
             } catch (e) {
-                console.log(e);
+                new Error("Failed to fetch resturants");
             }
         };
 
@@ -67,7 +67,7 @@ export default function User() {
        <section className="m-5 mb-20">
         <div className="flex flex-1 items-center justify-center">
         <span className="flex flex-row items-center">
-        <motion.input initial={{scale: 0 , width: 0}} animate={{scale: 1 , width: 240}} transition={{duration: 1 , type: "spring"}} type="text" onChange={(e) => setSearchQuery(e.target.value)} className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <motion.button initial={{scale: 0}} animate={{scale: 1}} transition={{duration: 1}} className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</motion.button>
+        <motion.input viewport={{ once: true, amount: 0.3 }} initial={{scale: 0 , width: 0}} whileInView={{scale: 1 , width: 240}} transition={{duration: 1 , type: "spring"}} type="text" onChange={(e) => setSearchQuery(e.target.value)} className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <motion.button initial={{scale: 0}} animate={{scale: 1}} transition={{duration: 1}} className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</motion.button>
         </span>
         </div>        
        </section>
@@ -77,7 +77,7 @@ export default function User() {
        <p className="text-gray-500 ml-5">Showing {filteredResturants?.length} Resturents</p></div>
        <motion.span className="m-3 flex min-h-[50vh] flex-row flex-wrap justify-center gap-5">
             {filteredResturants?.map((resturant) => (
-               <motion.div key={resturant.id} initial={{ x: Math.random() * 100, opacity: 0 }} animate={{ x: 0 ,opacity: 1 }} transition={{ duration: 0.5 }} whileHover={{ scale: 1.01 }} className="w-full flex-none sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]">
+               <motion.div key={resturant.id} initial={{ x: Math.random() * 100, opacity: 0 }} whileInView={{ x: 0 ,opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }} whileHover={{ scale: 1.01 }} className="w-full flex-none sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]">
                  <ResturantCard key={resturant.id} resturant={resturant} />
                </motion.div>
             ))}
