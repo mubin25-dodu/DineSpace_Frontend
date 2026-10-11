@@ -536,16 +536,16 @@ export default function Home() {
             className="font-semibold text-[#A13924] underline decoration-[#DDBDB3] underline-offset-4 transition hover:text-[#842F1E]"
           >
            <TextType 
-              text={["Mu-bin.dev", "MD. Abdullah Al Mubin", "Happy coding!"]}
+              text={["Mu-bin.dev", "MD. Abdullah Al Mubin"]}
               typingSpeed={75}
               pauseDuration={1500}
               showCursor
               cursorCharacter="_"
-              texts={["Mu-bin.dev", "MD. Abdullah Al Mubin", "Happy coding!"]}
+              // texts={["Mu-bin.dev", "MD. Abdullah Al Mubin", "Happy coding!"]}
               deletingSpeed={50}
-              variableSpeedEnabled={false}
-              variableSpeedMin={60}
-              variableSpeedMax={120}
+              // variableSpeedEnabled={false}
+              // variableSpeedMin={60}
+              // variableSpeedMax={120}
               cursorBlinkDuration={0.5}
             />
           </a>
