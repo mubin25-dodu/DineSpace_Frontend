@@ -6,9 +6,12 @@ import { MenuItem, OrderItem, Restaurant } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import {  Delete, MapPinCheckInside, Minus, Plus, Trash } from "lucide-react";
+import {  Delete, MapPinCheckInside, Minus, Plus, Shrink, Trash } from "lucide-react";
 import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
+import { motion } from "motion/react";
+import CountUp from "@/components/countUp/countUp";
+import Counter from "@/components/Counter/Counter";
 
 export default function Resturants(params:{id:string}){
     const param = useParams<{ id: string }>();
@@ -17,6 +20,7 @@ export default function Resturants(params:{id:string}){
     const [cat, setcat] = useState<string[]>([]);
     const [resturent, setResturent] = useState<Restaurant | null>(null);
     const [nextTotal, setnextTotal] = useState(0);
+    const [isCartExpanded, setIsCartExpanded] = useState(false);
     
 
     useEffect(()=>{
@@ -93,30 +97,61 @@ export default function Resturants(params:{id:string}){
                 <p className="px-4 pb-3 text-[#A13924] font-bold sm:px-6">Checkout the menu</p>
                 <hr className="w-full border-[#97756f]" />
                 
-                <div className="sticky top-14 z-10 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-10 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
                     <a id="allitems" href="#allitems" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "all" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("all")}>All items</a>
+                   
                     {cat.map((val) => (
-                        <a href={`#${val}`}
+                        <motion.a drag href={`#${val}`}
                             key={val}
                             className={`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn === val ? "bg-[#A13924] text-white" : "bg-[#F5F3F0] border border-[#DEC0BA]"}`}
                             onClick={() => handlemenucatagory(val)} >
                             {val}
-                        </a>
+                        </motion.a>
                     ))}
-                </div>
+                </motion.div>
+                
                 {/* cards load */}
                <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
-                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/>:"")}</section>)}
+                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div drag key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
-                {nextTotal > 0 ? <span className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 min-h-16 bg-[#A13924] px-4 py-3 text-sm text-white sm:text-base md:bottom-4 lg-bottom-0 md:left-1/2 md:right-auto md:w-[calc(100%-2rem)] md:max-w-5xl md:-translate-x-1/2 md:rounded-2xl">
-                <span className="mx-auto flex w-full flex-wrap items-center justify-between gap-2">
-                <span className="font-bold">Total: {nextTotal} BDT</span>
-                <span className="flex items-center justify-end gap-2 sm:gap-4">
-                <Link href={`../checkout/${param.id}`} className="rounded-3xl bg-[#F5F3F0] px-3 py-1.5 font-semibold text-[#A13924]">Checkout</Link> 
-                <button  onClick={()=>{handledeleteall()}} className="rounded-2xl border border-white px-3 py-1.5">Remove all</button>
-                </span></span></span>:""}
+                {nextTotal > 0 ? isCartExpanded ? (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] left-0 right-0 z-40 min-h-16 bg-[#A13924] px-4 py-3 text-sm text-white sm:text-base md:bottom-4 md:left-1/2 md:right-auto md:w-[calc(100%-2rem)] md:max-w-5xl md:-translate-x-1/2 md:rounded-2xl"
+                    >
+                        <span className="mx-auto flex w-full flex-wrap items-center justify-between gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setIsCartExpanded(false)}
+                                className="flex items-center gap-2 font-bold"
+                                aria-label="Collapse order summary"
+                            >
+                                <span>Total: <CountUp to={nextTotal} from={0} duration={0.5} /></span>
+                                <Shrink size={18} aria-hidden="true" />
+                            </button>
+                            <span className="flex items-center justify-end gap-2 sm:gap-4">
+                                <Link href={`../checkout/${param.id}`} className="rounded-3xl bg-[#F5F3F0] px-3 py-1.5 font-semibold text-[#A13924]">Checkout</Link>
+                                <button type="button" onClick={handledeleteall} className="rounded-2xl border border-white px-3 py-1.5">Remove all</button>
+                            </span>
+                        </span>
+                    </motion.div>
+                ) : (
+                    <motion.button
+                        type="button"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        onClick={() => setIsCartExpanded(true)}
+                        className="fixed bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] right-4 z-40 flex h-fit p-2 mb-1 min-w-16 items-center justify-center rounded-full bg-[#A13924] px-4 text-sm font-bold text-white shadow-lg sm:text-base md:bottom-4"
+                        aria-label="Show order summary"
+                    >
+                        <span>Total: <CountUp to={nextTotal} from={0} duration={0.5} /></span>
+                    </motion.button>
+                ) : ""}
             </div>
         </div> : <UsersLoading time={2000}/>}
         </>
@@ -127,6 +162,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
     const {myBowl , setbowl} = useContext(userContext);
     const [count, setcount] = useState(1);
     const [found , setfound] = useState(false)   
+    const [seemore , setseemore] = useState(false);
     
     useEffect(() => {
     const checkfound = myBowl?.find(
@@ -211,9 +247,9 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
               type="button">
               <Plus size={15} strokeWidth={2.5} />
             </button>
-          </div>
+          </div> {count > 1 ? <span className="text-[#A13924]">Total: <CountUp to={count * item.price} from={0} duration={0.5} className="text-[#A13924]" /></span> :""}
             </span>
-            {count > 1 ?<span className="text-[#A13924]">Total:{count*item.price} BDT</span> :""}
+           
             </span>
             <span className="relative shrink-0">
             <Image  className="h-20 w-20 rounded-2xl object-cover shadow-md sm:h-24 sm:w-24" src={item.images?.[0]?.Path

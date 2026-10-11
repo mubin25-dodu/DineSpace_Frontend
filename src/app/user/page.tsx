@@ -8,6 +8,7 @@ import { Restaurant } from "@/lib/interfaces/order"
 import Result from "@/lib/Result";
 import { Utensils } from "lucide-react";
 import { useContext, useEffect, useState } from "react"
+import { motion } from "motion/react";
 export default function User() {
     
     const [resturants , setresturants] = useState<Restaurant[]>();
@@ -71,11 +72,13 @@ export default function User() {
        </section>
        {filteredResturants && filteredResturants?.length > 0 ? <><div className="flex flex-row "> 
        <p className="text-gray-500 ml-5">Showing {filteredResturants?.length} Resturents</p></div>
-       <span className="flex flex-row flex-wrap m-3 gap-5 min-h-[50vh] ">
+       <motion.span className="m-3 flex min-h-[50vh] flex-row flex-wrap justify-center gap-5">
             {filteredResturants?.map((resturant) => (
-                <ResturantCard key={resturant.id} resturant={resturant} />
+               <motion.div key={resturant.id} initial={{ x: Math.random() * 100, opacity: 0 }} animate={{ x: 0 ,opacity: 1 }} transition={{ duration: 0.5 }} whileHover={{ scale: 1.01 }} className="w-full flex-none sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]">
+                 <ResturantCard key={resturant.id} resturant={resturant} />
+               </motion.div>
             ))}
-        </span></> : <span className="flex items-center min-h-20 justify-center"><LatticeLoader
+        </motion.span></> : <span className="flex items-center min-h-20 justify-center"><LatticeLoader
         status="working"
         label="Loading restaurants..."
         doneLabel="Done in"

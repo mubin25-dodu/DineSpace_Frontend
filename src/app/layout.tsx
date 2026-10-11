@@ -4,7 +4,6 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import JsonLd from "@/components/JsonLd"
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,7 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://dinespace.mu-bin.dev"),
   title: {
     default:
-      "DineSpace — Contactless Restaurant Ordering & Table-Side Dining Platform",
+      "DineSpace:Contactless Restaurant Ordering & Table-Side Dining Platform",
     template: "%s | DineSpace",
   },
   description:
