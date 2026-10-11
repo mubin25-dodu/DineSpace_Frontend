@@ -63,13 +63,16 @@ export default function User() {
        <>
        <span className="block sm:hidden"><UserHeroPhone /></span>
         <span className="hidden lg:block"><UserHeroDesktop /></span>
+       
        <section className="m-5 mb-20">
         <div className="flex flex-1 items-center justify-center">
         <span className="flex flex-row items-center">
-        <input type="text" onChange={(e) => setSearchQuery(e.target.value)} className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <button  className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</button>
+        <motion.input initial={{scale: 0 , width: 0}} animate={{scale: 1 , width: 240}} transition={{duration: 1 , type: "spring"}} type="text" onChange={(e) => setSearchQuery(e.target.value)} className="border h-12 w-60 pl-4 border-gray-400 rounded-3xl" placeholder="Resturant name" /> <motion.button initial={{scale: 0}} animate={{scale: 1}} transition={{duration: 1}} className="relative ml-[-87px] h-10 bg-[#A13924] pl-4 pr-4 pt-2 pb-2 rounded-4xl text-white">Search</motion.button>
         </span>
         </div>        
        </section>
+
+
        {filteredResturants && filteredResturants?.length > 0 ? <><div className="flex flex-row "> 
        <p className="text-gray-500 ml-5">Showing {filteredResturants?.length} Resturents</p></div>
        <motion.span className="m-3 flex min-h-[50vh] flex-row flex-wrap justify-center gap-5">

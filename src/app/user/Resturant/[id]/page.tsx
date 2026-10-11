@@ -97,7 +97,7 @@ export default function Resturants(params:{id:string}){
                 <p className="px-4 pb-3 text-[#A13924] font-bold sm:px-6">Checkout the menu</p>
                 <hr className="w-full border-[#97756f]" />
                 
-                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-10 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-20 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
                     <a id="allitems" href="#allitems" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "all" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("all")}>All items</a>
                    
                     {cat.map((val) => (
@@ -112,7 +112,7 @@ export default function Resturants(params:{id:string}){
                 
                 {/* cards load */}
                <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
-                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div drag key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
+                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
@@ -251,8 +251,8 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
             </span>
            
             </span>
-            <span className="relative shrink-0">
-            <Image  className="h-20 w-20 rounded-2xl object-cover shadow-md sm:h-24 sm:w-24" src={item.images?.[0]?.Path
+            <span className="relative shrink-0 ">
+            <Image  className="z-0 h-20 w-20 rounded-2xl object-cover shadow-md sm:h-24 sm:w-24" src={item.images?.[0]?.Path
                 ? encodeURI((item.images[0].Path.replace(/\\/g, "/")).startsWith("http")
                 ? item.images[0].Path.replace(/\\/g, "/")
                 : `${api.defaults.baseURL?.replace(/\/$/, "")}/${item.images[0].Path.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant__logo.png"} width={1000} height={1000} alt={`${item.itemName} image`} />
