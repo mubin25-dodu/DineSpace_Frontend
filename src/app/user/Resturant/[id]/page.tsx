@@ -115,9 +115,7 @@ export default function Resturants(params:{id:string}){
                 {/* cards load */}
                <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
                 {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
-                        drag
-                        dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-                        dragElastic={0.2}  key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
+                          key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
