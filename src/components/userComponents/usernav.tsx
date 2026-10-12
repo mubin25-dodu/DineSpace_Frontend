@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import DinespaceLogo  from "../DinespaceLogo";
+import { motion } from "motion/react";
 interface UsernavProps {
 icon1?: React.ReactNode;
 goback?: boolean;
@@ -78,7 +79,7 @@ export default function UsernavPhone(params:UsernavProps) {
                 )}
             </div>
         </div>
-        <div className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <motion.div initial={{ scale: 0 }} transition={{duration:1 , type: "spring"}} animate={{ scale: 1 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             <nav aria-label="User navigation" className="mx-auto flex h-15 max-w-md items-center justify-around rounded-xl border border-[#ead8d3] bg-[#FBF9F6]/95 px-1.5 shadow-[0_8px_30px_rgba(115,65,52,0.16)] backdrop-blur-md">
                 {navItems.map(({ href, label, icon: Icon, isActive, badge }) => (
                     <Link
@@ -101,7 +102,7 @@ export default function UsernavPhone(params:UsernavProps) {
                     </Link>
                 ))}
             </nav>
-        </div>
+        </motion.div>
         </>
     )
 }
@@ -119,7 +120,7 @@ export function UsernavDesktop(params:UsernavProps) {
     ];
 
     return (
-        <header className="sticky top-0 z-40 border-b border-[#ead8d3] bg-[#FBF9F6]/95 shadow-sm backdrop-blur-md">
+        <header className="sticky top-0 z-40 bg-[#FBF9F6]/98">
             <div className="mx-auto flex h-18 w-full max-w-7xl items-center gap-8 px-6 lg:px-10">
                 <div className="flex min-w-fit items-center gap-3">
                     {params.goback ? (
@@ -132,7 +133,9 @@ export function UsernavDesktop(params:UsernavProps) {
                             {params.icon1 || <ArrowLeft size={21} />}
                         </button>
                     ) : (
+                        
                         <DinespaceLogo />
+                      
                     )}
                     {params.goback ? (
                         <span className="text-xl font-bold tracking-tight text-[#A13924]">{params.title}</span>
@@ -141,7 +144,7 @@ export function UsernavDesktop(params:UsernavProps) {
 
                 <nav aria-label="User navigation" className="flex flex-1 items-center justify-center gap-1">
                     {navItems.map(({ href, label, icon: Icon, isActive, badge }) => (
-                        <Link
+                        <motion.span  key={href} initial={{ scale: 0 }} transition={{duration:1 , type: "spring"}} animate={{ scale: 1 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}><Link
                             key={href}
                             href={href}
                             aria-current={isActive ? "page" : undefined}
@@ -158,7 +161,7 @@ export function UsernavDesktop(params:UsernavProps) {
                                     {badge}
                                 </span>
                             ) : null}
-                        </Link>
+                        </Link></motion.span>
                     ))}
                 </nav>
 

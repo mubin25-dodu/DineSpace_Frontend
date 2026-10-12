@@ -11,23 +11,22 @@ import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
 import { motion, vh } from "motion/react";
 import CountUp from "@/components/countUp/countUp";
-import Counter from "@/components/Counter/Counter";
 
 export default function Resturants(params:{id:string}){
     const param = useParams<{ id: string }>();
-    const {setNavinfo , setservererror , myBowl , setbowl } = useContext(userContext);
+    const {setNavinfo , setservererror , myBowl , setbowl ,setPopup } = useContext(userContext);
     const [catbtn, setcatbtn]= useState("all");
     const [cat, setcat] = useState<string[]>([]);
     const [resturent, setResturent] = useState<Restaurant | null>(null);
     const [nextTotal, setnextTotal] = useState(0);
     const [isCartExpanded, setIsCartExpanded] = useState(false);
+    const [error, setError] = useState(false);
     
 
     useEffect(()=>{
         if(!resturent){return}
         const cats = Array.from(new Set(resturent.menu.filter((e)=> e.isAvailable).map(e=>e.catagory)));
         setcat(cats);
-
     },[resturent]);
 
     useEffect(()=>{
@@ -40,9 +39,14 @@ export default function Resturants(params:{id:string}){
                 if (data?.Success && data.Data) {
                     setResturent(data.Data);
                 // console.log(data)
+                } else {
+                    setError(true);
+                    setPopup("Failed to fetch resturent");
                 }
             } catch (e) {
                 // console.error(e);
+                setError(true);
+                setPopup("Failed to fetch resturent");
                 new Error("Failed to fetch resturent");
             }
         };
@@ -80,10 +84,10 @@ export default function Resturants(params:{id:string}){
         <>
         {
         resturent? <div className="mx-auto flex w-full min-h-[100vh] max-w-7xl flex-col scroll-smooth duration-200">
-            <Image className="h-48 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
+            <Image className="h-120 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
             ? resturent.coverFile?.Path?.replace(/\\/g, "/")
             : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant_cover.png"} width={1000} height={600} alt="cover"></Image>
-            <div className="mt-[-1.5rem] flex min-h-[70vh] flex-col rounded-[20px_20px_0_0] border border-[#c9c9c9] bg-[#FBF9F6] sm:mt-[-2.5rem]">
+            <div className="mt-[-1.5rem] flex min-h-[70vh] flex-col rounded-[20px_20px_0_0] bg-[#FBF9F6] sm:mt-[-2.5rem]">
                 <div className="flex flex-wrap items-center gap-3 px-4 pt-5 sm:px-6">
                  <Image className="mt-[-3rem] h-20 w-20 rounded-2xl object-cover shadow-md sm:mt-[-5rem] sm:h-28 sm:w-28" src={resturent.logoFile?.Path
                 ? encodeURI((resturent.logoFile?.Path?.replace(/\\/g, "/")).startsWith("http")
@@ -162,7 +166,9 @@ export default function Resturants(params:{id:string}){
                     </motion.button>
                 ) : ""}
             </div>
-        </div> : <UsersLoading time={2000}/>}
+        </div> :error ? <span className="flex items-center min-h-20 justify-center text-[#A13924] font-semibold">
+                   <Link href="/user" className="text-[#A13924] font-semibold"> Failed to load restaurant go back and try again </Link>
+                </span> : <UsersLoading time={2000} />}
         </>
     )
 }
@@ -229,7 +235,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
     return(
         <>
         {item ?
-        <div className="m-1 flex min-h-30 min-w-0 flex-row items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3 text-sm sm:m-2 sm:text-base">
+        <div className="m-1 flex min-h-30 min-w-0 flex-row items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3 text-sm transition-[border-color,box-shadow] duration-200 hover:border-transparent hover:ring-2 hover:ring-[#DEC0BA] hover:ring-offset-2 hover:ring-offset-[#FBF9F6] sm:m-2 sm:text-base">
             <span className="flex min-w-0 flex-1 flex-col justify-start gap-2">
             <span className="truncate font-semibold text-[#3b3939]">{item.itemName}</span>
             <span className="break-words font-normal leading-5 text-[#7a7776]">{seemore ? item.description : item.description.substring(0, 90) + "..."} {item.description.length > 90 ? <span className="cursor-pointer"><button onClick={() => setseemore(!seemore)} className="text-[#A13924] bold text-[12px] ">Read more</button></span> : null}</span>       
