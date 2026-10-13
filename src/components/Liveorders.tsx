@@ -1,9 +1,10 @@
 import { api } from "@/lib/api/axios";
 import { resturantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
-import { AddOnOrder, Order } from "@/lib/interfaces/order";
+import { Order } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { useContext } from "react";
+import { motion } from "motion/react";
 
 interface params{
     sendorders:Order[];
@@ -12,24 +13,28 @@ interface params{
 
 
 export  default  function LiveOrders({sendorders , handleChange} :params){
+    // console.log("live orders");
+    // console.log(sendorders);
 
     return<>
-    <div className="w-full bg-white h-210 p-5 mb-5 border border-[#DEC0BA] rounded-2xl shadow overflow-hidden ">
-        <div className="flex h-full min-h-0 flex-row gap-2 z-auto">
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden scrollbar-none">
-                <div className="sticky top-0 z-1 border-b border-[#DEC0BA] bg-white"> New </div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Pending ? <OrderCards key={e.id} handler = {handleChange} getOrders={e} /> :"")}
+    <div className="h-[min(38rem,72vh)] min-h-[24rem] w-full overflow-hidden rounded-2xl border border-[#EFE3DD] bg-[#FFFCFA]">
+        <div className="h-full overflow-x-auto scrollbar-none">
+        <div className="grid h-full min-w-[660px] grid-cols-3 gap-2 p-2 sm:p-3">
+            <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
+                <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>New</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Pending).length}</span></div>
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Pending ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler = {handleChange} getOrders={e} /> </span>  :"")}
             </div>
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden scrollbar-none">
-                <div className="sticky top-0 z-10 border-b border-[#DEC0BA] bg-white"> Preparing </div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Preparing ? <OrderCards key={e.id} handler={handleChange} getOrders={e} /> :"")}
+            <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
+                <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>Preparing</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Preparing).length}</span></div>
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Preparing ? <span key={e.id} className = "sticky top-10"> <OrderCards  handler={handleChange} getOrders={e} /> </span>:"")}
             </div> 
             
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden scrollbar-none">
-                <div className="sticky top-0 z-10 border-b border-[#DEC0BA] bg-white"> Ready </div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Ready ? <OrderCards key={e.id} handler ={handleChange} getOrders={e} /> :"")}
+            <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
+                <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>Ready</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Ready).length}</span></div>
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Ready ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler ={handleChange} getOrders={e} /> </span> :"")}
 
             </div>
+        </div>
         </div>
     </div>
      </>
@@ -91,30 +96,35 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
     return (
        <>
        {getOrders !==null ?
-       <div className="flex flex-col gap-1 w-[95%] bg-[#FBF9F6] h-auto mt-4 ml-3 p-5 rounded-2xl shadow border border-[#DEC0BA]">
-            <div className="flex flex-row justify-between">
-                <div>Table No- <span>{getOrders.table.tableno}</span></div>
-                <div className="text-[15px] text-gray-500">#ODR-{getOrders.id.slice(30)}</div>
+       <motion.div 
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 , type: "spring" }}
+            className="mt-2 flex  h-auto w-full flex-col gap-2 rounded-xl border border-[#E8E2DA] bg-white p-3 shadow-sm"
+        >
+            <div className="flex items-center justify-between gap-1.5 text-[11px] text-[#8A7971]">
+                <div className="font-semibold text-[#554740]">Table {getOrders.table.tableno}</div>
+                <div>#{getOrders.id.slice(30)}</div>
                 <div>{minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago</div>
             </div>
-            <div className="text-[18px] font-semibold">{getOrders.customerName}</div>
-            <div className="h-fit">
+            <div className="truncate text-sm font-bold text-[#2F2724]">{getOrders.customerName}</div>
+            <div className="flex h-fit flex-wrap gap-1.5">
                 {getOrders.orderitems.map((item) => (
-                    <span className="mr-2" key={item.id}>{item.quantity}x{item.menu.itemName}</span>
+                    <span className="rounded-md bg-[#F8F5F2] px-1.5 py-0.5 text-[11px] text-[#64534D]" key={item.id}>{item.quantity}× {item.menu.itemName}</span>
                 ))}
             </div>
-          <span className="font-semibold">Total bill: {getOrders.payable}</span>
-            <div>{getOrders.payment.status === PaymentStatus.Paid ? <span className="text-green-600">Paid Tid- {getOrders.payment.transectionId}</span> :  <span className="flex flex-row justify-between"><span className="text-red-600 ">Payment {getOrders.payment.status} <button onClick={()=>{handleChange( getOrders.OrderStatus ,  false ,PaymentStatus.Paid); console.log("mark as")}} className="text-black pl-1 pr-1 hover:text-green-600 cursor-pointer duration-500">Mark as paid ✓✓</button></span> </span>}</div>
-            <div className="flex flex-row justify-between">
+          <span className="text-xs font-bold text-[#A13924]">Total bill: BDT {getOrders.payable}</span>
+            <div className="text-xs">{getOrders.payment.status === PaymentStatus.Paid ? <span className="text-green-700">Paid · {getOrders.payment.transectionId}</span> :  <span className="flex flex-wrap items-center justify-between gap-1 text-red-700"><span>Payment {getOrders.payment.status}</span> <button onClick={()=>{handleChange( getOrders.OrderStatus ,  false ,PaymentStatus.Paid); console.log("mark as")}} className="rounded-md px-1 py-0.5 font-semibold text-[#554740] transition hover:bg-green-50 hover:text-green-700">Mark as paid ✓✓</button></span>}</div>
+            <div className="flex flex-row justify-between gap-2">
                 {getOrders.OrderStatus === OrderStatus.Pending ? <>
-                    <button onClick={()=>{handleChange(OrderStatus.Preparing);}} className="hover:scale-95 transition-all duration-200 cursor-pointer w-[60%] bg-black rounded h-8 text-white">Accept</button>
-                    <button onClick={()=> confirm("Are you sure you want to decline this order?") && handleChange(OrderStatus.Canceled , true)} className="transition-all duration-200 cursor-pointer w-[30%] text-[#A13924] rounded h-8">Decline</button>
+                    <button onClick={()=>{handleChange(OrderStatus.Preparing);}} className="h-8 flex-1 cursor-pointer rounded-lg bg-[#A13924] text-xs font-semibold text-white transition hover:bg-[#842F1E]">Accept</button>
+                    <button onClick={()=> confirm("Are you sure you want to decline this order?") && handleChange(OrderStatus.Canceled , true)} className="h-8 rounded-lg px-2 text-xs font-semibold text-[#A13924] transition hover:bg-[#FFF3EE]">Decline</button>
                     </> : getOrders.OrderStatus === OrderStatus.Preparing ?
-                    <button onClick={()=>handleChange(OrderStatus.Ready)} className="hover:scale-95 transition-all duration-200 cursor-pointer w-full border border-[#A13924] rounded h-8 text-[#A13924]">Mark as ready</button> :
+                    <button onClick={()=>handleChange(OrderStatus.Ready)} className="h-8 w-full cursor-pointer rounded-lg border border-[#E2B9AE] bg-[#FFF9F6] text-xs font-semibold text-[#A13924] transition hover:bg-[#F8EEE8]">Mark as ready</button> :
                     getOrders.OrderStatus === OrderStatus.Ready ?
-                        <button onClick={()=>handleChange(OrderStatus.Completed)} className="hover:scale-95 transition-all duration-200 cursor-pointer w-full border border-[#A13924] rounded h-8 text-[#A13924]">Mark as Complete</button> : null}
+                        <button onClick={()=>handleChange(OrderStatus.Completed)} className="h-8 w-full cursor-pointer rounded-lg border border-[#E2B9AE] bg-[#FFF9F6] text-xs font-semibold text-[#A13924] transition hover:bg-[#F8EEE8]">Mark as Complete</button> : null}
             </div>
-        </div>:""
+        </motion.div>:""
         }
         </>
     );

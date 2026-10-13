@@ -125,9 +125,11 @@ export default function Auth(){
     <>
     <ServerError error={serverError} setservererror={() => setServerError(false)}/>
     
-    {btns.forget && btns.forget === true && <AnimatePresence initial={btns.forget} ><Forgetpass setpopup={setpopup} setbuttons = {setbuttons} /></AnimatePresence>}
+    <AnimatePresence>
+        {btns.forget && <Forgetpass setpopup={setpopup} setbuttons={setbuttons} />}
+    </AnimatePresence>
     {popup && <AlerPopup setpopup={() => setpopup("")} Message={popup} />}
-    <div className="flex min-h-screen flex-col">
+    <motion.div initial={{ opacity: 0 , scale: 0.8}} animate={{ opacity: 1 , scale: 1}} transition={{ duration: 0.4 }}  className="flex min-h-screen flex-col">
         <div className="flex flex-1 items-center justify-center py-6">
         <div className="w-[80vw] lg:w-[35vw]  md:w-[45vh] h-fitcontent xl:w-[25vw] rounded-3xl shadow ">
             <div className="w-full h-[30%]" > <Link href={"./"}><Image src="/DineSpace.png" width={11120} height={220} loading="eager" className=" w-full h-full rounded-3xl" alt="" /></Link> </div>
@@ -220,7 +222,7 @@ export default function Auth(){
 
         </div>
         </div>
-    </div>
+    </motion.div>
     </>
     );
 }
@@ -261,8 +263,15 @@ function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration:5}} className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/55 p-4 backdrop-blur-sm">
-            <section
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#171717]/55 p-4 backdrop-blur-sm"
+        >
+            <motion.section
+             initial={{ opacity: 0 , scale:0}} animate={{ opacity: 1 , scale:1 }} exit={{ opacity: 0 , scale:0}} transition={{duration:0.5 , type:"spring"}}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="forgot-password-title"
@@ -339,7 +348,7 @@ function Forgetpass({setbuttons, setpopup}:ForgetpassProps) {
                         </button>
                     </div>
                 </form>
-            </section>
+            </motion.section>
         </motion.div>
     )
 }

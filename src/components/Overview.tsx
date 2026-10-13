@@ -11,6 +11,8 @@ import { OrderStatus, PaymentStatus, TableStatus } from "@/lib/Enums";
 import { CheckCircle2, Clock3, CookingPot, CreditCard, HandCoins, RotateCwFadingClock, Subtitles, Table, Utensils } from "lucide-react";
 import Inlinemessage from "./Inlinemessage";
 import { Payment } from "@/lib/interfaces/payment";
+import LatticeLoader from "./LatticeLoader/LetticalLoader";
+import { motion } from "motion/react";
 
 export default function Overview() {
     const [socConnect , setSocConnect] = useState(false);
@@ -22,6 +24,7 @@ export default function Overview() {
     const [kpicards , setkpicard ] = useState<kpicard[]>();
     const {defaultResturant, setpopup , refreshOrders} = useContext(resturantContext);
     const [sendorders , setSendorders] = useState<Order[]>([]);
+    const [dataload, setDataload] = useState(false);
     // const [date , setdate] = useState(()=> new Date());
 
     const handleChange = (id:string , state:OrderStatus , paymentstate?:PaymentStatus)=>{
@@ -42,9 +45,15 @@ export default function Overview() {
             
         try {
             const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultResturant}`);
-            console.log(res)
+            // console.log(res)
             const data = res.data.Data;
-            setgetorders(data ?? []);
+            if (res.data.Success) {
+                setgetorders(data ?? []);
+                setDataload(true);
+            }
+            else if (res.data.Success === false) {
+                setpopup("Failed to fetch orders try again later");
+            }
         }catch(e){console.error(e)}
         }
 
@@ -137,51 +146,121 @@ useEffect(()=>{
 }, [getorders]);
 
 
-    return <>
-    <div className="">
-        <div className="text-[40px]">Today's Overview</div>
-        <span className="flex flex-row gap-10 mt-10">{kpicards ? kpicards?.map((e,i)=>
-        <KPICard  key={i} {...e} />): "No data found "}</span> 
-        <div className="mt-15  flex flex-row gap-6 ">
-            <section className="w-[70%] " >
-                <div className="mb- flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-baseline gap-3">
-                        <span className="text-[30px]">Live Orders</span>
-                        <span className="cursor-pointer text-[12px] font-bold text-[#A13924]">View all Orders</span>
-                    </div>
-                    <input
-                       onChange={(e)=>{searchOrder(e.target.value)}}
-                        type="text"
-                        placeholder="Search by Order ID or Customer Name"
-                        className="w-full rounded-lg border border-[#DEC0BA] bg-[#F5F3F0] p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#A13924] sm:max-w-xs"
-                    />
+    return dataload ? (
+        <div className="mx-auto w-full max-w-[1600px] space-y-3 px-3 pb-8 sm:px-3 lg:px-6">
+            <header className="flex flex-col gap-3 rounded-3xl border border-[#EAD8D2] bg-gradient-to-r from-[#FFF9F6] via-white to-[#F8EEE8] p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-6">
+                <div>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#A13924]">Restaurant dashboard</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-[#2F2724] sm:text-4xl">Today&apos;s Overview</h1>
+                    <p className="mt-2 text-sm text-[#806D65]">A live snapshot of orders, tables, and revenue.</p>
                 </div>
-                
-            
-                <LiveOrders sendorders = {sendorders} handleChange = {handleChange} />
+                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#E6D7D1] bg-white/80 px-3 py-2 text-xs font-semibold text-[#64534D]">
+                    <span className="size-2 rounded-full bg-emerald-500" />
+                    Live dashboard
+                </div>
+            </header>
+
+            <section aria-label="Restaurant performance" className="flex flex-wrap items-stretch gap-6 mt-0 mb-2">
+                {kpicards?.length ? kpicards.map((card, index) => (
+                    <motion.div
+                        key={card.title}
+                        initial={{ y: 16, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.35, delay: index * 0.07, ease: "easeOut" }}
+                    >
+                        <KPICard {...card} />
+                    </motion.div>
+                )) : (
+                    <p className="rounded-2xl border border-dashed border-[#DEC0BA] bg-white p-5 text-sm text-[#806D65]">No performance data found.</p>
+                )}
             </section>
 
-            <section className="w-[25%]">
-                <section className="flex flex-col gap-3">
-                    <div>
-                <div className="text-[30px] mb-3">Table status</div>
-                <div className="bg-white min-h-40 p-5 w-[90%] max-h-100 border border-[#DEC0BA] rounded-2xl shadow overflow-y-auto overflow-x-hidden scrollbar-none">
-                   {getTables ? getTables.sort((a,b)=> a.tableno - b.tableno).map(e=> <Tables key={e.id} handlesTableState = {handlesTableState} table={e}/>):"No data Found"} 
-                </div>
+            <div className="grid min-w-0 grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(16rem,0.72fr)]">
+                <section aria-labelledby="live-orders-heading" className="min-w-0 overflow-hidden rounded-3xl border border-[#E8E2DA] bg-white shadow-sm">
+                    <div className="flex flex-col gap-4 border-b border-[#F0E8E3] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                        <div>
+                            <h2 id="live-orders-heading" className="text-xl font-bold text-[#2F2724]">Live Orders</h2>
+                            <p className="mt-1 text-sm text-[#8A7971]">Track each order through the kitchen.</p>
+                        </div>
+                        <label className="relative block w-full sm:max-w-xs">
+                            <span className="sr-only">Search orders</span>
+                            <input
+                                onChange={(event) => searchOrder(event.target.value)}
+                                type="search"
+                                placeholder="Search orders or customers"
+                                className="w-full rounded-xl border border-[#E6D7D1] bg-[#FFFCFA] px-4 py-2.5 text-sm text-[#352C29] outline-none transition placeholder:text-[#A9958D] focus:border-[#A13924] focus:ring-4 focus:ring-[#A13924]/10"
+                            />
+                        </label>
                     </div>
-
-                    <div>
-                <div className="text-[30px] mb-3">Live transactions</div>
-                <div className="bg-white min-h-40 p-5 w-[90%] max-h-100 border border-[#DEC0BA] rounded-2xl shadow overflow-y-auto overflow-x-hidden scrollbar-none">
-                    <Transactions/>
-                </div>
+                    <div className="p-3 sm:p-5">
+                        <LiveOrders sendorders={sendorders} handleChange={handleChange} />
                     </div>
                 </section>
-            </section>
-        </div>
-    </div>
 
-    </>
+                <aside className="grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-1">
+                    <section aria-labelledby="table-status-heading" className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                            <div>
+                                <h2 id="table-status-heading" className="text-lg font-bold text-[#2F2724]">Table status</h2>
+                                <p className="mt-1 text-xs text-[#8A7971]">{getTables.length} tables at your restaurant</p>
+                            </div>
+                            <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]"><Table size={20} /></span>
+                        </div>
+                        <div className="max-h-64 space-y-1.5 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none">
+                            {getTables.length ? [...getTables].sort((a, b) => a.tableno - b.tableno).map((table, index) => (
+                                <motion.div
+                                    key={table.id}
+                                    initial={{ y: 12, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.4) }}
+                                    className="w-full sticky top-0 "
+                                >
+                                    <Tables handlesTableState={handlesTableState} table={table} />
+                                </motion.div>
+                            )) : <p className="rounded-xl bg-[#FFFCFA] p-4 text-sm text-[#8A7971]">No tables found.</p>}
+                        </div>
+                    </section>
+
+                    <section aria-labelledby="transactions-heading" className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                            <div>
+                                <h2 id="transactions-heading" className="text-lg font-bold text-[#2F2724]">Live transactions</h2>
+                                <p className="mt-1 text-xs text-[#8A7971]">Recent payment activity</p>
+                            </div>
+                            <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]"><CreditCard size={20} /></span>
+                        </div>
+                        <div className="max-h-64 space-y-2 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none">
+                            <Transactions />
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </div>
+    ) : (
+        <div className="flex min-h-[60vh] w-full items-center justify-center px-4 py-12">
+            <LatticeLoader
+                className="min-h-29"
+                status="working"
+                label="Loading Today's Key Performance Indicators..."
+                doneLabel="Done in"
+                errorLabel="Failed after"
+                pattern="arrow"
+                grid={3}
+                shape="round"
+                doneColor="#22c55e"
+                errorColor="#ef4444"
+                cellSize={6}
+                gap={2}
+                fontSize={14}
+                step={90}
+                idleOpacity={0.15}
+                glow={false}
+                glowColor="#f5f5f5"
+                showTimer
+                color="#A13924"
+            />
+        </div>
+    );
 }
 
 
@@ -239,17 +318,18 @@ function Tables({handlesTableState , table}:func){
             {table ? (
                 <div
                     key={table.tableno}
-                    className="flex items-center justify-between rounded-xl border border-gray-200 bg-[#FAFAF9] p-3">
-                    <span className="font-semibold text-gray-700">
+                    className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-[#F0E8E3] bg-[#FFFCFA] p-3">
+                    <span className="min-w-0 truncate text-sm font-semibold text-[#413A34]">
                         Table {table.tableno}
                     </span>
-                    <span className={`rounded-full px-2 py-1 text-xs font-medium ${statusStyles[table.status]}`}>
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${statusStyles[table.status]}`}>
                         {table.status}
                     </span>
                     <select
                         name="tableStatus"
                         value={table.status}
-                        className="w-35 rounded-xl border border-[#DEC0BA] bg-[#FAFAF9]"
+                        aria-label={`Change status for table ${table.tableno}`}
+                        className="w-28 shrink-0 rounded-lg border border-[#E6D7D1] bg-white px-2 py-1.5 text-xs text-[#554740] outline-none focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10"
                         onChange={(e) => handleStatechange(e.target.value as TableStatus)} >
                         {allStatus.map((status) => (
                             <option key={status} value={status}>
@@ -281,10 +361,10 @@ function Transactions(){
         
         },[defaultResturant]);
     return (
-        <div className="flex flex-col gap-3 h-85">
+        <div className="flex flex-col gap-3">
             {payment?.length ? [...payment]
                 .sort((a, b) => new Date(b.createdat).getTime() - new Date(a.createdat).getTime())
-                .map((transaction) => {
+                .map((transaction ,index) => {
                     const isPaid = transaction.status.toLowerCase() === "paid";
                     const amount = Number(transaction.amount);
                     const formattedAmount = Number.isFinite(amount) ? amount.toFixed(2) : "0.00";
@@ -294,12 +374,15 @@ function Transactions(){
                         : accountNumber;
 
                     return (
-                        <span key={transaction.id} className="rounded-xl border border-[#E8E2DA] bg-[#FFFCF8] p-3 shadow-sm ">
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="flex min-w-0 items-center gap-2">
-                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#F3E5DE] text-[#A13924]">
-                                        <CreditCard size={16} strokeWidth={2.2} />
-                                    </div>
+                            <motion.div
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.4) }} key={transaction.id} className=" sticky top-0 rounded-xl border border-[#F0E8E3] bg-[#FFFCFA] p-3 shadow-sm">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex min-w-0 items-center gap-2">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#F3E5DE] text-[#A13924]">
+                                            <CreditCard size={16} strokeWidth={2.2} />
+                                        </div>
                                     <div className="min-w-0">
                                         <p className="truncate text-xs font-semibold text-[#27221E]">{transaction.paymentMethode}</p>
                                         <p className="truncate text-[10px] text-[#8A8179]">{transaction.transectionId ?? "No transaction ID"}</p>
@@ -320,7 +403,7 @@ function Transactions(){
                                     <p className="font-medium text-[#413A34]">{maskedAccount}</p>
                                 </div>
                             </div>
-                        </span>
+                        </motion.div>
                     );
                 }) : "No Data Found"}
         </div>

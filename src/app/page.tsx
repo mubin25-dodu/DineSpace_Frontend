@@ -15,7 +15,7 @@ import Counter from "@/components/Counter/Counter";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
 import  DinespaceLogo  from "@/components/DinespaceLogo";
 import TextType from "@/components/TextType ";
-
+import { motion } from "framer-motion";
 interface LoginResponse {
   role: string;
   email: string;
@@ -106,17 +106,28 @@ export default function Home() {
     }
   };
 
+  const fadeUp = {
+    hidden: { opacity: 0, y: 28 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
   return (
 
 
     <main className="min-h-screen bg-[#FBF9F6] text-[#171717]">
-      <header className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between gap-3 bg-[#FBF9F6]/95 px-4 py-4 backdrop-blur-md sm:px-6 sm:py-5 lg:px-10">
+      <motion.header initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5 }} className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between gap-3 bg-[#FBF9F6]/95 px-4 py-4 backdrop-blur-md sm:px-6 sm:py-5 lg:px-10">
        <DinespaceLogo/>
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
-          <button
+          <motion.button
             type="button"
             onClick={handleDummyLogin}
             disabled={isLoggingIn}
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#DEC0BA] bg-white px-2.5 py-2 text-xs font-semibold text-[#A13924] shadow-xs transition hover:bg-[#FDF7F5] disabled:cursor-not-allowed disabled:opacity-60 sm:px-3.5 sm:text-sm"
             title="Instant login as Demo Restaurant Owner (mubin9516@gmail.com)"
           >
@@ -131,24 +142,26 @@ export default function Home() {
                 <span>Dummy Login</span>
               </>
             )}
-          </button>
+          </motion.button>
           <Link
             href="/auth"
             className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] sm:block sm:px-4 sm:text-sm"
           >
             Restaurant owner?
           </Link>
-          <Link
-            href="/user"
-            className="rounded-lg bg-[#A13924] px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-[#842F1E] focus:outline-none focus:ring-2 focus:ring-[#A13924]/20 sm:px-4 sm:text-sm"
-          >
-            <span className="sm:hidden">Browse</span>
-            <span className="hidden sm:inline">Browse restaurants</span>
-          </Link>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link
+              href="/user"
+              className="rounded-lg bg-[#A13924] px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-[#842F1E] focus:outline-none focus:ring-2 focus:ring-[#A13924]/20 sm:px-4 sm:text-sm"
+            >
+              <span className="sm:hidden">Browse</span>
+              <span className="hidden sm:inline">Browse restaurants</span>
+            </Link>
+          </motion.div>
         </div>
-      </header>
+      </motion.header>
 
-      <div className="mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
+      <motion.div transition={{ duration: 0.4 , delay: 0.1 }} initial={{ y: -80 }}  animate={{ y: 0 }} className="mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="flex items-center gap-3 rounded-2xl border border-[#E7BE78] bg-[#FFF4D8] px-4 py-3 text-sm text-[#76511A] shadow-sm sm:px-5">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F2C66D] text-[#76511A]" aria-hidden="true">
             <GitBranch size={16} />
@@ -164,7 +177,7 @@ export default function Home() {
             View plan
           </button>
         </div>
-      </div>
+      </motion.div>
 
  
 
@@ -233,19 +246,23 @@ export default function Home() {
             </div>
           )}
 
-          <div className="mt-8 grid max-w-md grid-cols-1 gap-3 border-t border-[#EAD8D2] pt-5 text-sm text-[#735B53] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6">
-            <span className="flex items-center gap-2">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            className="mt-8 grid max-w-md grid-cols-1 gap-3 border-t border-[#EAD8D2] pt-5 text-sm text-[#735B53] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6"
+          >
+            <motion.span initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.45 }} className="flex items-center gap-2">
               <CircleCheck size={17} className="text-[#A13924]" />
               Browse the menu yourself
-            </span>
-            <span className="flex items-center gap-2">
+            </motion.span>
+            <motion.span initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.32, duration: 0.45 }} className="flex items-center gap-2">
               <CircleCheck size={17} className="text-[#A13924]" />
               Order without the wait
-            </span>
-          </div>
+            </motion.span>
+          </motion.div>
         </div>
 
-        <div className="relative mt-2 min-w-0 sm:mt-0 flex">
+        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }} className="relative mt-2 min-w-0 sm:mt-0 flex">
           {/* <div className="absolute -inset-4 rounded-4xl bg-[#EFD8CF] opacity-60 blur-2xl" />
           <div className="relative overflow-hidden rounded-4xl border-8 border-white bg-white shadow-2xl">
             <Image
@@ -307,10 +324,10 @@ export default function Home() {
   showTimer
   color="#A13924"
 />   </span> }
-        </div>
+        </motion.div>
       </section>
 
-      <section className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}  className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="mb-6 flex justify-center gap-2" role="tablist" aria-label="Choose a product flow">
             <button
@@ -388,11 +405,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="border-t border-[#EAD8D2] bg-white/60">
+      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }}  className="border-t border-[#EAD8D2] bg-white/60">
         <div className="mx-auto grid max-w-7xl gap-5 px-6 py-16 sm:grid-cols-3 lg:px-10">
-          <div className="rounded-2xl border border-[#EAD8D2] bg-white p-6">
+          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <Utensils className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For diners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
@@ -402,8 +419,8 @@ export default function Home() {
             <Link href="/user" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
               Start exploring <ArrowRight size={16} />
             </Link>
-          </div>
-          <div className="rounded-2xl border border-[#EAD8D2] bg-white p-6">
+          </motion.div>
+          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <ChefHat className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For restaurant owners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
@@ -413,19 +430,19 @@ export default function Home() {
             <Link href="/auth" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
               Owner sign in <ArrowRight size={16} />
             </Link>
-          </div>
-          <div className="rounded-2xl border border-[#EAD8D2] bg-white p-6">
+          </motion.div>
+          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <ClipboardList className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">One connected space</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
               Guests get a faster, more independent experience while restaurant teams spend less
               time taking repetitive requests and more time delivering great hospitality.
             </p>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="border-t border-[#EAD8D2] bg-[#28211E] text-[#FFF9F3]">
+      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="border-t border-[#EAD8D2] bg-[#28211E] text-[#FFF9F3]">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-10">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#F2C08D]">About this website</p>
@@ -454,15 +471,21 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {showProjectPlan && (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#171717]/70 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-6"
           role="presentation"
           onClick={() => setShowProjectPlan(false)}
         >
-          <section
+          <motion.section
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-plan-title"
@@ -514,15 +537,17 @@ export default function Home() {
               </ol>
             </div>
 
-            <button
+            <motion.button
               type="button"
               onClick={() => setShowProjectPlan(false)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="mt-7 w-full rounded-xl bg-[#A13924] px-5 py-3 font-semibold text-white transition hover:bg-[#842F1E] sm:w-auto"
             >
               Back to DineSpace
-            </button>
-          </section>
-        </div>
+            </motion.button>
+          </motion.section>
+        </motion.div>
       )}
 
       <footer className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-7 text-sm text-[#8B7168] sm:flex-row sm:items-center sm:justify-between lg:px-10">

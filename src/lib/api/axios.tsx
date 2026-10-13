@@ -11,7 +11,7 @@ export const api = axios.create({
 
 api.interceptors.request.use((config) => {
 if (typeof window !== "undefined") {
-const token = localStorage.getItem("accesstoken");
+const token = document.cookie.split("; ").find((row) => row.startsWith("accesstoken="))?.split("=")[1] || "";
 // console.log("token"+token)
 if (token) {
 config.headers.Authorization = "Bearer " + token;

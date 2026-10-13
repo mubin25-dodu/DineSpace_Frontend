@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ResturantNav from "./ResturantNav";
+import { motion } from "framer-motion";
 
 interface OwnerNavProps {
     handleDefaultResturant: (id:string)=> void;
@@ -41,12 +42,11 @@ export default function OwnerNav({ handleDefaultResturant , socConnect}: OwnerNa
     <div className="fixed left-0 top-0 z-30 flex h-full min-w-50 w-[14%] flex-col items-start gap-2 border-r-2 border-[#DEC0BA] bg-[#F5F3F0] p-7 font-semibold text-[#646468]" >
     <div> <Image src="/Header_margin.svg" alt="logo" className="ml-7 mt-5 scale-140 " width={2000} height={10000} quality={100}/></div> 
 
-    {navItems.map((item)=><Link
-        key={item.href}
+    {navItems.map((item ,index)=><motion.span key={item.href} className="w-full" initial={{ x: -220 * index }} animate={{  x: 0 }} transition={{ delay: 0.1 * index, duration: 0.45 ,type:"spring" }}><Link
         href={item.href}
         type="button"
         className={`${(item.href === "/home" ? pathname === item.href : pathname.startsWith(item.href)) ? "bg-[#EAE8E5] border-r-5 border-[#A13924] text-[#A13924] ml-2" : ""} hover:bg-[#EAE8E5] rounded hover:border-r-5 hover:border-[#A13924] hover:text-[#A13924] hover:ml-2 w-full p-2 h-auto transition-all duration-200 flex flex-row gap-2 items-center cursor-pointer`}
-    > <item.icon size={20} strokeWidth={2} aria-hidden="true" /> {item.name}</Link>
+    > <item.icon size={20} strokeWidth={2} aria-hidden="true" /> {item.name}</Link></motion.span>
     )}
     </div>
     </>

@@ -54,7 +54,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }){
     {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
     {servererror && <ServerError error={servererror} setservererror={() => setservererror}  />}
    
-    <main className="mx-auto min-h-[100vh] w-full max-w-7xl overflow-clip md:px-0 lg:px-10">{children}</main>
+    <main className="mx-auto min-h-[100vh] w-full max-w-7xl overflow-clip md:px-0 lg:px-10 scrollbar-none">{children}</main>
     <UserFooter />
     </userContext.Provider>
     </div>

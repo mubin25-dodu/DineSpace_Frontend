@@ -1,6 +1,5 @@
 import { ScrollText } from "lucide-react";
-import { ReactNode } from "react";
-import { CookingPot, HandCoins, RotateCwFadingClock, Table, Utensils } from "lucide-react";
+import type { ReactNode } from "react";
 
 
 interface data{
@@ -23,20 +22,19 @@ export default function KPICard(params:data){
         chunksArray.unshift(tempStr.slice(-3));
         tempStr = tempStr.slice(0, -3);
     }
-    console.log("Parsed Chunks:", chunksArray);
     }
 
     const isLoading = params.amount === undefined || params.amount === null;
 
     return (
     <>
-     <div className="relative z-0 w-fit h-fit min-h-28 overflow-hidden rounded-2xl border border-[#DEC0BA] p-5 shadow flex flex-col justify-between">
+     <div className="relative z-0 h-fit w-fit min-h-28 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-5 shadow flex flex-col justify-between">
         <div className="flex flex-row justify-between"><span className="w-fit text-gray-600 text-[16px]">{params.title}</span> <span className="rounded-4xl ml-2 p-1 h-fit w-fit text-[#812a19]"> {params.icon ??<ScrollText />}</span>
         </div>
         <span className=" flex flex-row gap-1">
-        {isLoading ? <span className="font-mono  text-[20px] z-0"></span> : params.amount && params.amount >= 999 ? <span> {chunksArray.map((e, index)=> <span key={`${params.title}-${index}`} className=" countdown font-mono text-[20px]"> 
+        {isLoading ? <span className="font-mono  text-[20px] z-0"></span> : params.amount && params.amount >= 999 ? <span> {chunksArray.map((e, index)=> <span key={`${params.title}-${index}`} className=" countdown font-mono text-[20px]">
         <span style={{"--value":e, "--digits":e.toLocaleString().length} as React.CSSProperties  } aria-live="polite" aria-label={e.toString()}>{e} </span>
-        </span>) }</span> : <span className="countdown font-mono text-[20px] -z-0"> 
+        </span>) }</span> : <span className="countdown font-mono text-[20px] -z-0">
         <span style={{"--value":params.amount, "--digits":params.amount &&  params.amount.toLocaleString().length} as React.CSSProperties  } aria-live="polite" aria-label={params.amount === undefined ? undefined : String(params.amount)}>{params.amount} </span>
         </span>
         }<span>{params.subtitle}</span>
