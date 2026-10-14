@@ -1,5 +1,6 @@
 import { ScrollText } from "lucide-react";
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 
 
 interface data{
@@ -28,7 +29,7 @@ export default function KPICard(params:data){
 
     return (
     <>
-     <div className="relative z-0 h-fit w-fit min-h-28 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-5 shadow flex flex-col justify-between">
+     <motion.div className="relative z-0 h-fit w-fit min-h-28 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-5 shadow flex flex-col justify-between">
         <div className="flex flex-row justify-between"><span className="w-fit text-gray-600 text-[16px]">{params.title}</span> <span className="rounded-4xl ml-2 p-1 h-fit w-fit text-[#812a19]"> {params.icon ??<ScrollText />}</span>
         </div>
         <span className=" flex flex-row gap-1">
@@ -40,7 +41,7 @@ export default function KPICard(params:data){
         }<span>{params.subtitle}</span>
         </span>
         {/* <div className="text-black text-[30px]">{params.amount}</div> */}
-    </div>
+    </motion.div>
     </>
     )
 }

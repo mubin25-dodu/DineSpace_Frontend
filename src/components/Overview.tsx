@@ -163,6 +163,9 @@ useEffect(()=>{
             <section aria-label="Restaurant performance" className="flex flex-wrap items-stretch gap-6 mt-0 mb-2">
                 {kpicards?.length ? kpicards.map((card, index) => (
                     <motion.div
+                        drag
+                        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                        dragElastic={0.2}
                         key={card.title}
                         initial={{ y: 16, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}

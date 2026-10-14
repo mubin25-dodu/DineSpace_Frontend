@@ -52,7 +52,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
 
     const orderBdTime = new Date(getOrders.OrderTime);
     const minutesAgo = Math.floor(
-        (Date.now() - orderBdTime.getTime()) / (1000 * 60)
+        (Date.now() - orderBdTime.getTime())
     );
 
 
