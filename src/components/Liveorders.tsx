@@ -51,8 +51,14 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
     const {setpopup} = useContext(resturantContext);
 
     const orderBdTime = new Date(getOrders.OrderTime);
+    const formattedOrderTime = orderBdTime.toLocaleTimeString("en-BD", {
+        timeZone: "Asia/Dhaka",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+    });
     const minutesAgo = Math.floor(
-        (Date.now() - orderBdTime.getTime())
+        (Date.now() - orderBdTime.getTime()) / (1000 * 60)
     );
 
 
@@ -105,7 +111,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
             <div className="flex items-center justify-between gap-1.5 text-[11px] text-[#8A7971]">
                 <div className="font-semibold text-[#554740]">Table {getOrders.table.tableno}</div>
                 <div>#{getOrders.id.slice(30)}</div>
-                <div>{minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago</div>
+                <div>{formattedOrderTime} BD · {minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago</div>
             </div>
             <div className="truncate text-sm font-bold text-[#2F2724]">{getOrders.customerName}</div>
             <div className="flex h-fit flex-wrap gap-1.5">
