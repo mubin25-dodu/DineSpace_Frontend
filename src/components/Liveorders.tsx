@@ -134,7 +134,7 @@ export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
             <div className="flex items-center justify-between gap-1.5 text-[11px] text-[#8A7971]">
                 <div className="font-semibold text-[#554740]">Table {getOrders.table.tableno}</div>
                 <div>#{getOrders.id.slice(30)}</div>
-                <div>{new Date(getOrders.OrderTime).getHours()}: {new Date(getOrders.OrderTime).getMinutes()} BD · {timeSinceOrder}</div>
+                <div>{new Date(orderBdTime).toLocaleTimeString("en-BD", { timeZone: "Asia/Dhaka" })} BD · {timeSinceOrder}</div>
             </div>
             <div className="truncate text-sm font-bold text-[#2F2724]">{getOrders.customerName}</div>
             <div className="flex h-fit flex-wrap gap-1.5">
