@@ -3,7 +3,7 @@ import { resturantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
 import { Order } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 interface params{
@@ -13,6 +13,18 @@ interface params{
 
 
 export  default  function LiveOrders({sendorders , handleChange} :params){
+    const [clientNow, setClientNow] = useState<number | null>(null);
+
+    useEffect(() => {
+        const timeout = window.setTimeout(() => setClientNow(Date.now()), 0);
+        const interval = window.setInterval(() => setClientNow(Date.now()), 60_000);
+
+        return () => {
+            window.clearTimeout(timeout);
+            window.clearInterval(interval);
+        };
+    }, []);
+
     // console.log("live orders");
     // console.log(sendorders);
 
@@ -22,16 +34,16 @@ export  default  function LiveOrders({sendorders , handleChange} :params){
         <div className="grid h-full min-w-[660px] grid-cols-3 gap-2 p-2 sm:p-3">
             <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
                 <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>New</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Pending).length}</span></div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Pending ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler = {handleChange} getOrders={e} /> </span>  :"")}
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Pending ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler = {handleChange} getOrders={e} clientNow={clientNow} /> </span>  :"")}
             </div>
             <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
                 <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>Preparing</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Preparing).length}</span></div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Preparing ? <span key={e.id} className = "sticky top-10"> <OrderCards  handler={handleChange} getOrders={e} /> </span>:"")}
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Preparing ? <span key={e.id} className = "sticky top-10"> <OrderCards  handler={handleChange} getOrders={e} clientNow={clientNow} /> </span>:"")}
             </div> 
             
             <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden rounded-xl bg-[#F8F5F2] p-2 scrollbar-none">
                 <div className="sticky top-0 z-10 mb-1 flex items-center justify-between rounded-lg bg-[#F8F5F2] px-2 py-2 text-sm font-bold text-[#352C29]"><span>Ready</span><span className="rounded-full bg-white px-2 py-0.5 text-xs text-[#75645D]">{sendorders.filter((order) => order.OrderStatus === OrderStatus.Ready).length}</span></div>
-                {sendorders.map(e=> e.OrderStatus === OrderStatus.Ready ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler ={handleChange} getOrders={e} /> </span> :"")}
+                {sendorders.map(e=> e.OrderStatus === OrderStatus.Ready ?  <span className = "sticky top-10" key={e.id}>  <OrderCards  handler ={handleChange} getOrders={e} clientNow={clientNow} /> </span> :"")}
 
             </div>
         </div>
@@ -43,9 +55,10 @@ export  default  function LiveOrders({sendorders , handleChange} :params){
 interface OrderCardsProps {
     handler: (id:string , state:OrderStatus , payment?:PaymentStatus)=>void;
     getOrders: Order;
+    clientNow: number | null;
 }
 
-export function  OrderCards({ handler , getOrders}: OrderCardsProps){
+export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
     // console.log(getOrders);
     // console.log("get orders");
     const {setpopup} = useContext(resturantContext);
@@ -57,9 +70,14 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
         minute: "2-digit",
         hour12: true,
     });
-    const minutesAgo = Math.floor(
-        (Date.now() - orderBdTime.getTime()) / (1000 * 60)
-    );
+    const minutesAgo = clientNow === null
+        ? null
+        : Math.floor((clientNow - orderBdTime.getTime()) / (1000 * 60));
+    const timeSinceOrder = minutesAgo === null
+        ? "…"
+        : minutesAgo < 1
+            ? "Just now"
+            : `${minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago`;
 
 
     // console.log("check 1"+prevState);
@@ -111,7 +129,7 @@ export function  OrderCards({ handler , getOrders}: OrderCardsProps){
             <div className="flex items-center justify-between gap-1.5 text-[11px] text-[#8A7971]">
                 <div className="font-semibold text-[#554740]">Table {getOrders.table.tableno}</div>
                 <div>#{getOrders.id.slice(30)}</div>
-                <div>{formattedOrderTime} BD · {minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago</div>
+                <div>{formattedOrderTime} BD · {timeSinceOrder}</div>
             </div>
             <div className="truncate text-sm font-bold text-[#2F2724]">{getOrders.customerName}</div>
             <div className="flex h-fit flex-wrap gap-1.5">
