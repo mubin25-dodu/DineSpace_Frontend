@@ -72,7 +72,7 @@ export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
     });
     const minutesAgo = clientNow === null
         ? null
-        : Math.floor((clientNow - orderBdTime.getTime()) / (1000 * 60));
+        : Math.floor((clientNow - new Date(formattedOrderTime).getTime()) / (1000 * 60));
     const timeSinceOrder = minutesAgo === null
         ? "…"
         : minutesAgo < 1
