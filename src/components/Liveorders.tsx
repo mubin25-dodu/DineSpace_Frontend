@@ -62,14 +62,17 @@ export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
     // console.log(getOrders);
     // console.log("get orders");
     const {setpopup} = useContext(resturantContext);
-
     const orderBdTime = new Date(getOrders.OrderTime);
-    const formattedOrderTime = orderBdTime.toLocaleTimeString("en-BD", {
+    console.log("orderBdTime" + typeof orderBdTime);
+    const formattedOrderTime = new Date(orderBdTime).toLocaleDateString("en-BD", {
         timeZone: "Asia/Dhaka",
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
     });
+    // console.log("formattedOrderTime" + typeof formattedOrderTime);
+    // console.log(formattedOrderTime);
+    // const orderTime = new Date(formattedOrderTime);
     const minutesAgo = clientNow === null
         ? null
         : Math.floor((clientNow - new Date(formattedOrderTime).getTime()) / (1000 * 60));
@@ -79,6 +82,7 @@ export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
             ? "Just now"
             : `${minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago`;
 
+            // console.log("timeSinceOrder" + timeSinceOrder);
 
     // console.log("check 1"+prevState);
  const handleChange = async (e:OrderStatus , declined?:boolean , payment?:PaymentStatus) =>  {
