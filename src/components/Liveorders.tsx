@@ -63,26 +63,31 @@ export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
     // console.log("get orders");
     const {setpopup} = useContext(resturantContext);
     const orderBdTime = new Date(getOrders.OrderTime);
-    console.log("orderBdTime" + typeof orderBdTime);
-    const formattedOrderTime = new Date(orderBdTime).toLocaleDateString("en-BD", {
+    const formattedOrderTime = orderBdTime.toLocaleTimeString("en-BD", {
         timeZone: "Asia/Dhaka",
-        hour: "numeric",
+        hour: "2-digit",
         minute: "2-digit",
-        hour12: true,
     });
+    // console.log("orderBdTime" + typeof orderBdTime);
     // console.log("formattedOrderTime" + typeof formattedOrderTime);
     // console.log(formattedOrderTime);
     // const orderTime = new Date(formattedOrderTime);
+    // console.log("my time"+ new Date().toLocaleTimeString());
+
     const minutesAgo = clientNow === null
         ? null
-        : Math.floor((clientNow - new Date(formattedOrderTime).getTime()) / (1000 * 60));
+        : Math.floor(Number(new Date().toLocaleTimeString("en-BD", {
+        timeZone: "Asia/Dhaka",
+        minute: "2-digit",
+    })) - new Date(orderBdTime).getMinutes());
     const timeSinceOrder = minutesAgo === null
         ? "…"
         : minutesAgo < 1
             ? "Just now"
             : `${minutesAgo >= 60 ? `${Math.floor(minutesAgo / 60)}h` : `${minutesAgo}m`} ago`;
 
-            // console.log("timeSinceOrder" + timeSinceOrder);
+            // console.log("time since order");
+            // console.log(timeSinceOrder);
 
     // console.log("check 1"+prevState);
  const handleChange = async (e:OrderStatus , declined?:boolean , payment?:PaymentStatus) =>  {
