@@ -407,9 +407,9 @@ export default function Home() {
         </div>
       </motion.section>
 
-      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }}  className="border-t border-[#EAD8D2] bg-white/60">
+      <motion.section initial={{ y: 20 }} whileInView={{ y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{duration:0.5}} className="border-t border-[#EAD8D2] bg-white/60">
         <div className="mx-auto grid max-w-7xl gap-5 px-6 py-16 sm:grid-cols-3 lg:px-10">
-          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
+          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <Utensils className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For diners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
@@ -420,7 +420,7 @@ export default function Home() {
               Start exploring <ArrowRight size={16} />
             </Link>
           </motion.div>
-          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
+          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <ChefHat className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For restaurant owners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
@@ -431,7 +431,7 @@ export default function Home() {
               Owner sign in <ArrowRight size={16} />
             </Link>
           </motion.div>
-          <motion.div whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
+          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <ClipboardList className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">One connected space</h2>
             <p className="mt-2 leading-7 text-[#735B53]">

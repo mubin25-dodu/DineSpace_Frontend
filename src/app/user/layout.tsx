@@ -40,7 +40,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }){
         localStorage.setItem("mybowl", JSON.stringify(myBowl));
     }, [bowlHydrated, myBowl]);
 
-    return <div className="h-svh overflow-y-auto no-scrollbar">
+    return <div className="min-h-svh">
     <userContext.Provider value={{setActiveLink, setNavinfo , setPopup , setservererror , setbowl , myBowl}}  >
     <div className=" sticky top-0 z-10 md:hidden">
         <motion.div>
@@ -54,7 +54,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }){
     {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
     {servererror && <ServerError error={servererror} setservererror={() => setservererror}  />}
    
-    <main className="mx-auto min-h-[100vh] w-full max-w-7xl overflow-clip md:px-0 lg:px-10 scrollbar-none">{children}</main>
+    <main className="mx-auto min-h-screen w-full max-w-7xl overflow-clip md:px-0 lg:px-10">{children}</main>
     <UserFooter />
     </userContext.Provider>
     </div>

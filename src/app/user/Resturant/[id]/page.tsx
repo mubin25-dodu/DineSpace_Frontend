@@ -5,11 +5,11 @@ import { userContext } from "@/lib/context/Context";
 import { MenuItem, OrderItem, Restaurant } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { useParams } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import {  Delete, MapPinCheckInside, Minus, Plus, Shrink, Trash } from "lucide-react";
 import Link from "next/link";
 import UsersLoading from "@/components/userComponents/Loading";
-import { motion, vh } from "motion/react";
+import { motion } from "motion/react";
 import CountUp from "@/components/countUp/countUp";
 
 export default function Resturants(params:{id:string}){
@@ -22,6 +22,10 @@ export default function Resturants(params:{id:string}){
     const [isCartExpanded, setIsCartExpanded] = useState(false);
     const [error, setError] = useState(false);
     
+
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }, [param.id]);
 
     useEffect(()=>{
         if(!resturent){return}
@@ -83,7 +87,7 @@ export default function Resturants(params:{id:string}){
     return(
         <>
         {
-        resturent? <div className="mx-auto flex w-full min-h-[100vh] max-w-7xl flex-col scroll-smooth duration-200">
+        resturent? <div className="mx-auto flex w-full min-h-screen max-w-7xl flex-col scroll-smooth duration-200">
             <Image className="h-120 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
             ? resturent.coverFile?.Path?.replace(/\\/g, "/")
             : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant_cover.png"} width={1000} height={600} alt="cover"></Image>
