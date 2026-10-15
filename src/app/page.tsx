@@ -4,7 +4,7 @@ import Image from "next/image";
 import FlexCarousel from "@/components/FlexCarousel/FlexCarousel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ChefHat, CircleCheck, ClipboardList, GitBranch, Loader2, LogIn, Sparkles, Store, Utensils } from "lucide-react";
+import { ArrowRight, ChefHat, CircleCheck, ClipboardList, Fullscreen, GitBranch, Loader2, LogIn, Sparkles, Store, Utensils } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
@@ -13,6 +13,7 @@ import Imagepath from "@/lib/algorithms/Imagepath";
 import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
 import Counter from "@/components/Counter/Counter";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
+import ShapeGrid from "@/components/ShapeGrid/ShapeGrid";
 import  DinespaceLogo  from "@/components/DinespaceLogo";
 import TextType from "@/components/TextType ";
 import { motion } from "framer-motion";
@@ -119,8 +120,13 @@ export default function Home() {
 
 
     <main className="min-h-screen bg-[#FBF9F6] text-[#171717]">
-      <motion.header initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5 }} className="sticky top-0 z-40 mx-auto flex w-full max-w-7xl items-center justify-between gap-3 bg-[#FBF9F6]/95 px-4 py-4 backdrop-blur-md sm:px-6 sm:py-5 lg:px-10">
-       <DinespaceLogo/>
+      <motion.header
+        initial={{ opacity: 0, scale: .99 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ ease: "easeInOut" }}
+        className="fixed inset-x-4 top-3 z-50 mx-auto flex w-auto max-w-7xl items-center justify-between gap-3 rounded-2xl border border-[#DEC0BA]/15 bg-[#ffff]/95 px-3 py-3  backdrop-blur-xl transition-all duration-400 sm:px-6 sm:py-4 lg:px-6"
+      >
+        <DinespaceLogo />
         <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
           <motion.button
             type="button"
@@ -160,8 +166,39 @@ export default function Home() {
           </motion.div>
         </div>
       </motion.header>
-
-      <motion.div transition={{ duration: 0.4 , delay: 0.1 }} initial={{ y: -80 }}  animate={{ y: 0 }} className="mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div
+        className="relative isolate min-h-screen w-full bg-cover bg-center pt-20 sm:pt-24"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)), url('/dinespace-landing.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <ShapeGrid
+          shape="square"
+          direction="diagonal"
+          lineColor="#2a2734"
+          hoverColor="#ffffff"
+          hoverFillColor="#ffffff"
+          fillOpacity={0.15}
+          cellSize={40}
+          speed={0.5}
+          tiltX={0}
+          tiltY={0}
+          rainbow={false}
+          lineWidth={1}
+          radius={1.5}
+          trail={0.6}
+          glow={0.35}
+          twinkle={0}
+          fade={1}
+          clickCascade
+          intro
+        />
+      </div>
+      <motion.div transition={{ duration: 0.4 , delay: 0.1 }} initial={{ y: -80 }}  animate={{ y: 0 }} className="relative z-10 mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="flex items-center gap-3 rounded-2xl border border-[#E7BE78] bg-[#FFF4D8] px-4 py-3 text-sm text-[#76511A] shadow-sm sm:px-5">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F2C66D] text-[#76511A]" aria-hidden="true">
             <GitBranch size={16} />
@@ -179,22 +216,22 @@ export default function Home() {
         </div>
       </motion.div>
 
- 
+      {/* <Image src="/dinespace-landing.png" alt="DineSpace Landing" width={2000} height={600} className="mx-auto mt-8 max-w-full rounded-lg shadow-lg w-[100vw] h-[100vh]" /> */}
 
-      <section className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-4 pb-14 pt-8 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-28 lg:pt-16">
+      <section className="relative z-10 mx-auto flex min-h-[70svh] max-w-7xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-10">
 
         
-        <div className="min-w-0">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#F1D8D0] bg-[#FDF7F5] px-3 py-1.5 text-xs font-medium text-[#A13924] sm:mb-6 sm:text-sm">
-            <span className="h-2 w-2 rounded-full bg-[#C86A52]" />
+        <div className="flex min-h-[70svh] w-full flex-col items-center sm:min-h-0">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#FFD18A]/50 bg-[#29140F]/70 px-4 py-2 text-xs font-semibold text-[#FFE0A8] shadow-lg backdrop-blur-sm sm:mb-6 sm:text-sm">
+            <span className="h-2 w-2 rounded-full bg-[#FFB454]" />
             Restaurant ordering, automated
           </div>
-          <h1 className="max-w-xl text-[2.75rem] font-bold leading-[1.08] tracking-tight text-[#171717] sm:text-6xl">
+          <h1 className="mx-auto max-w-4xl text-[2.75rem] font-bold leading-[1.08] tracking-tight text-[#FFF9F0] sm:text-6xl">
             Order what you want.{" "}
-            <span className="text-[#A13924]">Without waiting for a waiter.</span>
+            <span className="text-[#FFC66E]">Without waiting for a waiter.</span>
           </h1>
 
-          <div className="mt-6 flex w-fit max-w-lg items-center gap-4 rounded-2xl border border-[#EAD8D2] bg-white/80 px-4 py-3 shadow-sm sm:mt-7 sm:px-5">
+          <div className="mt-6 flex w-fit max-w-lg items-center gap-4 rounded-2xl border border-white/25 bg-[#24130F]/75 px-4 py-3 text-left text-white shadow-xl backdrop-blur-md sm:mt-7 sm:px-5">
            
             <span className="flex min-w-0 items-center gap-3">
               <span className="shrink-0" aria-hidden="true">
@@ -203,15 +240,15 @@ export default function Home() {
                   fontSize={28}
                   padding={4}
                   gap={1}
-                  textColor="#A13924"
+                  textColor="#FFC66E"
                   fontWeight={800}
                 />
               </span>
               <span className="min-w-0">
-                <span className="block text-sm font-semibold text-[#291812] sm:text-base">
+                <span className="block text-sm font-semibold text-[#FFF9F0] sm:text-base">
                   Restaurants are currently using DineSpace
                 </span>
-                <span className="mt-0.5 block text-xs leading-5 text-[#735B53] sm:text-sm">
+                <span className="mt-0.5 block text-xs leading-5 text-[#E8D9D0] sm:text-sm">
                   To automate their ordering experience.
                 </span>
                 <span className="sr-only">{resturants?.length ?? 0} restaurants on DineSpace.</span>
@@ -223,10 +260,10 @@ export default function Home() {
             table, see what is special today, and place your order whenever you are ready.
             No repeated calls, no waiting just to ask a question.
           </p> */}
-          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
+          <div className="order-last mt-auto flex w-full flex-col justify-center gap-3 pt-7 sm:order-none sm:mt-8 sm:flex-row sm:flex-wrap sm:pt-0">
             <Link
               href="/user"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#A13924] px-6 py-3.5 font-semibold text-white transition hover:bg-[#842F1E] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#D95638] px-6 py-3.5 font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-[#BD452C] sm:w-auto"
             >
               Explore restaurants
               <ArrowRight size={18} />
@@ -234,7 +271,7 @@ export default function Home() {
             
             <Link
               href="/auth"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDBDB3] bg-white px-6 py-3.5 font-semibold text-[#A13924] transition hover:bg-[#FFF3EE] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/70 bg-[#FFF9F0] px-6 py-3.5 font-semibold text-[#8B321F] transition hover:bg-[#FFE7D8] sm:w-auto"
             >
               Manage your restaurant
             </Link>
@@ -249,14 +286,14 @@ export default function Home() {
           <motion.div
             initial="hidden"
             animate="visible"
-            className="mt-8 grid max-w-md grid-cols-1 gap-3 border-t border-[#EAD8D2] pt-5 text-sm text-[#735B53] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6"
+            className="mt-8 grid w-full max-w-2xl grid-cols-1 justify-items-center gap-3 border-t border-white/30 pt-5 text-sm text-[#FFF1E5] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6"
           >
             <motion.span initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.45 }} className="flex items-center gap-2">
-              <CircleCheck size={17} className="text-[#A13924]" />
+              <CircleCheck size={17} className="text-[#FFC66E]" />
               Browse the menu yourself
             </motion.span>
             <motion.span initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.32, duration: 0.45 }} className="flex items-center gap-2">
-              <CircleCheck size={17} className="text-[#A13924]" />
+              <CircleCheck size={17} className="text-[#FFC66E]" />
               Order without the wait
             </motion.span>
           </motion.div>
@@ -278,7 +315,7 @@ export default function Home() {
               <p className="mt-1 text-lg font-semibold">Good food is better together.</p>
             </div>
           </div> */}
-  {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-155">
+  {/* {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-155">
   <FlexCarousel
     items={items}
     preset="liquid"
@@ -323,9 +360,11 @@ export default function Home() {
   glowColor="#f5f5f5"
   showTimer
   color="#A13924"
-/>   </span> }
+/>   </span> } */}
         </motion.div>
       </section>
+
+      </div>
 
       <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}  className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -366,13 +405,13 @@ export default function Home() {
             aria-labelledby={selectedFlow === "diner" ? "diner-flow-tab" : "restaurant-flow-tab"}
             className="grid grid-cols-1 items-center lg:grid-cols-12"
           >
-            <div className={`h-[480px] min-w-0 px-2 py-6 sm:h-[540px] sm:px-4 sm:py-8 lg:col-span-9 lg:px-6 ${selectedFlow === "diner" ? "order-1" : "order-2"}`}>
+            <div className={`h-[480px] min-w-0 px-2 py-6 sm:h-[540px] sm:px-4 sm:py-8 lg:col-span-9 lg:px-6 ${selectedFlow === "diner" ? "order-1" : "order-2"}`} >
               <DepthCarousel
                 key={selectedFlow}
                 items={activeFlowItems}
                 depth={170}
-                spread={20}
-                tilt={18}
+                spread={0}
+                tilt={180}
                 tiltDirection={selectedFlow === "diner" ? "right" : "left"}
                 perspective={1400}
                 visibleCards={1.5}
