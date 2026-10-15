@@ -1,22 +1,16 @@
 "use client";
 
-import Image from "next/image";
-import FlexCarousel from "@/components/FlexCarousel/FlexCarousel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ChefHat, CircleCheck, ClipboardList, Fullscreen, GitBranch, Loader2, LogIn, Sparkles, Store, Utensils } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowRight, ChefHat, GitBranch, Loader2, Sparkles, Utensils } from "lucide-react";
+import { useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
-import { Restaurant } from "@/lib/interfaces/order";
-import Imagepath from "@/lib/algorithms/Imagepath";
-import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
-import Counter from "@/components/Counter/Counter";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
 import ShapeGrid from "@/components/ShapeGrid/ShapeGrid";
 import  DinespaceLogo  from "@/components/DinespaceLogo";
 import TextType from "@/components/TextType ";
-import { motion } from "framer-motion";
+import { MotionConfig, motion, useReducedMotion } from "motion/react";
 interface LoginResponse {
   role: string;
   email: string;
@@ -26,15 +20,14 @@ interface LoginResponse {
 
 export default function Home() {
   const router = useRouter();
-  const [showDeveloperStory, setShowDeveloperStory] = useState(false);
   const [showProjectPlan, setShowProjectPlan] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [dummyLoginError, setDummyLoginError] = useState<string | null>(null);
-  const [resturants, setresturants] = useState<Restaurant[]>();
+  const shouldReduceMotion = useReducedMotion();
   const dinerFlowItems = [
     { image: "/Diner/restaurant-browsing.jpg", alt: "A diner browsing nearby restaurants", title: "Discover restaurants", description: "Explore restaurants and find a place that suits your next meal." },
     { image: "/Diner/table-qr-scan.jpg", alt: "A diner scanning a QR code at their table", title: "Scan your table", description: "Scan the table QR code to get started with your in-restaurant order." },
-    { image: "/Diner/mobile-ordering.jpg", alt: "A diner placing an order on a phone", title: "Browse and order", description: "Browse the menu, choose your favorites, and place your order from your phone." },
+    { image: "/Diner/mobile-ordering.jpg", alt: "A diner placing an order on a phone", title: "Order and pay", description: "Build your order, then choose Cash, bKash, or Nagad at checkout. Digital payment is currently simulated." },
     { image: "/Diner/diner-restaurant-connection.jpg", alt: "A diner connected to the restaurant team", title: "Connect with the restaurant", description: "Your order is shared with the restaurant team as soon as you place it." },
     { image: "/Diner/live-order-tracking.jpg", alt: "A diner checking live order progress", title: "Track your order", description: "Stay informed while the restaurant prepares your order." },
     { image: "/Diner/diner-journeys.jpg", alt: "A diner enjoying the restaurant experience", title: "Enjoy your dining journey", description: "Follow a smoother experience from choosing a restaurant to enjoying your meal." },
@@ -49,34 +42,6 @@ export default function Home() {
   const [selectedFlow, setSelectedFlow] = useState<"diner" | "restaurant">("diner");
   const [activeFlowStep, setActiveFlowStep] = useState(0);
   const activeFlowItems = selectedFlow === "diner" ? dinerFlowItems : restaurantFlowItems;
-  const [items, setItems] = useState([
-    { src: 'public/images/one.jpg', alt: 'A chrome sculpture', title: 'Iridescence', resturentLink: '/user' },
-  ]);
-
-  const getresturants = async () => {
-              try {
-                  const {data} = await api.get<Result<Restaurant[]>>("resturant/getAllResturants");
-                  console.log(data);
-                  if (data?.Success) {
-                      setresturants(data.Data ?? []);
-                  }
-              } catch (e) {
-                  console.log(e);
-              }
-          };
-
-          useEffect(() => {
-              setItems(resturants?.filter((e)=>e.coverFile).map((resturant) => ({
-                  src: Imagepath(resturant.coverFile!.Path),
-                  alt: resturant.resturantName,
-                  title: resturant.resturantName,
-                  resturentLink: `/resturant/${resturant.id}`
-              })) ?? []);
-          }, [resturants]);
-
-  useEffect(() => {
-    getresturants();
-  }, []);
 
   const handleDummyLogin = async () => {
     setIsLoggingIn(true);
@@ -107,163 +72,131 @@ export default function Home() {
     }
   };
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 28 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
-
   return (
-
-
+    <MotionConfig reducedMotion="user">
     <main className="min-h-screen bg-[#FBF9F6] text-[#171717]">
       <motion.header
         initial={{ opacity: 0, scale: .99 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ ease: "easeInOut" }}
-        className="fixed inset-x-4 top-3 z-50 mx-auto flex w-auto max-w-7xl items-center justify-between gap-3 rounded-2xl border border-[#DEC0BA]/15 bg-[#ffff]/95 px-3 py-3  backdrop-blur-xl transition-all duration-400 sm:px-6 sm:py-4 lg:px-6"
+        className="fixed inset-x-3 top-3 z-50 mx-auto flex w-auto max-w-7xl items-center justify-between gap-2 rounded-2xl border border-[#DEC0BA]/15 bg-white/95 px-2.5 py-2.5 backdrop-blur-xl transition-all duration-400 sm:inset-x-4 sm:gap-3 sm:px-6 sm:py-4"
       >
         <DinespaceLogo />
-        <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
+        <nav aria-label="Main navigation" className="flex min-w-0 items-center gap-1 sm:gap-3">
           <motion.button
             type="button"
             onClick={handleDummyLogin}
             disabled={isLoggingIn}
             whileHover={{ y: -2, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#DEC0BA] bg-white px-2.5 py-2 text-xs font-semibold text-[#A13924] shadow-xs transition hover:bg-[#FDF7F5] disabled:cursor-not-allowed disabled:opacity-60 sm:px-3.5 sm:text-sm"
-            title="Instant login as Demo Restaurant Owner (mubin9516@gmail.com)"
+            aria-label="Sign in to the demo restaurant owner account"
+            title="Demo access signs in to a sample restaurant owner account"
+            className="inline-flex items-center gap-1 rounded-lg border border-[#DEC0BA] bg-white px-2 py-2 text-xs font-semibold text-[#A13924] shadow-xs transition hover:bg-[#FDF7F5] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924] disabled:cursor-not-allowed disabled:opacity-60 sm:gap-1.5 sm:px-3.5 sm:text-sm"
           >
             {isLoggingIn ? (
               <>
                 <Loader2 size={15} className="animate-spin" />
-                <span>Logging in...</span>
+                <span className="whitespace-nowrap">Logging in...</span>
               </>
             ) : (
               <>
                 <Sparkles size={15} className="text-[#C86A52]" />
-                <span>Dummy Login</span>
+                <span className="whitespace-nowrap sm:hidden">Demo</span>
+                <span className="hidden whitespace-nowrap sm:inline">Demo login</span>
               </>
             )}
           </motion.button>
           <Link
             href="/auth"
-            className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] sm:block sm:px-4 sm:text-sm"
+            className="hidden rounded-lg px-2 py-2 text-xs font-semibold text-[#735B53] transition hover:bg-[#F4E9E5] hover:text-[#A13924] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924] sm:block sm:px-4 sm:text-sm"
           >
             Restaurant owner?
           </Link>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/user"
-              className="rounded-lg bg-[#A13924] px-3 py-2.5 text-xs font-semibold text-white transition hover:bg-[#842F1E] focus:outline-none focus:ring-2 focus:ring-[#A13924]/20 sm:px-4 sm:text-sm"
+              className="rounded-lg bg-[#A13924] px-2.5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#842F1E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924] sm:px-4 sm:text-sm"
             >
               <span className="sm:hidden">Browse</span>
               <span className="hidden sm:inline">Browse restaurants</span>
             </Link>
           </motion.div>
-        </div>
+        </nav>
       </motion.header>
       <div
         className="relative isolate min-h-screen w-full bg-cover bg-center pt-20 sm:pt-24"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)), url('/dinespace-landing.png')",
+            "linear-gradient(rgba(22, 13, 10, 0.42), rgba(22, 13, 10, 0.64)), url('/dinespace-landing.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-      <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-70">
         <ShapeGrid
           shape="square"
           direction="diagonal"
           lineColor="#2a2734"
           hoverColor="#ffffff"
           hoverFillColor="#ffffff"
-          fillOpacity={0.15}
+          fillOpacity={0.1}
           cellSize={40}
-          speed={0.5}
+          speed={0.3}
           tiltX={0}
           tiltY={0}
           rainbow={false}
           lineWidth={1}
           radius={1.5}
-          trail={0.6}
-          glow={0.35}
+          trail={0.4}
+          glow={0.25}
           twinkle={0}
           fade={1}
           clickCascade
           intro
         />
       </div>
-      <motion.div transition={{ duration: 0.4 , delay: 0.1 }} initial={{ y: -80 }}  animate={{ y: 0 }} className="relative z-10 mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
-        <div className="flex items-center gap-3 rounded-2xl border border-[#E7BE78] bg-[#FFF4D8] px-4 py-3 text-sm text-[#76511A] shadow-sm sm:px-5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F2C66D] text-[#76511A]" aria-hidden="true">
+      <motion.div transition={{ duration: 0.4, delay: 0.1 }} initial={{ y: -24 }} animate={{ y: 0 }} className="relative z-10 mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-10">
+        <div className="flex flex-wrap items-center gap-2.5 rounded-2xl border border-[#E7BE78]/80 bg-[#FFF4D8]/95 px-3 py-2.5 text-xs text-[#76511A] shadow-sm sm:flex-nowrap sm:gap-3 sm:px-5 sm:py-3 sm:text-sm">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F2C66D] text-[#76511A] sm:h-8 sm:w-8" aria-hidden="true">
             <GitBranch size={16} />
           </span>
-          <p className="flex-1">
-            <span className="font-bold">In development:</span> DineSpace is actively growing with new restaurant operations tools.
-          </p>
-          <button
-            type="button"
-            onClick={() => setShowProjectPlan(true)}
-            className="hidden shrink-0 rounded-lg bg-[#76511A] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#5F4014] sm:inline-flex"
-          >
-            View plan
-          </button>
+          <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+            <p className="min-w-0 flex-1 leading-5">
+              <span className="font-bold">In active development.</span> Explore what DineSpace does today and what is planned next.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowProjectPlan(true)}
+              className="self-start rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#76511A] underline decoration-[#C69A4D] underline-offset-4 transition hover:bg-[#F8E5B8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#76511A] sm:shrink-0 sm:self-auto sm:px-3 sm:py-2"
+            >
+              View roadmap
+            </button>
+          </div>
         </div>
       </motion.div>
 
       {/* <Image src="/dinespace-landing.png" alt="DineSpace Landing" width={2000} height={600} className="mx-auto mt-8 max-w-full rounded-lg shadow-lg w-[100vw] h-[100vh]" /> */}
 
-      <section className="relative z-10 mx-auto flex min-h-[70svh] max-w-7xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-10">
+      <section className="relative z-10 mx-auto flex min-h-[70svh] max-w-7xl flex-col items-center justify-center px-4 py-14 text-center sm:px-6 sm:py-20 lg:px-10">
 
         
-        <div className="flex min-h-[70svh] w-full flex-col items-center sm:min-h-0">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#FFD18A]/50 bg-[#29140F]/70 px-4 py-2 text-xs font-semibold text-[#FFE0A8] shadow-lg backdrop-blur-sm sm:mb-6 sm:text-sm">
+        <div className="flex w-full flex-col items-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#FFD18A]/40 bg-[#29140F]/65 px-4 py-2 text-xs font-semibold text-[#FFE0A8] shadow-lg backdrop-blur-sm sm:mb-6 sm:text-sm">
             <span className="h-2 w-2 rounded-full bg-[#FFB454]" />
             Restaurant ordering, automated
           </div>
-          <h1 className="mx-auto max-w-4xl text-[2.75rem] font-bold leading-[1.08] tracking-tight text-[#FFF9F0] sm:text-6xl">
-            Order what you want.{" "}
-            <span className="text-[#FFC66E]">Without waiting for a waiter.</span>
+          <h1 className="mx-auto max-w-4xl text-[2rem] font-bold leading-[1.08] tracking-tight text-[#FFF9F0] sm:text-5xl lg:text-6xl">
+            <span className="block sm:inline">Great food. </span>
+            <span className="block sm:inline">Seamless ordering.</span>
+            <span className="mt-1 block text-[#FFC66E]">All from your table.</span>
           </h1>
-
-          <div className="mt-6 flex w-fit max-w-lg items-center gap-4 rounded-2xl border border-white/25 bg-[#24130F]/75 px-4 py-3 text-left text-white shadow-xl backdrop-blur-md sm:mt-7 sm:px-5">
-           
-            <span className="flex min-w-0 items-center gap-3">
-              <span className="shrink-0" aria-hidden="true">
-                <Counter
-                  value={resturants?.length ?? 0}
-                  fontSize={28}
-                  padding={4}
-                  gap={1}
-                  textColor="#FFC66E"
-                  fontWeight={800}
-                />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold text-[#FFF9F0] sm:text-base">
-                  Restaurants are currently using DineSpace
-                </span>
-                <span className="mt-0.5 block text-xs leading-5 text-[#E8D9D0] sm:text-sm">
-                  To automate their ordering experience.
-                </span>
-                <span className="sr-only">{resturants?.length ?? 0} restaurants on DineSpace.</span>
-              </span>
-            </span>
-          </div>
-          {/* <p className="mt-5 max-w-lg text-base leading-7 text-[#514947] sm:mt-6 sm:text-lg sm:leading-8">
-            DineSpace automates the restaurant ordering experience. Browse the menu from your
-            table, see what is special today, and place your order whenever you are ready.
-            No repeated calls, no waiting just to ask a question.
-          </p> */}
-          <div className="order-last mt-auto flex w-full flex-col justify-center gap-3 pt-7 sm:order-none sm:mt-8 sm:flex-row sm:flex-wrap sm:pt-0">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-[#FFF5ED] sm:mt-6 sm:text-lg sm:leading-8">
+            Scan the QR code, explore the menu, place your order, and follow its progress — all from your phone.
+          </p>
+          <div className="mt-7 flex w-full flex-col justify-center gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Link
               href="/user"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#D95638] px-6 py-3.5 font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-[#BD452C] sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#D95638] px-6 py-3.5 font-semibold text-white shadow-lg shadow-black/20 transition hover:bg-[#BD452C] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
             >
               Explore restaurants
               <ArrowRight size={18} />
@@ -271,141 +204,65 @@ export default function Home() {
             
             <Link
               href="/auth"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/70 bg-[#FFF9F0] px-6 py-3.5 font-semibold text-[#8B321F] transition hover:bg-[#FFE7D8] sm:w-auto"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/70 bg-[#FFF9F0] px-6 py-3.5 font-semibold text-[#8B321F] transition hover:bg-[#FFE7D8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto"
             >
-              Manage your restaurant
+              For restaurant owners
             </Link>
            
           </div>
           {dummyLoginError && (
-            <div className="mt-3 max-w-md rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-medium text-red-700">
+            <div role="alert" className="mt-3 max-w-md rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-medium text-red-700">
               {dummyLoginError}
             </div>
           )}
 
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            className="mt-8 grid w-full max-w-2xl grid-cols-1 justify-items-center gap-3 border-t border-white/30 pt-5 text-sm text-[#FFF1E5] sm:mt-10 sm:grid-cols-2 sm:gap-4 sm:pt-6"
-          >
-            <motion.span initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2, duration: 0.45 }} className="flex items-center gap-2">
-              <CircleCheck size={17} className="text-[#FFC66E]" />
-              Browse the menu yourself
-            </motion.span>
-            <motion.span initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.32, duration: 0.45 }} className="flex items-center gap-2">
-              <CircleCheck size={17} className="text-[#FFC66E]" />
-              Order without the wait
-            </motion.span>
-          </motion.div>
         </div>
-
-        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }} className="relative mt-2 min-w-0 sm:mt-0 flex">
-          {/* <div className="absolute -inset-4 rounded-4xl bg-[#EFD8CF] opacity-60 blur-2xl" />
-          <div className="relative overflow-hidden rounded-4xl border-8 border-white bg-white shadow-2xl">
-            <Image
-              src="/dinespace-landing.png"
-              alt="Guests enjoying a meal together in a warm restaurant"
-              width={1365}
-              height={768}
-              priority
-              className="h-auto w-full object-cover"
-            />
-            <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/40 bg-[#171717]/75 p-4 text-white backdrop-blur-md">
-              <p className="text-sm font-medium text-[#F3D4C9]">Your next favorite place</p>
-              <p className="mt-1 text-lg font-semibold">Good food is better together.</p>
-            </div>
-          </div> */}
-  {/* {resturants !== undefined && resturants?.length > 0 ?  <div className="relative h-72 w-full sm:h-110 lg:h-155">
-  <FlexCarousel
-    items={items}
-    preset="liquid"
-    intro="rise"
-    cardHeight={0.5}
-    gap={12}
-    squeeze={0.2}
-    focusOnClick
-    captions
-    fit="natural"
-    radius={0}
-    lensWidth={0.74}
-    lensHeight={1.18}
-    tilt={62}
-    roundness={1}
-    bend={0.34}
-    reach={0.38}
-    curl="twist"
-    dispersion={0.45}
-    liquid={0}
-    followCursor={false}
-    autoplay={false}
-    interval={4}
-    captureWheel
-/>
-</div> : <span className="flex items-center justify-center sm:pl-[40%] lg:h-155"> <LatticeLoader
-  status="working"
-  label="Loading restaurants..."
-  doneLabel="Done in"
-  errorLabel="Failed after"
-  pattern="arrow"
-  grid={3}
-  shape="round"
-  doneColor="#22c55e"
-  errorColor="#ef4444"
-  cellSize={6}
-  gap={2}
-  fontSize={14}
-  step={90}
-  idleOpacity={0.15}
-  glow={false}
-  glowColor="#f5f5f5"
-  showTimer
-  color="#A13924"
-/>   </span> } */}
-        </motion.div>
       </section>
 
       </div>
 
-      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}  className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+      <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6 flex justify-center gap-2" role="tablist" aria-label="Choose a product flow">
+          <div className="mx-auto mb-8 max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A13924]">How DineSpace works</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#291812] sm:text-4xl">
+              From the first scan to the last order update.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-[#735B53]">
+              Explore the customer ordering journey or see how restaurant teams manage service with the tools available today.
+            </p>
+          </div>
+          <div className="mb-6 flex justify-center gap-2" role="group" aria-label="Choose a product flow">
             <button
-              id="diner-flow-tab"
               type="button"
-              role="tab"
-              aria-selected={selectedFlow === "diner"}
-              aria-controls="product-flow-panel"
+              aria-pressed={selectedFlow === "diner"}
               onClick={() => {
                 setSelectedFlow("diner");
                 setActiveFlowStep(0);
               }}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${selectedFlow === "diner" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
+              className={`min-h-11 rounded-full px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924] ${selectedFlow === "diner" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
             >
               Diner flow
             </button>
             <button
-              id="restaurant-flow-tab"
               type="button"
-              role="tab"
-              aria-selected={selectedFlow === "restaurant"}
-              aria-controls="product-flow-panel"
+              aria-pressed={selectedFlow === "restaurant"}
               onClick={() => {
                 setSelectedFlow("restaurant");
                 setActiveFlowStep(0);
               }}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${selectedFlow === "restaurant" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
+              className={`min-h-11 rounded-full px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924] ${selectedFlow === "restaurant" ? "bg-[#A13924] text-white shadow-md" : "bg-white/70 text-[#735B53] hover:bg-white"}`}
             >
               Restaurant flow
             </button>
           </div>
 
           <div
-            id="product-flow-panel"
-            role="tabpanel"
-            aria-labelledby={selectedFlow === "diner" ? "diner-flow-tab" : "restaurant-flow-tab"}
+            aria-live="polite"
+            aria-label={`${selectedFlow === "diner" ? "Diner" : "Restaurant"} product journey`}
             className="grid grid-cols-1 items-center lg:grid-cols-12"
           >
-            <div className={`h-[480px] min-w-0 px-2 py-6 sm:h-[540px] sm:px-4 sm:py-8 lg:col-span-9 lg:px-6 ${selectedFlow === "diner" ? "order-1" : "order-2"}`} >
+            <div className={`h-[260px] min-w-0 overflow-hidden px-2 py-6 sm:h-[520px] sm:px-4 sm:py-8 lg:h-[560px] lg:col-span-9 lg:px-6 ${selectedFlow === "diner" ? "order-1" : "order-2"}`} >
               <DepthCarousel
                 key={selectedFlow}
                 items={activeFlowItems}
@@ -438,8 +295,8 @@ export default function Home() {
               </p>
               <h3 className="mt-3 text-2xl font-bold text-[#291812] sm:text-3xl">{activeFlowItems[activeFlowStep].title}</h3>
               <p className="mt-4 max-w-lg text-base leading-7 text-[#735B53]">{activeFlowItems[activeFlowStep].description}</p>
-              <Link href={selectedFlow === "diner" ? "/user" : "/auth"} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
-                {selectedFlow === "diner" ? "Explore restaurants" : "Manage your restaurant"} <ArrowRight size={16} />
+              <Link href={selectedFlow === "diner" ? "/user" : "/auth"} className="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#A13924] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924]">
+                {selectedFlow === "diner" ? "Explore restaurants" : "For restaurant owners"} <ArrowRight size={16} />
               </Link>
             </div>
           </div>
@@ -447,36 +304,26 @@ export default function Home() {
       </motion.section>
 
       <motion.section initial={{ y: 20 }} whileInView={{ y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{duration:0.5}} className="border-t border-[#EAD8D2] bg-white/60">
-        <div className="mx-auto grid max-w-7xl gap-5 px-6 py-16 sm:grid-cols-3 lg:px-10">
-          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
+        <div className="mx-auto grid max-w-5xl gap-5 px-6 py-16 sm:grid-cols-2 lg:px-10">
+          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <Utensils className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For diners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
-              Browse the menu, discover today&apos;s specials, and place an order from your table
-              without having to call a waiter every time.
+              Scan a table QR code to open the digital menu, place an order from your phone, and follow its progress.
             </p>
-            <Link href="/user" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
+            <Link href="/user" className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#A13924] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924]">
               Start exploring <ArrowRight size={16} />
             </Link>
           </motion.div>
-          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
+          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}} className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
             <ChefHat className="text-[#A13924]" />
             <h2 className="mt-5 text-xl font-semibold">For restaurant owners</h2>
             <p className="mt-2 leading-7 text-[#735B53]">
-              Automate order collection while keeping menus, tables, payments, and service
-              operations organized in one workspace.
+              Review incoming orders and manage restaurant details, menus, tables, and service operations from the owner dashboard.
             </p>
-            <Link href="/auth" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#A13924]">
+            <Link href="/auth" className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#A13924] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A13924]">
               Owner sign in <ArrowRight size={16} />
             </Link>
-          </motion.div>
-          <motion.div initial={{ y: 20 }} whileInView={{y:0}} whileHover={{ y: -8, scale: 1.01 }} transition={{ type: "spring", stiffness: 260, damping: 18 , duration: 0.5}}  className="rounded-2xl border border-[#EAD8D2] bg-white p-6 shadow-sm">
-            <ClipboardList className="text-[#A13924]" />
-            <h2 className="mt-5 text-xl font-semibold">One connected space</h2>
-            <p className="mt-2 leading-7 text-[#735B53]">
-              Guests get a faster, more independent experience while restaurant teams spend less
-              time taking repetitive requests and more time delivering great hospitality.
-            </p>
           </motion.div>
         </div>
       </motion.section>
@@ -569,7 +416,7 @@ export default function Home() {
             <div className="mt-5 rounded-2xl border border-[#EAD8D2] bg-white p-5">
               <p className="text-sm font-bold text-[#A13924]">Plan</p>
               <ol className="mt-3 grid gap-3 text-sm leading-6 text-[#514947] sm:grid-cols-2">
-                <li><span className="font-semibold text-[#171717]">01. Core dining flow:</span> menus, table ordering, payments, and live order status.</li>
+                <li><span className="font-semibold text-[#171717]">01. Core dining flow:</span> menus, table ordering, payment integration, and live order status.</li>
                 <li><span className="font-semibold text-[#171717]">02. Restaurant control:</span> staff permissions, salary tracking, menus, tables, and payouts.</li>
                 <li><span className="font-semibold text-[#171717]">03. Admin visibility:</span> restaurant oversight, withdrawals, and platform reporting.</li>
                 <li><span className="font-semibold text-[#171717]">04. Refinement:</span> testing, performance improvements, and a smoother mobile experience.</li>
@@ -599,7 +446,7 @@ export default function Home() {
             rel="noreferrer"
             className="font-semibold text-[#A13924] underline decoration-[#DDBDB3] underline-offset-4 transition hover:text-[#842F1E]"
           >
-           <TextType 
+           {shouldReduceMotion ? "Mu-bin.dev" : <TextType
               text={["Mu-bin.dev", "MD. Abdullah Al Mubin"]}
               typingSpeed={75}
               pauseDuration={1500}
@@ -611,11 +458,12 @@ export default function Home() {
               // variableSpeedMin={60}
               // variableSpeedMax={120}
               cursorBlinkDuration={0.5}
-            />
+            />}
           </a>
           .
         </span>
       </footer>
     </main>
+    </MotionConfig>
   );
 }
