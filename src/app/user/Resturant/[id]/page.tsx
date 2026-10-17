@@ -6,10 +6,10 @@ import { MenuItem, OrderItem, Restaurant } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useLayoutEffect, useState } from "react";
-import {  Delete, MapPinCheckInside, Minus, Plus, Shrink, Trash } from "lucide-react";
+import {  Delete, Files, Flame, MapPinCheckInside, Minus, Plus, Shrink, Trash } from "lucide-react";
 import Link from "next/link";
-import UsersLoading from "@/components/userComponents/Loading";
-import { motion } from "motion/react";
+import UsersLoading from "@/components/PageLoader";
+import { motion, spring } from "motion/react";
 import CountUp from "@/components/countUp/countUp";
 
 export default function Resturants(params:{id:string}){
@@ -21,7 +21,7 @@ export default function Resturants(params:{id:string}){
     const [nextTotal, setnextTotal] = useState(0);
     const [isCartExpanded, setIsCartExpanded] = useState(false);
     const [error, setError] = useState(false);
-    
+    const [populer, setpopuler] = useState<{menuId:string , timesOrdered: number , totalQuantity: number}[]>([]);
 
     useLayoutEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -39,10 +39,13 @@ export default function Resturants(params:{id:string}){
             if (!param.id) return;
 
             try {
-                const {data} = await api.get<Result<Restaurant>>(`resturant/getResturentById/${param.id}`);
+                const {data} = await api.get<Result<Restaurant , {menuId:string , timesOrdered: number , totalQuantity: number}[]>>(`resturant/getResturentById/${param.id}`);
                 if (data?.Success && data.Data) {
                     setResturent(data.Data);
-                // console.log(data)
+                     console.log(data)
+                     if(data.additionalData){
+                       setpopuler(data.additionalData);
+                     }
                 } else {
                     setError(true);
                     setPopup("Failed to fetch resturent");
@@ -106,9 +109,11 @@ export default function Resturants(params:{id:string}){
                 <p className="px-4 pb-3 text-[#A13924] font-bold sm:px-6">Checkout the menu</p>
                 <hr className="w-full border-[#97756f]" />
                 
-                <motion.div initial={{ x: 20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 z-20 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
+                <motion.div initial={{ x: 20, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{duration:.7}} className="sticky top-14 lg:top-16 z-5 flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory bg-[#FBF9F6] p-1 no-scrollbar">
                     <a id="allitems" href="#allitems" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "all" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("all")}>All items</a>
-                   
+                    {populer.length > 0 && (
+                        <a  href="#popular" className = {`m-2 shrink-0 whitespace-nowrap rounded-3xl border pl-3 pr-3 pt-1 pb-1 ${catbtn == "popular" ? "bg-[#A13924] text-white" :" bg-[#F5F3F0] border border-[#DEC0BA]"}`} onClick={()=>handlemenucatagory("popular")}>Popular</a>
+                    )}
                     {cat.map((val) => (
                         <motion.a                         
                        href={`#${val}`}
@@ -119,10 +124,26 @@ export default function Resturants(params:{id:string}){
                         </motion.a>
                     ))}
                 </motion.div>
+
+             {populer.length > 0 && (<div id="" className="mt-2 grid grid-cols-1 gap-y-2 p-2 sm:p-4 shadow-[0px_0px_0px_1px] shadow-amber-600 rounded-2xl">
                 
+                    <div id="popular" className="mb-4 grid scroll-mt-28 grid-cols-1 gap-y-1 font-semibold md:grid-cols-2 md:gap-x-4">
+                        <h2 className="col-span-full px-2 py-2 text-base text-orange-500 sm:text-lg">Popular Now <Flame className="inline-block h-5 w-5 text-orange-500" /></h2>
+                        {populer.map((pop) => (
+                            <Ordercard  resturent={resturent.resturantName} resid={param.id} key={pop.menuId} item={resturent.menu.find((f) => f.id === pop.menuId) || {id: "unknown",
+                                itemName: "Unknown Item",
+                                description: "Description not available",
+                                catagory: "Unknown",
+                                price: 0,} } />
+                        ))}
+                    </div>
+
+               
+                </div> )}
+
                 {/* cards load */}
-               <div className="grid grid-cols-1 gap-x-6 gap-y-2 p-2 sm:p-4 xl:grid-cols-2">
-                {cat.map(e=> <section id={e} key={e} className="mb-4 flex scroll-mt-28 flex-col font-semibold"> <h2 className="px-2 py-2 text-base sm:text-lg">{e}</h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
+               <div className="mt-2 grid grid-cols-1 gap-y-2 p-2 sm:p-4">
+                {cat.map(e=> <section id={e} key={e} className="mb-4 grid scroll-mt-28 grid-cols-1 gap-y-1 font-semibold md:grid-cols-2 md:gap-x-4"> <motion.h2 initial={{ x: -20 }} whileInView={{ x: 0 }} transition={{duration:0.5 , type:"spring"}} viewport={{ once: true }} className="col-span-full px-2 py-2 text-basesm:text-lg">{e}</motion.h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
                           key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
@@ -239,7 +260,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
     return(
         <>
         {item ?
-        <div className="m-1 flex min-h-30 min-w-0 flex-row items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#F5F3F0] p-3 text-sm transition-[border-color,box-shadow] duration-200 hover:border-transparent hover:ring-2 hover:ring-[#DEC0BA] hover:ring-offset-2 hover:ring-offset-[#FBF9F6] sm:m-2 sm:text-base">
+        <div className={`m-1 flex min-h-30 min-w-0 flex-row items-center justify-between gap-3 overflow-hidden rounded-2xl border ${item.timesOrdered && item.timesOrdered > 0 ? 'border-orange-500' : 'border-[#DEC0BA]'} bg-[#F5F3F0] p-3 text-sm transition-[border-color,box-shadow] duration-200 hover:border-transparent hover:ring-2 hover:ring-[#DEC0BA] hover:ring-offset-2 hover:ring-offset-[#FBF9F6] sm:m-2 sm:text-base`}>
             <span className="flex min-w-0 flex-1 flex-col justify-start gap-2">
             <span className="truncate font-semibold text-[#3b3939]">{item.itemName}</span>
             <span className="break-words font-normal leading-5 text-[#7a7776]">{seemore ? item.description : item.description.substring(0, 90) + "..."} {item.description.length > 90 ? <span className="cursor-pointer"><button onClick={() => setseemore(!seemore)} className="text-[#A13924] bold text-[12px] ">Read more</button></span> : null}</span>       

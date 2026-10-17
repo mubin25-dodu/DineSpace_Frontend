@@ -17,15 +17,15 @@ const rolerouter: Record<string, string[]> = {
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-    console.log("hit middleware")
+    // console.log("hit middleware")
     const pathName = request.nextUrl.pathname ;
     const IsPublicPath = pathName === '/auth' || pathName === '/';
 
     const cookieStore = await cookies()
    try{
     const token = cookieStore.get('accesstoken')?.value  || "Notoken";
-        console.log("token and path")
-        console.log(token);
+        // console.log("token and path")
+        // console.log(token);
         // console.log(IsPublicPath);
     if(token ==="Notoken" && !IsPublicPath){
         // console.log("hit logout notoken or path")

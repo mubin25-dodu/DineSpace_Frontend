@@ -22,6 +22,8 @@ export interface MenuItem {
     price: number;
     isAvailable?: boolean;
     resturentId?: string;
+    timesOrdered?: number;
+    totalQuantity?: number;
 }
 
 export interface Restaurant {

@@ -11,6 +11,7 @@ import ShapeGrid from "@/components/ShapeGrid/ShapeGrid";
 import  DinespaceLogo  from "@/components/DinespaceLogo";
 import TextType from "@/components/TextType ";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
+import UsersLoading from "@/components/PageLoader";
 interface LoginResponse {
   role: string;
   email: string;
@@ -73,7 +74,11 @@ export default function Home() {
   };
 
   return (
-    <MotionConfig reducedMotion="user">
+  <>
+    
+    {/* // <MotionConfig reducedMotion="user"> */}
+    {/* <UsersLoading time={2000}/>  */}
+    
     <main className="min-h-screen bg-[#FBF9F6] text-[#171717]">
       <motion.header
         initial={{ opacity: 0, scale: .99 }}
@@ -464,6 +469,7 @@ export default function Home() {
         </span>
       </footer>
     </main>
-    </MotionConfig>
+     {/* </MotionConfig> */}
+    </>
   );
 }
