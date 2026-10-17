@@ -1,6 +1,6 @@
 "use client"
 import { api } from "@/lib/api/axios"
-import { resturantContext } from "@/lib/context/Context"
+import { restaurantContext } from "@/lib/context/Context"
 import { Payment } from "@/lib/interfaces/payment"
 import Result from "@/lib/Result"
 import { ArrowDownUp, CalendarSearch, Landmark, Search } from "lucide-react"
@@ -13,7 +13,7 @@ export default function PaymentsPage() {
     const [loadError, setLoadError] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
     const [newestFirst, setNewestFirst] = useState(true);
-    const {defaultResturant , setpopup} = useContext(resturantContext);
+    const {defaultRestaurant , setpopup} = useContext(restaurantContext);
     const [monthdata , setMonthData] = useState<Date>(new Date());
     const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -22,11 +22,11 @@ export default function PaymentsPage() {
     }, []);
 
     const getpayments = async()=>{
-        if (!defaultResturant) return;
+        if (!defaultRestaurant) return;
         setLoading(true);
         setLoadError("");
         try{
-            const {data} = await api.get<Result<Payment[]>>(`payment/monthly/${defaultResturant}?month=${monthdata.getMonth()+1}&&year=${monthdata.getFullYear()}`)
+            const {data} = await api.get<Result<Payment[]>>(`payment/monthly/${defaultRestaurant}?month=${monthdata.getMonth()+1}&&year=${monthdata.getFullYear()}`)
             if(data.Success){
                 setpayments(data.Data ?? []);
                 console.log(data.Data);
@@ -43,7 +43,7 @@ export default function PaymentsPage() {
      }
      useEffect(()=>{
         getpayments();
-     }, [defaultResturant , monthdata.getMonth() , monthdata.getFullYear()]);
+     }, [defaultRestaurant , monthdata.getMonth() , monthdata.getFullYear()]);
 
       const formatDate = (date: Date) => new Date(date).toLocaleString(undefined, {
           year: "numeric",
@@ -155,7 +155,7 @@ export default function PaymentsPage() {
                     </calendar-date>: ""}
 
                 </h1>
-                <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
+                <p className="text-gray-600">Manage your restaurants finances, refunds and transaction history</p>
             </div>
             {/* <Link href={"payment/withdraw"} className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"> <Landmark color="#ffffff" size={20}/>Withdraw Funds</Link> */}
         </div>

@@ -84,7 +84,7 @@ export default function OrderInfo(){
                     <div>
                         <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#A13924]">Order details</p>
                         <h1 className="mt-1 text-2xl font-semibold text-[#171717]">
-                            {order.table?.resturant?.resturantName || "Restaurant order"}
+                            {order.table?.restaurant?.resturantName || "Restaurant order"}
                         </h1>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${

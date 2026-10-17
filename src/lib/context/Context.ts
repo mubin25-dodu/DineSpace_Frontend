@@ -2,19 +2,19 @@ import { createContext, Dispatch, SetStateAction } from "react";
 import { OrderItem } from "../interfaces/order";
 
 interface RestaurantContextValue {
-	defaultResturant: string;
+	defaultRestaurant: string;
 	setpopup: Dispatch<SetStateAction<string>>;
 	  refreshOrders: number;
 	setservererror: Dispatch<SetStateAction<string>>;
-	resturants?: { id: string; resturantName?: string }[];
+	restaurants?: { id: string; resturantName?: string }[];
 }
 
-export const resturantContext = createContext<RestaurantContextValue>({
-	defaultResturant: "",
+export const restaurantContext = createContext<RestaurantContextValue>({
+	defaultRestaurant: "",
 	setpopup: () => undefined,
 	refreshOrders: 0,
 	setservererror:() => undefined,
-	resturants: [],
+	restaurants: [],
 });
 
 interface Usercontext{

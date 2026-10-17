@@ -79,7 +79,7 @@ export default function Register(){
     return(
         <>
         {alertMsg.length !== 0  ? <AlertPopup Message={alertMsg} setpopup={() => setAlertMsg("")}/> :""}
-        <PageLoader load={loading} time={2000}/>
+        {loading ? <PageLoader time={2000}/>:""}
         <ServerError error={serverError} setservererror={() => setServerError(false)} />
         <div className={`${serverError ? 'mt-20' : 'mt-6'} mb-6 text-gray-800  flex justify-center items-start`}>
         {serverError === false ? registred === true ?
@@ -138,22 +138,22 @@ export default function Register(){
             </div>
             
              <div className="flex flex-col gap-2">
-              <div className="border-b border-gray-300 mb-5">Resturant Details (Optional)</div>
+              <div className="border-b border-gray-300 mb-5">Restaurant Details (Optional)</div>
                 
             <div className="flex flex-col gap-1">
-                <label htmlFor="">Enter Resturant Name <span className="text-red-800">*</span></label>
-              <input type="text" id="resturantName" className={`${form.formState.errors.resturantName?"border border-red-500":"" } rounded border border-gray-300 p-1 pl-5`}  placeholder="Name of the resturant" {...form.register('resturantName')}/>
+                <label htmlFor="">Enter Restaurant Name <span className="text-red-800">*</span></label>
+              <input type="text" id="resturantName" className={`${form.formState.errors.resturantName?"border border-red-500":"" } rounded border border-gray-300 p-1 pl-5`}  placeholder="Name of the restaurant" {...form.register('resturantName')}/>
               {form.formState.errors.resturantName && (<span className="text-red-800 text-[14px]">{form.formState.errors.resturantName.message}</span>)}
             </div>
 
             <div className="flex flex-wrap justify-between gap-1">
               <div className="flex flex-col w-[49%]">
-              <label htmlFor="">Enter Resturant Email <span className="text-red-800">*</span></label>
+              <label htmlFor="">Enter Restaurant Email <span className="text-red-800">*</span></label>
               <input type="email" id="resturantemail" className={`${form.formState.errors.resturantemail?"border border-red-500":"" }rounded border border-gray-300 p-1 pl-5`}  placeholder="owner@dinespace.com" {...form.register('resturantemail')}/>
               {form.formState.errors.resturantemail && (<span className="text-red-800 text-[14px]">{form.formState.errors.resturantemail.message}</span>)}
               </div>
               <div className="flex flex-col w-[49%]">
-              <label htmlFor="">Resturant Phone Number <span className="text-red-800">*</span></label>
+              <label htmlFor="">Restaurant Phone Number <span className="text-red-800">*</span></label>
               <input type="text" id="phone" className={`${form.formState.errors.phone?"border border-red-500":"" }rounded border border-gray-300 p-1 pl-5`}  placeholder="+88012345678912" {...form.register('phone')}/>
               {form.formState.errors.phone && (<span className="text-red-800 text-[14px]">{form.formState.errors.phone.message}</span>)}
               </div>

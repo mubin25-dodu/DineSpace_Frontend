@@ -7,7 +7,7 @@ export interface User {
     files?: Files[];
 }
 
-export interface Resturant {
+export interface RestaurantFileOwner {
     id: string;
     files?: Files[];
 }
@@ -27,7 +27,7 @@ export interface Files {
     UploadedByUserId: string;
     uploadedByUser: User;
     RestaurantId?: string | null;
-    restaurant?: Resturant | null;
+    restaurant?: RestaurantFileOwner | null;
     MenuId?: string | null;
     Menu?: menu | null;
 }

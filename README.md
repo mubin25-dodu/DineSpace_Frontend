@@ -331,7 +331,7 @@ DineSpace_Frontend/
 │   │   │   └── layout.tsx          # Socket.IO connection & restaurant selector
 │   │   ├── registration/           # 📝 Self-serve restaurant onboarding wizard
 │   │   ├── user/                   # 🍽️ Customer-facing Dining Interface
-│   │   │   ├── Resturant/[id]/     # Dynamic menu browsing by restaurant
+│   │   │   ├── Restaurant/[id]/     # Dynamic menu browsing by restaurant
 │   │   │   ├── checkout/[id]/      # Checkout & payment processing
 │   │   │   ├── myBowl/             # Live cart & order preparation
 │   │   │   ├── myorders/           # Order tracking & order history

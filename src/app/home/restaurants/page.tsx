@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { Restaurant } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { Search, PenLine, SaveCheck, X, Upload, Plus, Trash2 } from "lucide-react";
@@ -25,7 +25,7 @@ export default function RestaurantsPage() {
     const [createCoverFile, setCreateCoverFile] = useState<File | null>(null);
     const qrBaseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
-    const { setpopup, setservererror } = useContext(resturantContext);
+    const { setpopup, setservererror } = useContext(restaurantContext);
 
     const loadRestaurants = async () => {
         setLoading(true);
@@ -612,15 +612,15 @@ export default function RestaurantsPage() {
                                                 <div className="bg-white p-1.5 rounded-lg border border-gray-200 shrink-0">
                                                     <QRCode
                                                         id={`restaurant-qr-${res.id}`}
-                                                        value={`${qrBaseUrl}/user/Resturant/${res.id}`}
+                                                        value={`${qrBaseUrl}/user/Restaurant/${res.id}`}
                                                         size={64}
                                                     />
                                                 </div>
                                                 <div className="flex flex-col flex-1 min-w-0">
                                                     <span className="text-sm font-bold text-[#28211e]">Digital Menu QR</span>
                                                     <span className="text-xs text-[#654f48] mb-1">Scan to view menu & order</span>
-                                                    <a href={`${qrBaseUrl}/user/Resturant/${res.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#A13924] hover:underline font-medium break-all">
-                                                        {qrBaseUrl}/user/Resturant/{res.id}
+                                                    <a href={`${qrBaseUrl}/user/Restaurant/${res.id}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#A13924] hover:underline font-medium break-all">
+                                                        {qrBaseUrl}/user/Restaurant/{res.id}
                                                     </a>
                                                     <button
                                                         type="button"

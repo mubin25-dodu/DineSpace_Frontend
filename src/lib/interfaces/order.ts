@@ -56,7 +56,7 @@ export interface OrderTable {
     seatCapacity: number;
     reservationId: string | null;
     resturantid: string;
-    resturant: Restaurant;
+    restaurant: Restaurant;
 }
 
 export interface Payment {

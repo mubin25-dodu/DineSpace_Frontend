@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { MenuItem, OrderItem } from "@/lib/interfaces/order";
 import Image from "next/image";
 import Result from "@/lib/Result";
@@ -13,7 +13,7 @@ import Imagepath from "@/lib/algorithms/Imagepath";
 
 export default function SearchOrders({setMore , orderId}: { setMore: (value: boolean) => void; orderId: string }) {
   const [menu , setmenu] = useState<MenuItem[]>();  
-  const {defaultResturant , setservererror , setpopup} = useContext(resturantContext);
+  const {defaultRestaurant , setservererror , setpopup} = useContext(restaurantContext);
   const[searchterm , setsearchterm] = useState("");
   const [selected , setselected] = useState<selecteditems[]>();
   const [total , settotal] = useState(0);
@@ -29,7 +29,7 @@ export default function SearchOrders({setMore , orderId}: { setMore: (value: boo
 
   useEffect(()=>{
     console.log(close);
-    const getfromlocalstorage  = localStorage.getItem(`menu-${defaultResturant}`) ;
+    const getfromlocalstorage  = localStorage.getItem(`menu-${defaultRestaurant}`) ;
      if(getfromlocalstorage){ setmenu(JSON.parse(getfromlocalstorage));}
      else{
       void handlesync();
@@ -95,12 +95,12 @@ export default function SearchOrders({setMore , orderId}: { setMore: (value: boo
 
     const handlesync = async ()=>{
       console.log("sync")
-      console.log(defaultResturant);
+      console.log(defaultRestaurant);
       try{
-       const {data} = await api.get<Result<MenuItem[]>>(`menu/GetMenu/${defaultResturant}`);
+       const {data} = await api.get<Result<MenuItem[]>>(`menu/GetMenu/${defaultRestaurant}`);
        console.log("menu");
       //  console.log(data);
-       data.Success ?  localStorage.setItem(`menu-${defaultResturant}`, JSON.stringify(data.Data)):"";
+       data.Success ?  localStorage.setItem(`menu-${defaultRestaurant}`, JSON.stringify(data.Data)):"";
        setmenu(data.Data ?? []);
       }catch(e){ console.error(e) ; setservererror("the server run into a problem try again letter")};
       // console.log(data);

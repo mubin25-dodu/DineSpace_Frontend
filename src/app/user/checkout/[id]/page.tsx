@@ -18,7 +18,7 @@ const wait = (milliseconds: number) =>
 export default function Checkout(){
     const param = useParams();
     const router = useRouter();
-    const [resturent , setresturent] = useState<Restaurant>();
+    const [restaurant , setRestaurant] = useState<Restaurant>();
     const [holdcheckout , setHoldcheckout] = useState(true);
     const {setNavinfo , setPopup , myBowl , setbowl} = useContext(userContext);
     const [selectedtable, setselectedtable] = useState<OrderTable | null>(null);
@@ -49,9 +49,9 @@ export default function Checkout(){
             }
             const {data} = await api.get<Result<Restaurant>>(`resturant/getResturentById/${param.id}`);
                 if (data?.Success && data.Data) {
-                    setresturent(data.Data);
+                    setRestaurant(data.Data);
 
-                    //holding checkout if the resturant is closed
+                    //holding checkout if the restaurant is closed
                     setHoldcheckout(!data.Data.isopen);
                     if(data.Data.isopen === false){
                         setPopup("This restaurant is currently closed.");
@@ -70,16 +70,16 @@ export default function Checkout(){
     }
 
     //ammm i tired vhaiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-    // first getting the resturent data then updating it with the localstorage cause maybe price is updated or the product is not available soooooooo
+    // first getting the restaurant data then updating it with the localstorage cause maybe price is updated or the product is not available soooooooo
     // my god new update : used adapter (i dont klnow if it is that i klwarned fro the SADP course)
     useEffect(()=>{
-        if(!resturent) return;
+        if(!restaurant) return;
         if(myBowl && myBowl.length < 1) return;
-        setbowl( refreashbowl( myBowl ?? [] , resturent));
-    },[resturent]);
+        setbowl( refreashbowl( myBowl ?? [] , restaurant));
+    },[restaurant]);
 
     useEffect(()=>{ getresdata();},[param.id]);
-    const availableTables = resturent?.tables
+    const availableTables = restaurant?.tables
         ?.filter((table) => table.status === TableStatus.Available || table.status === TableStatus.Cleaning)
         .sort((first, second) => first.tableno - second.tableno) ?? [];
     const restaurantItems = myBowl?.filter((item) => item.resturantId === param.id) ?? [];
@@ -249,9 +249,9 @@ return(
                     Browse restaurants
                 </Link>
             </section>
-        ) : resturent ? (
+        ) : restaurant ? (
             <>
-                <RestaurantCheckoutHeader restaurant={resturent} />
+                <RestaurantCheckoutHeader restaurant={restaurant} />
                 <section className="mx-3 border border-[#DEC0BA] mt-4 rounded-2xl bg-white px-5 py-6 shadow-sm">
                     <div className="mb-6 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
@@ -259,10 +259,10 @@ return(
                                 Items in Order
                             </h2>
                             <span className="rounded-full bg-[#FAD8D0] px-3 py-1 text-sm font-semibold text-[#A13924]">
-                                {myBowl?.filter((item) => item.resturantId === resturent.id).length ?? 0}
+                                {myBowl?.filter((item) => item.resturantId === restaurant.id).length ?? 0}
                             </span>
                         </div>
-                        <Link href={`../Resturant/${param.id}`}
+                        <Link href={`../Restaurant/${param.id}`}
                             type="button"
                             className="text-sm font-semibold text-[#A13924] transition hover:text-[#7E2C1C]">
                             + Add More/Edit
@@ -271,7 +271,7 @@ return(
 
                     <div className="flex flex-col divide-y divide-[#F0E8E5]">
                         {myBowl
-                            ?.filter((item) => item.resturantId === resturent.id)
+                            ?.filter((item) => item.resturantId === restaurant.id)
                             .map((item) => (
                                 <OrderItemCard key={item.menu.id} item={item} />
                             ))}
@@ -410,14 +410,14 @@ return(
                             Enter Your Name
                         </label>
                     </div>
-                    {paymentMethod === paymentMethods.Cash   && !resturent.payfirst ? (
+                    {paymentMethod === paymentMethods.Cash   && !restaurant.payfirst ? (
                         <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#E8D8D3] bg-[#FBF9F6] px-4 py-3 text-sm text-[#514947]">
                             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FAD8D0] text-xs font-bold text-[#A13924]">
                                 ✓
                             </span>
                             <p>Pay with cash when your order is delivered or served at the restaurant.</p>
                         </div>
-                    ) : paymentMethod === paymentMethods.Cash  && resturent.payfirst ? <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#E8D8D3] bg-[#FBF9F6] px-4 py-3 text-sm text-[#514947]">
+                    ) : paymentMethod === paymentMethods.Cash  && restaurant.payfirst ? <div className="mt-4 flex items-start gap-3 rounded-xl border border-[#E8D8D3] bg-[#FBF9F6] px-4 py-3 text-sm text-[#514947]">
                             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FAD8D0] text-xs font-bold text-[#A13924]">
                                 ✓
                             </span>
@@ -498,7 +498,7 @@ function OrderItemCard({ item }: { item: OrderItem }) {
                 <Image
                     src={item.menu.images?.[0]?.Path
                         ? Imagepath(item.menu.images[0].Path)
-                        : "/broken_resturant__logo.png"}
+                        : "/broken_restaurant__logo.png"}
                     alt={item.menu.itemName}
                     fill
                     className="object-cover"

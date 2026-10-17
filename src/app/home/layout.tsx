@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
 import { Restaurant } from "@/lib/interfaces/order";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import AlerPopup from "@/components/alertPopup";
 import OwnerNav from "@/components/OwnerNav";
 import ServerError from "@/components/serverError";
 import { socket } from "@/lib/websock/socket";
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
-    const [defaultResturant, setDefaultResturant] = useState("");
+    const [defaultRestaurant, setDefaultRestaurant] = useState("");
     const [popup, setPopup] = useState("");
     const [servererror , setservererror] = useState("");
     const [Today , settoday] = useState<Date>();
     const [refreshOrders, setRefreshOrders] = useState(0);
     const [socConnect, setSocConnect] = useState(false);
-    const [resturants, setResturants] = useState<{ id: string; resturantName?: string }[]>([]);
+    const [restaurants, setRestaurants] = useState<{ id: string; resturantName?: string }[]>([]);
     // for fetching users data
     useEffect(() => {
         async function getUserData() {
@@ -31,7 +31,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
                     id: restaurant.id,
                     resturantName: restaurant.resturantName,
                 }));
-                setResturants(restaurantOptions);
+                setRestaurants(restaurantOptions);
                 localStorage.setItem("resids", JSON.stringify(restaurantOptions));
 
                 const storedRestaurant = localStorage.getItem("defaultres");
@@ -40,7 +40,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
                     : { resturantName: restaurants[0].resturantName, id: restaurants[0].id };
 
                 localStorage.setItem("defaultres", JSON.stringify(restaurant));
-                setDefaultResturant(restaurant.id);
+                setDefaultRestaurant(restaurant.id);
             } catch (error) {
                 console.error(error);
             }
@@ -50,16 +50,16 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     }, []);
 
 
-    // for websock resturent 
+    // for websock restaurant
     useEffect(()=>{
-        if(!defaultResturant) return;
+        if(!defaultRestaurant) return;
         const handleConnect = ()=>{
            setSocConnect(true);
            console.log("soc connected" , socket.id);
            socket.emit(
                 "subscribeRestaurant",
                 {
-                resturantId: defaultResturant,
+                resturantId: defaultRestaurant,
                 },
                 (response: { success: boolean; message: string }) => {
                 console.log("Subscription response:", response);
@@ -98,7 +98,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
             socket.disconnect();
         };
 
-    },[defaultResturant])
+    },[defaultRestaurant])
 
 
 
@@ -107,11 +107,11 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     // },[new Date().getMilliseconds])
 
     return (
-        <resturantContext.Provider value={{ defaultResturant, setpopup: setPopup , setservererror , refreshOrders , resturants }}>
-            <OwnerNav handleDefaultResturant={setDefaultResturant} socConnect = {socConnect} />
+        <restaurantContext.Provider value={{ defaultRestaurant, setpopup: setPopup , setservererror , refreshOrders , restaurants }}>
+            <OwnerNav handleDefaultRestaurant={setDefaultRestaurant} socConnect = {socConnect} />
             {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
             {servererror && <ServerError error={servererror} setservererror={() => setservererror("")}  />}
             <main className="relative z-0 ml-[max(16%,12.5rem)] mt-25 min-w-0">{children}</main>
-        </resturantContext.Provider>
+        </restaurantContext.Provider>
     );
 }

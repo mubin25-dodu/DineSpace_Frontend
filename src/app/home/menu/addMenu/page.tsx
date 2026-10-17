@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { MenuItem } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { menuSchema, MenuForm, MenuFormInput } from "@/schemas/menu.schema";
@@ -26,7 +26,7 @@ export default function Addmenu() {
     const [loadingCategories, setLoadingCategories] = useState(false);
     const [itemPhoto, setItemPhoto] = useState<File | null>(null);
     const [itemPhotoPreview, setItemPhotoPreview] = useState<string | null>(null);
-    const {defaultResturant , setpopup , setservererror} = useContext(resturantContext);
+    const {defaultRestaurant , setpopup , setservererror} = useContext(restaurantContext);
     const menuForm = useForm<MenuFormInput, undefined, MenuForm>({
         resolver: zodResolver(menuSchema),
         mode: "onBlur",
@@ -95,7 +95,7 @@ export default function Addmenu() {
 
          try {
         const payloaddata:MenuItem[] = [{
-            resturentId:defaultResturant,
+            resturentId:defaultRestaurant,
              itemName: payload.itemName,
             catagory: payload.catagory,
             price: Number(payload.price),

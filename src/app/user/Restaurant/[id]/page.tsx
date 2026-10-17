@@ -12,12 +12,12 @@ import UsersLoading from "@/components/PageLoader";
 import { motion, spring } from "motion/react";
 import CountUp from "@/components/countUp/countUp";
 
-export default function Resturants(params:{id:string}){
+export default function Restaurants(params:{id:string}){
     const param = useParams<{ id: string }>();
     const {setNavinfo , setservererror , myBowl , setbowl ,setPopup } = useContext(userContext);
     const [catbtn, setcatbtn]= useState("all");
     const [cat, setcat] = useState<string[]>([]);
-    const [resturent, setResturent] = useState<Restaurant | null>(null);
+    const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [nextTotal, setnextTotal] = useState(0);
     const [isCartExpanded, setIsCartExpanded] = useState(false);
     const [error, setError] = useState(false);
@@ -28,37 +28,37 @@ export default function Resturants(params:{id:string}){
     }, [param.id]);
 
     useEffect(()=>{
-        if(!resturent){return}
-        const cats = Array.from(new Set(resturent.menu.filter((e)=> e.isAvailable).map(e=>e.catagory)));
+        if(!restaurant){return}
+        const cats = Array.from(new Set(restaurant.menu.filter((e)=> e.isAvailable).map(e=>e.catagory)));
         setcat(cats);
-    },[resturent]);
+    },[restaurant]);
 
     useEffect(()=>{
        
-        const getresturent = async () => {
+        const getrestaurant = async () => {
             if (!param.id) return;
 
             try {
                 const {data} = await api.get<Result<Restaurant , {menuId:string , timesOrdered: number , totalQuantity: number}[]>>(`resturant/getResturentById/${param.id}`);
                 if (data?.Success && data.Data) {
-                    setResturent(data.Data);
+                    setRestaurant(data.Data);
                      console.log(data)
                      if(data.additionalData){
                        setpopuler(data.additionalData);
                      }
                 } else {
                     setError(true);
-                    setPopup("Failed to fetch resturent");
+                    setPopup("Failed to fetch restaurant");
                 }
             } catch (e) {
                 // console.error(e);
                 setError(true);
-                setPopup("Failed to fetch resturent");
-                new Error("Failed to fetch resturent");
+                setPopup("Failed to fetch restaurant");
+                new Error("Failed to fetch restaurant");
             }
         };
 
-        void getresturent();
+        void getrestaurant();
     }, [param.id, setNavinfo]);
 
     const handlemenucatagory =(cat:string)=>{
@@ -74,13 +74,13 @@ export default function Resturants(params:{id:string}){
     }, [myBowl, param.id ]);
 
     useEffect(()=>{
-        if(!resturent){return}
+        if(!restaurant){return}
 
-        setNavinfo({title:resturent.resturantName
+        setNavinfo({title:restaurant.resturantName
                 ,
             goback: true
         });
-    }, [resturent, nextTotal, setNavinfo]);
+    }, [restaurant, nextTotal, setNavinfo]);
 
     const handledeleteall =()=>{
         setbowl((pr)=>{
@@ -90,21 +90,21 @@ export default function Resturants(params:{id:string}){
     return(
         <>
         {
-        resturent? <div className="mx-auto flex w-full min-h-screen max-w-7xl flex-col scroll-smooth duration-200">
-            <Image className="h-120 w-full object-cover sm:h-64 md:h-80" src={resturent.coverFile?.Path?encodeURI((resturent.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
-            ? resturent.coverFile?.Path?.replace(/\\/g, "/")
-            : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant_cover.png"} width={1000} height={600} alt="cover"></Image>
+        restaurant? <div className="mx-auto flex w-full min-h-screen max-w-7xl flex-col scroll-smooth duration-200">
+            <Image className="h-120 w-full object-cover sm:h-64 md:h-80" src={restaurant.coverFile?.Path?encodeURI((restaurant.coverFile?.Path?.replace(/\\/g, "/")).startsWith("http")
+            ? restaurant.coverFile?.Path?.replace(/\\/g, "/")
+            : `${api.defaults.baseURL?.replace(/\/$/, "")}/${restaurant.coverFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_restaurant_cover.png"} width={1000} height={600} alt="cover"></Image>
             <div className="mt-[-1.5rem] flex min-h-[70vh] flex-col rounded-[20px_20px_0_0] bg-[#FBF9F6] sm:mt-[-2.5rem]">
                 <div className="flex flex-wrap items-center gap-3 px-4 pt-5 sm:px-6">
-                 <Image className="mt-[-3rem] h-20 w-20 rounded-2xl object-cover shadow-md sm:mt-[-5rem] sm:h-28 sm:w-28" src={resturent.logoFile?.Path
-                ? encodeURI((resturent.logoFile?.Path?.replace(/\\/g, "/")).startsWith("http")
-                ? resturent.logoFile?.Path?.replace(/\\/g, "/")
-                : `${api.defaults.baseURL?.replace(/\/$/, "")}/${resturent.logoFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant__logo.png"} width={256} height={256} alt={`${resturent.resturantName} logo`}></Image>
-                <h1 className="min-w-0 flex-1 text-xl font-bold text-[#A13924] sm:text-2xl">{resturent.resturantName.toUpperCase()}</h1>
+                 <Image className="mt-[-3rem] h-20 w-20 rounded-2xl object-cover shadow-md sm:mt-[-5rem] sm:h-28 sm:w-28" src={restaurant.logoFile?.Path
+                ? encodeURI((restaurant.logoFile?.Path?.replace(/\\/g, "/")).startsWith("http")
+                ? restaurant.logoFile?.Path?.replace(/\\/g, "/")
+                : `${api.defaults.baseURL?.replace(/\/$/, "")}/${restaurant.logoFile?.Path?.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_restaurant__logo.png"} width={256} height={256} alt={`${restaurant.resturantName} logo`}></Image>
+                <h1 className="min-w-0 flex-1 text-xl font-bold text-[#A13924] sm:text-2xl">{restaurant.resturantName.toUpperCase()}</h1>
                 </div>
             <div className="flex items-start gap-2 px-4 py-4 sm:px-6">
                 <MapPinCheckInside className="mt-0.5 shrink-0"/>
-                <p className="break-words text-sm text-black sm:text-base">{resturent.address}</p>
+                <p className="break-words text-sm text-black sm:text-base">{restaurant.address}</p>
             </div>
                 <p className="px-4 pb-3 text-[#A13924] font-bold sm:px-6">Checkout the menu</p>
                 <hr className="w-full border-[#97756f]" />
@@ -130,7 +130,7 @@ export default function Resturants(params:{id:string}){
                     <div id="popular" className="mb-4 grid scroll-mt-28 grid-cols-1 gap-y-1 font-semibold md:grid-cols-2 md:gap-x-4">
                         <h2 className="col-span-full px-2 py-2 text-base text-orange-500 sm:text-lg">Popular Now <Flame className="inline-block h-5 w-5 text-orange-500" /></h2>
                         {populer.map((pop) => (
-                            <Ordercard  resturent={resturent.resturantName} resid={param.id} key={pop.menuId} item={resturent.menu.find((f) => f.id === pop.menuId) || {id: "unknown",
+                            <Ordercard  restaurant={restaurant.resturantName} resid={param.id} key={pop.menuId} item={restaurant.menu.find((f) => f.id === pop.menuId) || {id: "unknown",
                                 itemName: "Unknown Item",
                                 description: "Description not available",
                                 catagory: "Unknown",
@@ -143,8 +143,8 @@ export default function Resturants(params:{id:string}){
 
                 {/* cards load */}
                <div className="mt-2 grid grid-cols-1 gap-y-2 p-2 sm:p-4">
-                {cat.map(e=> <section id={e} key={e} className="mb-4 grid scroll-mt-28 grid-cols-1 gap-y-1 font-semibold md:grid-cols-2 md:gap-x-4"> <motion.h2 initial={{ x: -20 }} whileInView={{ x: 0 }} transition={{duration:0.5 , type:"spring"}} viewport={{ once: true }} className="col-span-full px-2 py-2 text-basesm:text-lg">{e}</motion.h2>{resturent.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
-                          key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard resturent={resturent.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
+                {cat.map(e=> <section id={e} key={e} className="mb-4 grid scroll-mt-28 grid-cols-1 gap-y-1 font-semibold md:grid-cols-2 md:gap-x-4"> <motion.h2 initial={{ x: -20 }} whileInView={{ x: 0 }} transition={{duration:0.5 , type:"spring"}} viewport={{ once: true }} className="col-span-full px-2 py-2 text-basesm:text-lg">{e}</motion.h2>{restaurant.menu.map(f=> e == f.catagory && f.isAvailable ? <motion.div                        
+                          key={f.id} initial={{ y: Math.random() * 100, opacity: 0 }} viewport={{ once: true }} whileInView={{ y: 0, opacity: 1 }} transition={{duration:.7}}> <Ordercard restaurant={restaurant.resturantName} resid={param.id} key={f.id} item={f}/></motion.div>:"")}</section>)}
                </div>
             </div>
             <div className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
@@ -198,7 +198,7 @@ export default function Resturants(params:{id:string}){
     )
 }
 
-export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:string ,resturent:string }){
+export function Ordercard({item , resid , restaurant }:{item:MenuItem , resid:string ,restaurant:string }){
     const {myBowl , setbowl} = useContext(userContext);
     const [count, setcount] = useState(1);
     const [found , setfound] = useState(false)   
@@ -228,10 +228,10 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
             if (existingItemIndex ) {
                 // console.log(existingItemIndex);
                 // console.log("item already exist in bowl");
-                return prev!.map(e=> e.menu.id === item.id ? { ...e, quantity: count , resturantName:resturent } : e)
+                return prev!.map(e=> e.menu.id === item.id ? { ...e, quantity: count , resturantName:restaurant } : e)
             } else {
                 // console.log("item added to bowl");
-                return [...prev! , {resturantId:resid, resturantName:resturent , menu: item, quantity: count, price: item.price }];
+                return [...prev! , {resturantId:resid, resturantName:restaurant , menu: item, quantity: count, price: item.price }];
             }
         })
             // console.log(myBowl);
@@ -295,7 +295,7 @@ export function Ordercard({item , resid , resturent }:{item:MenuItem , resid:str
             <Image  className="z-0 h-20 w-20 rounded-2xl object-cover shadow-md sm:h-24 sm:w-24" src={item.images?.[0]?.Path
                 ? encodeURI((item.images[0].Path.replace(/\\/g, "/")).startsWith("http")
                 ? item.images[0].Path.replace(/\\/g, "/")
-                : `${api.defaults.baseURL?.replace(/\/$/, "")}/${item.images[0].Path.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_resturant__logo.png"} width={1000} height={1000} alt={`${item.itemName} image`} />
+                : `${api.defaults.baseURL?.replace(/\/$/, "")}/${item.images[0].Path.replace(/\\/g, "/").replace(/^\//, "")}`) : "/broken_restaurant__logo.png"} width={1000} height={1000} alt={`${item.itemName} image`} />
 
                 {found ? <button onClick={()=>handleremove()} className="absolute top-18 rounded-4xl p-1 bg-[#A13924] right-1"><Trash size={20} color="#ffff" strokeWidth={3} /></button> :<button onClick={()=>handleadd()} className="absolute top-18 rounded-4xl p-1 bg-[#A13924] right-1"><Plus size={20} color="#ffff" strokeWidth={3} /></button>
                 }

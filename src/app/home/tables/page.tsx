@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { TableStatus } from "@/lib/Enums";
 import { OrderTable } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
@@ -34,8 +34,8 @@ const emptyForm: TableForm = {
 };
 
 export default function TablesPage() {
-    const { defaultResturant, setpopup } =
-        useContext(resturantContext);
+    const { defaultRestaurant, setpopup } =
+        useContext(restaurantContext);
 
     const [tables, setTables] = useState<OrderTable[]>([]);
     const [loading, setLoading] = useState(true);
@@ -56,7 +56,7 @@ export default function TablesPage() {
     // --------------------------------------------------
 
     const getTables = async () => {
-        if (!defaultResturant) {
+        if (!defaultRestaurant) {
             setTables([]);
             setLoading(false);
             return;
@@ -66,7 +66,7 @@ export default function TablesPage() {
             setLoading(true);
 
             const { data } = await api.get<Result<OrderTable[]>>(
-                `/tables/getTablesByResturantId/${defaultResturant}`
+                `/tables/getTablesByResturantId/${defaultRestaurant}`
             );
 
             if (data.Success) {
@@ -88,7 +88,7 @@ export default function TablesPage() {
 
     useEffect(() => {
         getTables();
-    }, [defaultResturant]);
+    }, [defaultRestaurant]);
 
     // --------------------------------------------------
     // Statistics
@@ -186,7 +186,7 @@ export default function TablesPage() {
     ) => {
         event.preventDefault();
 
-        if (!defaultResturant) {
+        if (!defaultRestaurant) {
             setpopup("Please select a restaurant first");
             return;
         }
@@ -220,7 +220,7 @@ export default function TablesPage() {
                         tableno: tableNumber,
                         seatCapacity,
                         status: TableStatus.Available,
-                        resturantid: defaultResturant,
+                        resturantid: defaultRestaurant,
                     },
                 ];
 
@@ -244,7 +244,7 @@ export default function TablesPage() {
                         tableno: tableNumber,
                         seatCapacity,
                         status: editingTable.status,
-                        resturantid: defaultResturant,
+                        resturantid: defaultRestaurant,
                     },
                 ];
 

@@ -4,7 +4,7 @@
 User-agent: *
 Allow: /
 Allow: /user
-Allow: /user/Resturant/*
+Allow: /user/Restaurant/*
 
 # Block private/auth-gated routes (not useful for search engines)
 Disallow: /home

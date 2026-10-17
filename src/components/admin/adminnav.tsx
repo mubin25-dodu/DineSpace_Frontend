@@ -18,7 +18,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 interface OwnerNavProps {
-    handleDefaultResturant: (id:string)=> void;
+    handleDefaultRestaurant: (id:string)=> void;
     socConnect:boolean;
 };
 

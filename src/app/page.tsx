@@ -34,11 +34,11 @@ export default function Home() {
     { image: "/Diner/diner-journeys.jpg", alt: "A diner enjoying the restaurant experience", title: "Enjoy your dining journey", description: "Follow a smoother experience from choosing a restaurant to enjoying your meal." },
   ];
   const restaurantFlowItems = [
-    { image: "/Resturent/Staff_managing_restaurant_orders…_20261004172446.jpg", alt: "Restaurant staff managing incoming orders", title: "Manage incoming orders", description: "Restaurant staff can review and manage diner orders as they arrive." },
-    { image: "/Resturent/Staff_managing_restaurant_order_…_20261004172442.jpg", alt: "Restaurant staff processing restaurant orders", title: "Process orders", description: "Keep the team coordinated as orders move through preparation and service." },
-    { image: "/Resturent/Manager_updating_digital_restaur…_20261004172439.jpg", alt: "A manager updating a restaurant's digital setup", title: "Keep restaurant details up to date", description: "Managers can maintain the digital information diners use when ordering." },
-    { image: "/Resturent/Manager_managing_table_QR_codes_20261004172521.jpg", alt: "A manager managing restaurant table QR codes", title: "Manage table QR codes", description: "Organize table QR codes so diners can connect their orders to the right table." },
-    { image: "/Resturent/Manager_using_restaurant_workflo…_20261004172529.jpg", alt: "A manager using the restaurant workflow", title: "Run the restaurant workflow", description: "Use connected tools to keep day-to-day restaurant operations moving." },
+    { image: "/Restaurant/Staff_managing_restaurant_orders…_20261004172446.jpg", alt: "Restaurant staff managing incoming orders", title: "Manage incoming orders", description: "Restaurant staff can review and manage diner orders as they arrive." },
+    { image: "/Restaurant/Staff_managing_restaurant_order_…_20261004172442.jpg", alt: "Restaurant staff processing restaurant orders", title: "Process orders", description: "Keep the team coordinated as orders move through preparation and service." },
+    { image: "/Restaurant/Manager_updating_digital_restaur…_20261004172439.jpg", alt: "A manager updating a restaurant's digital setup", title: "Keep restaurant details up to date", description: "Managers can maintain the digital information diners use when ordering." },
+    { image: "/Restaurant/Manager_managing_table_QR_codes_20261004172521.jpg", alt: "A manager managing restaurant table QR codes", title: "Manage table QR codes", description: "Organize table QR codes so diners can connect their orders to the right table." },
+    { image: "/Restaurant/Manager_using_restaurant_workflo…_20261004172529.jpg", alt: "A manager using the restaurant workflow", title: "Run the restaurant workflow", description: "Use connected tools to keep day-to-day restaurant operations moving." },
   ];
   const [selectedFlow, setSelectedFlow] = useState<"diner" | "restaurant">("diner");
   const [activeFlowStep, setActiveFlowStep] = useState(0);

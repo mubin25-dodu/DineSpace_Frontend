@@ -1,82 +1,82 @@
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { useContext, useEffect, useState, type ChangeEvent } from "react";
 import { ChevronDown, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-interface Resturant{
+interface Restaurant{
     id:string;
     resturantName?:string;
 }
 
 interface func{
-    handleDefaultResturant:(id:string)=> void;
+    handleDefaultRestaurant:(id:string)=> void;
     socConnect:boolean;
 }
 
-export default function ResturantNav({handleDefaultResturant , socConnect}:func) {
-    const [defaultResturant, setdefaultResturant] = useState<Resturant>({ id: "", resturantName: "No resturant Found" });
-    const { resturants } = useContext(resturantContext);
+export default function RestaurantNav({handleDefaultRestaurant , socConnect}:func) {
+    const [defaultRestaurant, setdefaultRestaurant] = useState<Restaurant>({ id: "", resturantName: "No restaurant Found" });
+    const { restaurants } = useContext(restaurantContext);
     const router = useRouter();
 
 
     useEffect(() => {
-        if(!resturants?.length) return;
-        const defaultResturant = localStorage.getItem("defaultres");
+        if(!restaurants?.length) return;
+        const defaultRestaurant = localStorage.getItem("defaultres");
         const allres = localStorage.getItem("resids");
 
   
-        if (!defaultResturant) {
-            setdefaultResturant({ id: "", resturantName: "No resturant Found" });
+        if (!defaultRestaurant) {
+            setdefaultRestaurant({ id: "", resturantName: "No restaurant Found" });
             return;
         }
 
         try {
-            const parsedRes = JSON.parse(defaultResturant);
-            setdefaultResturant(parsedRes);
+            const parsedRes = JSON.parse(defaultRestaurant);
+            setdefaultRestaurant(parsedRes);
         } catch {
-            setdefaultResturant({ id: "", resturantName: "No resturant Found" });
+            setdefaultRestaurant({ id: "", resturantName: "No restaurant Found" });
         }
         console.log("res loadin..")
         
-    }, [resturants]);
+    }, [restaurants]);
 
     useEffect(()=>{
-        handleDefaultResturant(defaultResturant.id);
-    },[defaultResturant.id]);
+        handleDefaultRestaurant(defaultRestaurant.id);
+    },[defaultRestaurant.id]);
 
-    const handleresturantchange = (id:string) => {
-        if(!resturants?.length) return;
-        const selectedRestaurant = resturants?.find((restaurant) => restaurant.id === id);
+    const handlerestaurantchange = (id:string) => {
+        if(!restaurants?.length) return;
+        const selectedRestaurant = restaurants?.find((restaurant) => restaurant.id === id);
         if (!selectedRestaurant) return;
 
-        console.log("hit resturant toggle")
+        console.log("hit restaurant toggle")
         console.log(id);
-        setdefaultResturant(selectedRestaurant);
+        setdefaultRestaurant(selectedRestaurant);
         localStorage.setItem("defaultres", JSON.stringify(selectedRestaurant));
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("accesstoken");
+        // localStorage.removeItem("accesstoken");
         document.cookie = "accesstoken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
         router.replace("/auth");
     };
 
 
     return (
-        // <resturantContext.Provider value={defaultResturant}>
+        // <restaurantContext.Provider value={defaultRestaurant}>
         <>
-            <div className="fixed left-0 right-0 top-0 z-40 flex min-h-20 flex-row items-center gap-3 border-b border-[#DEC0BA] bg-[#FBF9F6] p-4 font-black shadow-sm sm:min-h-21 sm:gap-5 sm:p-5 md:left-[14%]">
+            <div className="fixed left-0 right-0 top-0 z-30 flex min-h-20 flex-row items-center gap-3 border-b border-[#DEC0BA] bg-[#FBF9F6] p-4 font-black shadow-sm sm:min-h-21 sm:gap-5 sm:p-5 md:left-[14%]">
                 <span className="relative block">
                 <select
-                    name="resturentName"
+                    name="restaurantName"
                     className="w-56 appearance-none rounded-xl border border-[#DEC0BA] bg-white px-4 py-2.5 pr-10 text-sm font-bold tracking-wide text-[#514947] shadow-sm outline-none transition hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
-                    value={defaultResturant.id}
-                    onChange={(e)=> handleresturantchange(e.target.value)}
-                    id="resturent-name"
+                    value={defaultRestaurant.id}
+                    onChange={(e)=> handlerestaurantchange(e.target.value)}
+                    id="restaurant-name"
                 >
-                    <option value={defaultResturant.id}>{(defaultResturant.resturantName ?? "Unnamed restaurant").toUpperCase()}</option>
-                    {resturants && resturants!
-                        .filter((restaurant) => restaurant.id !== defaultResturant.id)
+                    <option value={defaultRestaurant.id}>{(defaultRestaurant.resturantName ?? "Unnamed restaurant").toUpperCase()}</option>
+                    {restaurants && restaurants!
+                        .filter((restaurant) => restaurant.id !== defaultRestaurant.id)
                         .map((restaurant) => (
                             <option  key={restaurant.id} value={restaurant.id}>
                                 {(restaurant.resturantName ?? "Unnamed restaurant").toUpperCase()}
@@ -113,6 +113,6 @@ export default function ResturantNav({handleDefaultResturant , socConnect}:func)
                 </button>
             </div>
         </>
-        // </resturantContext.Provider>
+        // </restaurantContext.Provider>
     );
 }

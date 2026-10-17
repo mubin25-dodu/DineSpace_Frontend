@@ -123,7 +123,7 @@ export default function Restaurants() {
                                 <td className="border-b border-[#f0a393] px-4 py-3">
                                     <div className="flex flex-wrap gap-2">
                                         <Link
-                                            href={`/user/Resturant/${restaurant.id}`}
+                                            href={`/user/Restaurant/${restaurant.id}`}
                                             className="rounded bg-[#a13924] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#8b2f20]"
                                         >
                                             Visit Restaurant

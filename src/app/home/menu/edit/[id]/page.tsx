@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { MenuItem } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { menuSchema, MenuForm, MenuFormInput } from "@/schemas/menu.schema";
@@ -27,7 +27,7 @@ export default function Addmenu() {
     const [loadingCategories, setLoadingCategories] = useState(false);
     const [itemPhoto, setItemPhoto] = useState<File | null>(null);
     const [Preview, setPreview] = useState<string | null>(null);
-    const {defaultResturant , setpopup , setservererror} = useContext(resturantContext);
+    const {defaultRestaurant , setpopup , setservererror} = useContext(restaurantContext);
     const [data , setdata ] = useState<MenuItem>()
     const params = useParams<{ id: string }>();
 
@@ -129,7 +129,7 @@ export default function Addmenu() {
     const handleSubmit = async (payload: MenuForm) => {
         try {
         const payloaddata:MenuItem[] = [{
-            resturentId:defaultResturant,
+            resturentId:defaultRestaurant,
             itemName: payload.itemName,
             id:params.id,
             catagory: payload.catagory,

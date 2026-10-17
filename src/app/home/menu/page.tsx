@@ -1,6 +1,6 @@
 "use client"
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { MenuItem } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
 import { ArrowUpDown, PenLine, Plus, Search, Trash } from "lucide-react"
@@ -13,12 +13,12 @@ export default function MenuPage() {
     const [menu , setmenu] = useState<MenuItem[]>();
     const [senddata , setsenddata] = useState<MenuItem[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const {defaultResturant , setpopup} = useContext(resturantContext);
+    const {defaultRestaurant , setpopup} = useContext(restaurantContext);
     
     const callmenuapi = async ()=>{
-        if (!defaultResturant) return;
+        if (!defaultRestaurant) return;
         try{
-        const {data} = await api.get<Result<MenuItem[]>>(`/menu/GetMenu/${defaultResturant}`);
+        const {data} = await api.get<Result<MenuItem[]>>(`/menu/GetMenu/${defaultRestaurant}`);
         if(data.Success)  {
                setmenu(data.Data ?? []);
         }
@@ -27,9 +27,9 @@ export default function MenuPage() {
     }
     }
     useEffect(()=>{
-        if (!defaultResturant) return;
+        if (!defaultRestaurant) return;
         callmenuapi();
-    },[defaultResturant]);
+    },[defaultRestaurant]);
 
     useEffect(()=>{
         const query = searchTerm.trim().toLowerCase();

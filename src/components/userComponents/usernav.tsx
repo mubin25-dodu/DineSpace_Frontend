@@ -4,7 +4,7 @@ import { ArrowLeft, ClipboardList, House, ShieldQuestionMark, Soup } from "lucid
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useSyncExternalStore } from "react";
 import DinespaceLogo  from "../DinespaceLogo";
 import { motion } from "motion/react";
 interface UsernavProps {
@@ -37,11 +37,19 @@ function readIsOwner() {
     }
 }
 
+function useIsOwner() {
+    return useSyncExternalStore(
+        () => () => undefined,
+        readIsOwner,
+        () => false,
+    );
+}
+
 export default function UsernavPhone(params:UsernavProps) {
     const {myBowl} = useContext(userContext);
     const pathname = usePathname();
     const router = useRouter();
-    const [isOwner] = useState(readIsOwner);
+    const isOwner = useIsOwner();
 
     const navItems = [
         { href: "/user", label: "Home", icon: House, isActive: pathname === "/user" },
@@ -111,7 +119,7 @@ export function UsernavDesktop(params:UsernavProps) {
     const { myBowl } = useContext(userContext);
     const pathname = usePathname();
     const router = useRouter();
-    const [isOwner] = useState(readIsOwner);
+    const isOwner = useIsOwner();
 
     const navItems = [
         { href: "/user", label: "Home", icon: House, isActive: pathname === "/user" },

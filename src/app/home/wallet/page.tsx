@@ -1,6 +1,6 @@
 "use client"
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import Result from "@/lib/Result";
 import { useContext, useEffect, useState } from "react";
 import KPICard from "@/components/KPICards";
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function WalletPage() {
-    const {defaultResturant , setpopup} = useContext(resturantContext);
+    const {defaultRestaurant , setpopup} = useContext(restaurantContext);
     const [walletData, setWalletData] = useState<Wallet | undefined>();
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"date" | "status">("date");
@@ -27,9 +27,9 @@ export default function WalletPage() {
 
     const getapi = async () => {
         try {
-            if(!defaultResturant){return}
+            if(!defaultRestaurant){return}
             setLoading(true);
-            const walletResponse = await api.get<Result<Wallet>>(`wallet/wallet/${defaultResturant}`);
+            const walletResponse = await api.get<Result<Wallet>>(`wallet/wallet/${defaultRestaurant}`);
             const wallet = walletResponse.data.Data;
             console.log(walletResponse.data);
             if (walletResponse.data.Success && wallet) {
@@ -53,7 +53,7 @@ export default function WalletPage() {
     }
     useEffect(()=>{
     getapi();
-    },[defaultResturant]);
+    },[defaultRestaurant]);
 
     const amount = walletData?.balance ? Number(walletData.balance) : 0;
     const pendingAmount = walletData?.withdrawalRequests?.filter((req) => req.status === WithdrawalStatus.Pending && req.type === WithdrawalType.Withdraw).reduce((total, request) => total + Number(request.amount), 0) || 0;
@@ -110,7 +110,7 @@ export default function WalletPage() {
         try {
             payload.type = WithdrawalType.Withdraw;
             if(!payload){return};
-            const response = await api.post<Result<string>>(`wallet/WidthdrawRequest/${defaultResturant}`, payload);
+            const response = await api.post<Result<string>>(`wallet/WidthdrawRequest/${defaultRestaurant}`, payload);
             if(response.data.Success){
                 getapi();
             }
@@ -165,7 +165,7 @@ export default function WalletPage() {
            <div className="flex flex-row items-center justify-between mr-5">
              <div className="mt-5 ">
                 <h1 className="text-[30px] font-semibold">Wallet & Payments  <span className="text-[#A13924]">{new Date().toLocaleString("en-US", { year: "numeric" })}</span></h1>
-                <p className="text-gray-600">Manage your resturants finances, refunds and transaction history</p>
+                <p className="text-gray-600">Manage your restaurants finances, refunds and transaction history</p>
             </div>
             <button className="h-fit hover:scale-95 flex flex-row w-fit gap-2 font-semibold rounded-[10px] bg-[#A13924] text-white p-3 duration-150"  onClick={() => {setShowbtn(!showbtn)}}>
                 <Landmark color="#ffffff" size={20}/>Withdraw Funds

@@ -6,7 +6,7 @@ import Result from "@/lib/Result";
 import { socket } from "@/lib/websock/socket";
 import { kpicard, Order, OrderTable } from "@/lib/interfaces/order";
 import { useContext, useEffect, useState } from "react";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus, TableStatus } from "@/lib/Enums";
 import { CheckCircle2, Clock3, CookingPot, CreditCard, HandCoins, RotateCwFadingClock, Subtitles, Table, Utensils } from "lucide-react";
 import Inlinemessage from "./Inlinemessage";
@@ -22,7 +22,7 @@ export default function Overview() {
     const [tablekpi , settablekpi] = useState<kpicard[]>()
     const [totalamount, settotalamount] = useState(0);
     const [kpicards , setkpicard ] = useState<kpicard[]>();
-    const {defaultResturant, setpopup , refreshOrders} = useContext(resturantContext);
+    const {defaultRestaurant, setpopup , refreshOrders} = useContext(restaurantContext);
     const [sendorders , setSendorders] = useState<Order[]>([]);
     const [dataload, setDataload] = useState(false);
     // const [date , setdate] = useState(()=> new Date());
@@ -44,7 +44,7 @@ export default function Overview() {
        const getNewOrders = async ()=>{
             
         try {
-            const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultResturant}`);
+            const res = await api.get<Result<Order[]>>(`/order/todaysOrders/${defaultRestaurant}`);
             // console.log(res)
             const data = res.data.Data;
             if (res.data.Success) {
@@ -91,7 +91,7 @@ export default function Overview() {
 
         const Gettables = async ()=>{
             try{
-            const res = await api.get<Result<OrderTable[]>>(`tables/getTablesByResturantId/${defaultResturant}`);
+            const res = await api.get<Result<OrderTable[]>>(`tables/getTablesByResturantId/${defaultRestaurant}`);
             const data = res.data.Data;
             setGettables(data ?? []);
             // console.log("table data")
@@ -110,9 +110,9 @@ export default function Overview() {
         }
 
         useEffect(()=>{
-         if(defaultResturant === undefined || defaultResturant === null || defaultResturant === "" ){return}
+         if(defaultRestaurant === undefined || defaultRestaurant === null || defaultRestaurant === "" ){return}
         loadOverview();
-        },[defaultResturant , refreshOrders]);
+        },[defaultRestaurant , refreshOrders]);
 
         useEffect(() => {
         setkpicard([
@@ -349,20 +349,20 @@ function Tables({handlesTableState , table}:func){
 }
 
 function Transactions(){
-    const { defaultResturant } = useContext(resturantContext);
+    const { defaultRestaurant } = useContext(restaurantContext);
     const [payment , setPayment] = useState<Payment[]>();
    const getpayment = async ()=>{  
     try{
-    const get = await api.get<Result<Payment[]>>(`payment/GetpaymentByResturentId/${defaultResturant}`);
+    const get = await api.get<Result<Payment[]>>(`payment/GetpaymentByResturentId/${defaultRestaurant}`);
         get.data.Data ? setPayment(get.data.Data) : "";
     } catch(e){console.error(e)}
     
 }
     useEffect(()=>{
-            if(defaultResturant === ""){return}
+            if(defaultRestaurant === ""){return}
             getpayment();
         
-        },[defaultResturant]);
+        },[defaultRestaurant]);
     return (
         <div className="flex flex-col gap-3">
             {payment?.length ? [...payment]

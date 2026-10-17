@@ -286,7 +286,7 @@ sequenceDiagram
 | Route | Purpose |
 |---|---|
 | `/user` | Restaurant discovery |
-| `/user/Resturant/[id]` | Restaurant details and menu |
+| `/user/Restaurant/[id]` | Restaurant details and menu |
 | `/user/checkout/[id]` | Checkout and payment initiation |
 | `/user/myBowl` | Current basket |
 | `/user/myorders` | Customer order lookup/history |
@@ -386,7 +386,7 @@ The frontend uses the Axios instance in [src/lib/api/axios.tsx](./src/lib/api/ax
 | Wallet | `wallet/wallet/{restaurantId}`, `wallet/WidthdrawRequest/{restaurantId}`, `wallet/withdrawal/{id}` | GET, POST, DELETE |
 | Withdrawals | `wallet/withdrawals?status={status}`, `wallet/withdrawal/{id}/status` | GET, PATCH |
 
-> Endpoint spelling and capitalization follow the existing backend contract, including legacy names such as `resturant`, `WidthdrawRequest`, and `toggleAvailabel`.
+> Endpoint spelling and capitalization follow the existing backend contract, including legacy names such as `restaurant`, `WidthdrawRequest`, and `toggleAvailabel`.
 
 ## 9. Domain model summary
 
@@ -446,7 +446,7 @@ The application primarily uses local React state and scoped React contexts rathe
 ### Contexts
 
 - `adminContext`: popup and server-error setters for administrator screens.
-- `resturantContext`: selected restaurant, owner popup/error handling, restaurant options, and order refresh counter.
+- `restaurantContext`: selected restaurant, owner popup/error handling, restaurant options, and order refresh counter.
 - `userContext`: navigation state, user popup/error handling, and bowl contents.
 
 ### Persistence

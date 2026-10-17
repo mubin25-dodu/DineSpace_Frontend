@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (data?.Success && Array.isArray(data.Data)) {
         restaurantPages = data.Data.map(
           (restaurant: { id: string }) => ({
-            url: `${baseUrl}/user/Resturant/${restaurant.id}`,
+            url: `${baseUrl}/user/Restaurant/${restaurant.id}`,
             lastModified: new Date(),
             changeFrequency: "daily" as const,
             priority: 0.8,

@@ -5,7 +5,7 @@ import Link from "next/link";
 import OrderFilter from "@/components/OrderFilter";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { Order, OrderItem } from "@/lib/interfaces/order";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
 import { ArrowDownUp, Dot, PhoneOutgoing, Search, UserRound } from "lucide-react";
@@ -28,7 +28,7 @@ export default function Orders() {
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [orders, setOrders] = useState<Order[]>([]);
   const [availableOrders, setAvailableOrders] = useState<number>(0);
-  const { defaultResturant, refreshOrders, setpopup } = useContext(resturantContext);
+  const { defaultRestaurant, refreshOrders, setpopup } = useContext(restaurantContext);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,11 +39,11 @@ export default function Orders() {
   
 
   const loadorders = async () => {
-    if (!defaultResturant) return;
+    if (!defaultRestaurant) return;
     setIsLoading(true);
     try {
       const { data } = await api.get<Result<Order[]> & { TotalOrders?: number }>(
-        `/order/GetallOrders/${defaultResturant}?page=${page}`,
+        `/order/GetallOrders/${defaultRestaurant}?page=${page}`,
       );
       if (data.Data) {
         setOrders(data.Data);
@@ -131,7 +131,7 @@ export default function Orders() {
     if (!searchTerm.trim()) return;
     try {
       const { data } = await api.get<Result<Order[]>>(
-          `order/filterOrders/${defaultResturant}`,
+          `order/filterOrders/${defaultRestaurant}`,
           {
             params: {
               status: selectedFilter || 'all',
@@ -173,11 +173,11 @@ export default function Orders() {
 
   useEffect(() => {
     setPage(1);
-  }, [defaultResturant]);
+  }, [defaultRestaurant]);
 
   useEffect(() => {
     loadorders();
-  }, [defaultResturant, page, refreshOrders]);
+  }, [defaultRestaurant, page, refreshOrders]);
 
   useEffect(() => {
     console.log("Search term changed:", searchTerm);
@@ -203,7 +203,7 @@ export default function Orders() {
               </p>
             </div>
             <Link
-              href={`/user/Resturant/${defaultResturant}`}
+              href={`/user/Restaurant/${defaultRestaurant}`}
               className="mt-1 rounded-lg bg-[#A13924] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#8a2c1d] focus:outline-none focus:ring-2 focus:ring-[#A13924]/15"
             >
               Place New Order

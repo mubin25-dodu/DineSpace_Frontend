@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/axios";
-import { resturantContext } from "@/lib/context/Context";
+import { restaurantContext } from "@/lib/context/Context";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
 import { Order } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
@@ -61,7 +61,7 @@ interface OrderCardsProps {
 export function  OrderCards({ handler , getOrders, clientNow}: OrderCardsProps){
     // console.log(getOrders);
     // console.log("get orders");
-    const {setpopup} = useContext(resturantContext);
+    const {setpopup} = useContext(restaurantContext);
     const orderBdTime = new Date(getOrders.OrderTime);
     
     // console.log("orderBdTime" + typeof orderBdTime);

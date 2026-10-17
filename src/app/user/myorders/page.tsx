@@ -196,7 +196,7 @@ export default function MyOrders(){
                             </Link>
                             <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E8D8D3] pt-4">
                                 <Link
-                                    href={`/user/Resturant/${order.restaurant.id}`}
+                                    href={`/user/Restaurant/${order.restaurant.id}`}
                                     className="rounded-xl bg-[#A13924] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#7E2C1C]"
                                 >
                                     Visit restaurant
