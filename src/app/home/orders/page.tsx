@@ -266,7 +266,7 @@ export default function Orders() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="text-sm text-[#2F2724]">
+                <tbody className="text-sm text-[#2F2724]v ">
                   {visibleOrders.length ? (
                     visibleOrders.map((e) => (
                       <tr
@@ -277,7 +277,7 @@ export default function Orders() {
                         className={`border-b border-[#EAD8D2] transition-colors hover:bg-[#FFF3EE] ${selectedOrder?.id === e.id ? "bg-[#F8E8E3]" : ""}`}
                       >
                         <td className="px-5 py-5 font-medium text-[#514947]">
-                          <span className="block truncate">#ORD-{e.id.slice(30)}</span>
+                          <span className="truncate flex flex-col">#ORD-{e.id.slice(30)} <span className={``} > {e.OrderStatus}</span></span>
                         </td>
                         <td className="px-3 py-5 text-[#514947]">Table-{e.table.tableno}</td>
                         <td className="px-3 py-5">
@@ -332,10 +332,10 @@ export default function Orders() {
           </div>
         </div>
 
-        <OrderDetailsprofile
+        {selectedOrder !== null ?<OrderDetailsprofile
           selectedOrder={selectedOrder}
           onStatusChange={handleOrderStatusChange}
-        />
+        />:""}
       </div>
     </>
   );
@@ -418,7 +418,7 @@ function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
           </div>
           <br />
           <span>
-          {selectedOrder.orderitems.map((e) => (
+          { selectedOrder.orderitems?.map((e) => (
             <Items key={e.id} items = {e} />
           ))}
           </span>
@@ -467,6 +467,14 @@ interface item {
   items: OrderItem;
 }
 function Items({ items }: item) {
+  if (!items.menu) {
+    return (
+      <div className="mr-10 py-2 text-sm text-gray-500">
+        This item is no longer available.
+      </div>
+    );
+  }
+
   return (
     <>
       <div>
