@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import OrderFilter from "@/components/OrderFilter";
 import { api } from "@/lib/api/axios";
@@ -11,6 +11,8 @@ import { OrderStatus, PaymentStatus } from "@/lib/Enums";
 import { ArrowDownUp, Dot, PhoneOutgoing, Search, UserRound } from "lucide-react";
 import Pagination from "@/components/pagination";
 import SearchItems from "@/components/SearchOrders";
+import { motion } from "motion/react";
+import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
 
 const convertime = (time: Date | string) => {
   const formattedTime = new Date(time).toLocaleString("en-US", {
@@ -31,7 +33,7 @@ export default function Orders() {
   const { defaultRestaurant, refreshOrders, setpopup } = useContext(restaurantContext);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortNewestFirst, setSortNewestFirst] = useState(true);
   const pageSize = 50;
@@ -96,7 +98,7 @@ export default function Orders() {
 
   const handleselection = (e: Order) => {
     setSelectedOrder(e);
-    // console.log(selectedOrder);
+    console.log(selectedOrder);
   };
 
   const handleOrderStatusChange = async (status: OrderStatus) => {
@@ -217,7 +219,7 @@ export default function Orders() {
             </div>
           </div>
           <div className="mb-5 flex items-center justify-between gap-3 px-1">
-            <label className="relative block w-full max-w-[28rem]">
+            <motion.label initial={{scale:0 , width:0}} animate={{scale:1 , width:220}} transition={{duration:0.5 , type:"spring"}} className="relative block w-full max-w-[28rem]">
               <Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b7168]" />
               <input
                 type="search"
@@ -227,7 +229,7 @@ export default function Orders() {
                 aria-label="Search orders"
                 className="w-full rounded-lg border border-[#DEC0BA] bg-white py-2.5 pl-9 pr-3 text-sm text-[#514947] outline-none transition placeholder:text-[#A58D85] hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
               />
-            </label>
+            </motion.label>
             <OrderFilter
               value={selectedFilter}
               orders={orders}
@@ -266,18 +268,71 @@ export default function Orders() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="text-sm text-[#2F2724]v ">
-                  {visibleOrders.length ? (
-                    visibleOrders.map((e) => (
-                      <tr
+                <tbody className="text-sm text-[#2F2724] ">
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={5} className="h-[60vh] p-0">
+                        <div className="flex h-full w-full items-center justify-center">
+                          <LatticeLoader
+                            className=""
+                            status="working"
+                            label="Loading Orders"
+                            doneLabel="Done in"
+                            errorLabel="Failed after"
+                            pattern="arrow"
+                            grid={3}
+                            shape="round"
+                            doneColor="#22c55e"
+                            errorColor="#ef4444"
+                            cellSize={6}
+                            gap={2}
+                            fontSize={14}
+                            step={90}
+                            idleOpacity={0.15}
+                            glow={false}
+                            glowColor="#f5f5f5"
+                            showTimer
+                            color="#A13924"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ) : visibleOrders.length ? (
+                    visibleOrders.map((e , i) => (
+                      <motion.tr
+                        initial = {{y: i !== 0 ? 20 * i : 20 , opacity:0}}
+                        animate = {{y:0 , opacity:1}}
+                        viewport={{once:true}}
+                        transition={{duration:0.5}}
                         onClick={() => {
                           handleselection(e);
                         }}
                         key={e.id}
-                        className={`border-b border-[#EAD8D2] transition-colors hover:bg-[#FFF3EE] ${selectedOrder?.id === e.id ? "bg-[#F8E8E3]" : ""}`}
+                        className={`border-b border-[#EAD8D2] transition-colors ${
+                          selectedOrder?.id === e.id
+                            ? "bg-[#FFF3EE]"
+                            : "bg-[#fffcfa] hover:bg-[#FFF3EE]"
+                        }`}
                       >
                         <td className="px-5 py-5 font-medium text-[#514947]">
-                          <span className="truncate flex flex-col">#ORD-{e.id.slice(30)} <span className={``} > {e.OrderStatus}</span></span>
+                          <span className="flex flex-col truncate">
+                            #ORD-{e.id.slice(30)}
+                            <span className={`mt-1 w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${
+                              e.OrderStatus === OrderStatus.Confirmed
+                                ? "bg-[#DBEAFE] text-[#1D4ED8]"
+                                : e.OrderStatus === OrderStatus.Preparing
+                                  ? "bg-[#FFF0C7] text-[#9A6B00]"
+                                  : e.OrderStatus === OrderStatus.Ready
+                                    ? "bg-[#EDE9FE] text-[#6D28D9]"
+                                    : e.OrderStatus === OrderStatus.Completed
+                                      ? "bg-[#D9F5E4] text-[#168044]"
+                                      : e.OrderStatus === OrderStatus.Canceled || e.OrderStatus === OrderStatus.Failed
+                                        ? "bg-[#FCE0DE] text-[#B42318]"
+                                        : "bg-gray-100 text-gray-700"
+                            }`}>
+                              {e.OrderStatus}
+                            </span>
+                          </span>
                         </td>
                         <td className="px-3 py-5 text-[#514947]">Table-{e.table.tableno}</td>
                         <td className="px-3 py-5">
@@ -309,9 +364,9 @@ export default function Orders() {
                           </a>
                         </td>
                         <td className="px-3 py-5 text-xs text-[#735B53]">{convertime(e.OrderTime)}</td>
-                      </tr>
+                      </motion.tr>
                     ))
-                  ) : (
+                  ) :  (
                     <tr>
                       <td colSpan={5} className="px-5 py-12 text-center text-sm text-[#735B53]">Nothing found</td>
                     </tr>
@@ -365,7 +420,14 @@ function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
 
   return (
     <>
-      <div className="w-[40%] mt-10 mr-10 bg-white h-[84vh] mb-5 border border-[#DEC0BA] rounded-2xl shadow overflow-hidden ">
+      <motion.div
+        // key={selectedOrder.id}
+        // initial={{ rotateY: 180, opacity: 0 }}
+        // animate={{ rotateY: 0, opacity: 1 }}
+        // transition={{ duration: 0.7, type: "spring" }}
+        // style={{ transformPerspective: 1000 }}
+        className="w-[40%] mt-10 mr-10 bg-white h-[84vh] mb-5 border border-[#DEC0BA] rounded-2xl shadow overflow-hidden"
+      >
         <div className="text-[#57423D] text-[16px] font-semibold p-6 border-b border-[#DEC0BA]">
           <span className="font-semibold text-[25px] flex flex-row items-center gap-3 ">
             Order #{selectedOrder.id.toString().slice(30)}{" "}
@@ -456,7 +518,7 @@ function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
                 <span> {selectedOrder.payable - selectedOrder.payment.amount} BDT</span>
             </div>
         </div>
-      </div>          
+      </motion.div>
       <span onClick={()=>{console.log("peep peep")}} className= {`${!more? "hidden":""}`} >
           <SearchItems setMore = {setMore} orderId={selectedOrder.id}/></span>  
     </>
