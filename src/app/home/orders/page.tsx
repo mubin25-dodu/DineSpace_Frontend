@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import OrderFilter from "@/components/OrderFilter";
 import { api } from "@/lib/api/axios";
@@ -8,11 +8,12 @@ import Result from "@/lib/Result";
 import { restaurantContext } from "@/lib/context/Context";
 import { Order, OrderItem } from "@/lib/interfaces/order";
 import { OrderStatus, PaymentStatus } from "@/lib/Enums";
-import { ArrowDownUp, Dot, PhoneOutgoing, Search, UserRound } from "lucide-react";
+import { ArrowDownUp, Dot, PhoneOutgoing, Search, UserRound, X } from "lucide-react";
 import Pagination from "@/components/pagination";
 import SearchItems from "@/components/SearchOrders";
 import { motion } from "motion/react";
 import LatticeLoader from "@/components/LatticeLoader/LetticalLoader";
+import CountUp from "@/components/countUp/countUp";
 
 const convertime = (time: Date | string) => {
   const formattedTime = new Date(time).toLocaleString("en-US", {
@@ -32,6 +33,7 @@ export default function Orders() {
   const [availableOrders, setAvailableOrders] = useState<number>(0);
   const { defaultRestaurant, refreshOrders, setpopup } = useContext(restaurantContext);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(true);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -98,7 +100,7 @@ export default function Orders() {
 
   const handleselection = (e: Order) => {
     setSelectedOrder(e);
-    console.log(selectedOrder);
+    setIsDetailsOpen(true);
   };
 
   const handleOrderStatusChange = async (status: OrderStatus) => {
@@ -192,35 +194,47 @@ export default function Orders() {
 
   return (
     <>
-      <div className="flex flex-row flex-wrap justify-between">
-        <div className="w-[55%] mt-10 mb-5">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="min-w-0 flex-1 mt-10 mb-5">
           <div className="mb-6 px-1">
             <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-[30px] font-semibold leading-tight text-[#171717]">
-                Order History
-              </h1>
-              <p className="mt-1 text-[15px] text-[#514947]">
-                Manage and track active orders across all stations
-              </p>
-            </div>
-            <Link
-              href={`/user/Restaurant/${defaultRestaurant}`}
-              className="mt-1 rounded-lg bg-[#A13924] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#8a2c1d] focus:outline-none focus:ring-2 focus:ring-[#A13924]/15"
-            >
-              Place New Order
-            </Link>
+              <div>
+                <h1 className="text-[30px] font-semibold leading-tight text-[#171717]">
+                  Order History
+                </h1>
+                <p className="mt-1 text-[15px] text-[#514947]">
+                  Manage and track active orders across all stations
+                </p>
+              </div>
+              <Link
+                href={`/user/Restaurant/${defaultRestaurant}`}
+                className="mt-1 rounded-lg bg-[#A13924] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#8a2c1d] focus:outline-none focus:ring-2 focus:ring-[#A13924]/15"
+              >
+                Place New Order
+              </Link>
             </div>
             <div className="mt-4 flex items-center gap-3">
               <span className="text-sm text-[#A13924]">
-                {availableOrders} found, showing {orders?.length}
+                <CountUp to={availableOrders} from={0} duration={0.5} /> found,
+                showing <CountUp to={orders?.length} from={0} duration={0.5} />
+                
               </span>
-              {isLoading && <span className="text-sm text-[#8b7168]">Loading...</span>}
+              {isLoading && (
+                <span className="text-sm text-[#8b7168]">Loading...</span>
+              )}
             </div>
           </div>
           <div className="mb-5 flex items-center justify-between gap-3 px-1">
-            <motion.label initial={{scale:0 , width:0}} animate={{scale:1 , width:220}} transition={{duration:0.5 , type:"spring"}} className="relative block w-full max-w-[28rem]">
-              <Search size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b7168]" />
+            <motion.label
+              initial={{ scale: 0, width: 0 }}
+              animate={{ scale: 1, width: 220 }}
+              transition={{ duration: 0.5, type: "spring" }}
+              className="relative block w-full max-w-[28rem]"
+            >
+              <Search
+                size={17}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8b7168]"
+              />
               <input
                 type="search"
                 value={searchTerm}
@@ -236,7 +250,9 @@ export default function Orders() {
               onChange={setSelectedFilter}
             />
             <button
-              onClick={() => {handleDatabaseLookup()}}
+              onClick={() => {
+                handleDatabaseLookup();
+              }}
               className="whitespace-nowrap rounded-lg border border-[#A13924] bg-white px-4 py-2 text-sm font-semibold text-[#A13924] transition hover:bg-[#FFF1ED] focus:outline-none focus:ring-2 focus:ring-[#A13924]/15"
             >
               Database Lookup
@@ -244,153 +260,189 @@ export default function Orders() {
           </div>
           <div className="h-[65vh] overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#FFFCFA] shadow-sm">
             <div className="flex h-full flex-col ">
-            <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto scrollbar-none mt-2">
-              <table className="w-full min-w-[760px] table-fixed text-left">
-                <thead className="sticky top-0 z-10 border-b border-[#DEC0BA] bg-[#FFF8F5]">
-                  <tr className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#735B53]">
-                    <th className="w-[23%] px-5 py-4">Order ID</th>
-                    <th className="w-[14%] px-3 py-4">Table</th>
-                    <th className="w-[20%] px-3 py-4">Payment</th>
-                    <th className="w-[27%] px-3 py-4">Customer Details</th>
-                    <th className="w-[16%] px-3 py-4">
-                      <button
-                        type="button"
-                        onClick={() => setSortNewestFirst((current) => !current)}
-                        className="inline-flex items-center gap-2 transition hover:text-[#A13924]"
-                        aria-label={`Sort by date, currently ${sortNewestFirst ? "newest first" : "oldest first"}`}
-                      >
-                        Date
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#F4E9E5] px-2 py-1 text-[10px] normal-case tracking-normal text-[#735B53]">
-                          <ArrowDownUp size={11} />
-                          {sortNewestFirst ? "Newest" : "Oldest"}
-                        </span>
-                      </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm text-[#2F2724] ">
-                  {isLoading ? (
-                    <tr>
-                      <td colSpan={5} className="h-[60vh] p-0">
-                        <div className="flex h-full w-full items-center justify-center">
-                          <LatticeLoader
-                            className=""
-                            status="working"
-                            label="Loading Orders"
-                            doneLabel="Done in"
-                            errorLabel="Failed after"
-                            pattern="arrow"
-                            grid={3}
-                            shape="round"
-                            doneColor="#22c55e"
-                            errorColor="#ef4444"
-                            cellSize={6}
-                            gap={2}
-                            fontSize={14}
-                            step={90}
-                            idleOpacity={0.15}
-                            glow={false}
-                            glowColor="#f5f5f5"
-                            showTimer
-                            color="#A13924"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ) : visibleOrders.length ? (
-                    visibleOrders.map((e , i) => (
-                      <motion.tr
-                        initial = {{y: i !== 0 ? 20 * i : 20 , opacity:0}}
-                        animate = {{y:0 , opacity:1}}
-                        viewport={{once:true}}
-                        transition={{duration:0.5}}
-                        onClick={() => {
-                          handleselection(e);
-                        }}
-                        key={e.id}
-                        className={`border-b border-[#EAD8D2] transition-colors ${
-                          selectedOrder?.id === e.id
-                            ? "bg-[#FFF3EE]"
-                            : "bg-[#fffcfa] hover:bg-[#FFF3EE]"
-                        }`}
-                      >
-                        <td className="px-5 py-5 font-medium text-[#514947]">
-                          <span className="flex flex-col truncate">
-                            #ORD-{e.id.slice(30)}
-                            <span className={`mt-1 w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${
-                              e.OrderStatus === OrderStatus.Confirmed
-                                ? "bg-[#DBEAFE] text-[#1D4ED8]"
-                                : e.OrderStatus === OrderStatus.Preparing
-                                  ? "bg-[#FFF0C7] text-[#9A6B00]"
-                                  : e.OrderStatus === OrderStatus.Ready
-                                    ? "bg-[#EDE9FE] text-[#6D28D9]"
-                                    : e.OrderStatus === OrderStatus.Completed
-                                      ? "bg-[#D9F5E4] text-[#168044]"
-                                      : e.OrderStatus === OrderStatus.Canceled || e.OrderStatus === OrderStatus.Failed
-                                        ? "bg-[#FCE0DE] text-[#B42318]"
-                                        : "bg-gray-100 text-gray-700"
-                            }`}>
-                              {e.OrderStatus}
-                            </span>
+              <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto scrollbar-none mt-2">
+                <table className="w-full min-w-[760px] table-fixed text-left">
+                  <thead className="sticky top-0 z-10 border-b border-[#DEC0BA] bg-[#FFF8F5]">
+                    <tr className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#735B53]">
+                      <th className="w-[23%] px-5 py-4">Order ID</th>
+                      <th className="w-[14%] px-3 py-4">Table</th>
+                      <th className="w-[20%] px-3 py-4">Payment</th>
+                      <th className="w-[27%] px-3 py-4">Customer Details</th>
+                      <th className="w-[16%] px-3 py-4">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSortNewestFirst((current) => !current)
+                          }
+                          className="inline-flex items-center gap-2 transition hover:text-[#A13924]"
+                          aria-label={`Sort by date, currently ${sortNewestFirst ? "newest first" : "oldest first"}`}
+                        >
+                          Date
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#F4E9E5] px-2 py-1 text-[10px] normal-case tracking-normal text-[#735B53]">
+                            <ArrowDownUp size={11} />
+                            {sortNewestFirst ? "Newest" : "Oldest"}
                           </span>
-                        </td>
-                        <td className="px-3 py-5 text-[#514947]">Table-{e.table.tableno}</td>
-                        <td className="px-3 py-5">
-                          <span className="block font-semibold text-[#171717]">{e.payable} BDT</span>
-                          {e.payment.status == PaymentStatus.Pending ? (
-                            <span className="mt-1 inline-flex rounded-full bg-[#FFF0C7] px-2.5 py-1 text-[11px] font-semibold text-[#9A6B00]">
-                              {e.payment.status.toUpperCase()}
-                            </span>
-                          ) : e.payment.status == PaymentStatus.Failed ? (
-                            <span className="mt-1 inline-flex rounded-full bg-[#FCE0DE] px-2.5 py-1 text-[11px] font-semibold text-[#B42318]">
-                              {e.payment.status.toUpperCase()}
-                            </span>
-                          ) : e.payment.status == PaymentStatus.Paid ? (
-                            <span className="mt-1 inline-flex rounded-full bg-[#D9F5E4] px-2.5 py-1 text-[11px] font-semibold text-[#168044]">
-                              {e.payment.status.toUpperCase()}
-                            </span>
-                          ) : (
-                            ""
-                          )}
-                        </td>
-                        <td className="px-3 py-5">
-                          <span className="block truncate font-medium">{e.customerName}</span>
-                          <a
-                            href={`tel:${e.customerPhone}`}
-                            className="mt-1 inline-flex items-center gap-1 text-xs text-[#735B53] transition hover:text-[#A13924]"
-                          >
-                            {e.customerPhone}
-                            <PhoneOutgoing size={13} />
-                          </a>
-                        </td>
-                        <td className="px-3 py-5 text-xs text-[#735B53]">{convertime(e.OrderTime)}</td>
-                      </motion.tr>
-                    ))
-                  ) :  (
-                    <tr>
-                      <td colSpan={5} className="px-5 py-12 text-center text-sm text-[#735B53]">Nothing found</td>
+                        </button>
+                      </th>
                     </tr>
-                    
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className=" flex justify-around border-t border-t-[#DEC0BA]">
-              {" "}
-              <span className="flex flex-row items-center gap-2">
+                  </thead>
+                  <tbody className="text-sm text-[#2F2724] ">
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={5} className="h-[60vh] p-0">
+                          <div className="flex h-full w-full items-center justify-center">
+                            <LatticeLoader
+                              className=""
+                              status="working"
+                              label="Loading Orders"
+                              doneLabel="Done in"
+                              errorLabel="Failed after"
+                              pattern="arrow"
+                              grid={3}
+                              shape="round"
+                              doneColor="#22c55e"
+                              errorColor="#ef4444"
+                              cellSize={6}
+                              gap={2}
+                              fontSize={14}
+                              step={90}
+                              idleOpacity={0.15}
+                              glow={false}
+                              glowColor="#f5f5f5"
+                              showTimer
+                              color="#A13924"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ) : visibleOrders.length ? (
+                      visibleOrders.map((e, i) => (
+                        <motion.tr
+                          initial={{ y: i !== 0 ? 20 * i : 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5 }}
+                          onClick={() => {
+                            handleselection(e);
+                          }}
+                          key={e.id}
+                          className={`border-b border-[#EAD8D2] transition-colors ${
+                            selectedOrder?.id === e.id
+                              ? "bg-[#FFF3EE]"
+                              : "bg-[#fffcfa] hover:bg-[#FFF3EE]"
+                          }`}
+                        >
+                          <td className="px-5 py-5 font-medium text-[#514947]">
+                            <span className="flex flex-col truncate">
+                              #ORD-{e.id.slice(30)}
+                              <span
+                                className={`mt-1 w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase ${
+                                  e.OrderStatus === OrderStatus.Confirmed
+                                    ? "bg-[#DBEAFE] text-[#1D4ED8]"
+                                    : e.OrderStatus === OrderStatus.Preparing
+                                      ? "bg-[#FFF0C7] text-[#9A6B00]"
+                                      : e.OrderStatus === OrderStatus.Ready
+                                        ? "bg-[#EDE9FE] text-[#6D28D9]"
+                                        : e.OrderStatus ===
+                                            OrderStatus.Completed
+                                          ? "bg-[#D9F5E4] text-[#168044]"
+                                          : e.OrderStatus ===
+                                                OrderStatus.Canceled ||
+                                              e.OrderStatus ===
+                                                OrderStatus.Failed
+                                            ? "bg-[#FCE0DE] text-[#B42318]"
+                                            : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {e.OrderStatus}
+                              </span>
+                            </span>
+                          </td>
+                          <td className="px-3 py-5 text-[#514947]">
+                            Table-{e.table.tableno}
+                          </td>
+                          <td className="px-3 py-5">
+                            <span className="block font-semibold text-[#171717]">
+                              {e.payable} BDT
+                            </span>
+                            {e.payment.status == PaymentStatus.Pending ? (
+                              <span className="mt-1 inline-flex rounded-full bg-[#FFF0C7] px-2.5 py-1 text-[11px] font-semibold text-[#9A6B00]">
+                                {e.payment.status.toUpperCase()}
+                              </span>
+                            ) : e.payment.status == PaymentStatus.Failed ? (
+                              <span className="mt-1 inline-flex rounded-full bg-[#FCE0DE] px-2.5 py-1 text-[11px] font-semibold text-[#B42318]">
+                                {e.payment.status.toUpperCase()}
+                              </span>
+                            ) : e.payment.status == PaymentStatus.Paid ? (
+                              <span className="mt-1 inline-flex rounded-full bg-[#D9F5E4] px-2.5 py-1 text-[11px] font-semibold text-[#168044]">
+                                {e.payment.status.toUpperCase()}
+                              </span>
+                            ) : (
+                              ""
+                            )}
+                          </td>
+                          <td className="px-3 py-5">
+                            <span className="block truncate font-medium">
+                              {e.customerName}
+                            </span>
+                            <a
+                              href={`tel:${e.customerPhone}`}
+                              className="mt-1 inline-flex items-center gap-1 text-xs text-[#735B53] transition hover:text-[#A13924]"
+                            >
+                              {e.customerPhone}
+                              <PhoneOutgoing size={13} />
+                            </a>
+                          </td>
+                          <td className="px-3 py-5 text-xs text-[#735B53]">
+                            {convertime(e.OrderTime)}
+                          </td>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="px-5 py-12 text-center text-sm text-[#735B53]"
+                        >
+                          Nothing found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className=" flex justify-around border-t border-t-[#DEC0BA]">
                 {" "}
-                {isLoading ? "Loading" : ""}
-                <Pagination setPage={setPage} pageno={page} disabled={disabled} />
-              </span>
+                <span className="flex flex-row items-center gap-2">
+                  {" "}
+                  {isLoading ? "Loading" : ""}
+                  <Pagination
+                    setPage={setPage}
+                    pageno={page}
+                    disabled={disabled}
+                  />
+                </span>
+              </div>
             </div>
-          </div>
           </div>
         </div>
 
-        {selectedOrder !== null ?<OrderDetailsprofile
-          selectedOrder={selectedOrder}
-          onStatusChange={handleOrderStatusChange}
-        />:""}
+        {selectedOrder !== null && isDetailsOpen ? (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            className="w-full lg:w-[40%]"
+          >
+            <OrderDetailsprofile
+              selectedOrder={selectedOrder}
+              onStatusChange={handleOrderStatusChange}
+              onClose={() => setIsDetailsOpen(false)}
+            />
+          </motion.div>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );
@@ -398,8 +450,9 @@ export default function Orders() {
 interface order {
   selectedOrder: Order | null;
   onStatusChange: (status: OrderStatus) => void;
+  onClose: () => void;
 }
-function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
+function OrderDetailsprofile({ selectedOrder, onStatusChange, onClose }: order) {
     const [disbtn , setdisbtn]= useState(false);
     const [more , setMore]= useState(false);
 
@@ -426,64 +479,84 @@ function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
         // animate={{ rotateY: 0, opacity: 1 }}
         // transition={{ duration: 0.7, type: "spring" }}
         // style={{ transformPerspective: 1000 }}
-        className="w-[40%] mt-10 mr-10 bg-white h-[84vh] mb-5 border border-[#DEC0BA] rounded-2xl shadow overflow-hidden"
+        className="mt-10 mb-5 flex h-[84vh] w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-[#DEC0BA] bg-white shadow-sm lg:w-full"
       >
-        <div className="text-[#57423D] text-[16px] font-semibold p-6 border-b border-[#DEC0BA]">
-          <span className="font-semibold text-[25px] flex flex-row items-center gap-3 ">
-            Order #{selectedOrder.id.toString().slice(30)}{" "}
-            <select
-              value={selectedOrder.OrderStatus}
-              onChange={(event) => onStatusChange(event.target.value as OrderStatus)}
-              aria-label="Change order status"
-              className="rounded-lg border border-[#DEC0BA] bg-[#FFF8F5] px-2 py-1 text-sm font-bold text-[#A13924] outline-none transition hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
-            >
-              {Object.values(OrderStatus).map((status) => (
-                <option key={status} value={status}>
-                  {status.toUpperCase()}
-                </option>
-              ))}
-            </select>
-          </span>
-          <span className=" flex flex-row">
-            Placed at {convertime(selectedOrder.OrderTime)}{" "}
-            <Dot size={25} strokeWidth={3} /> Dine-in (Table no{" "}
-            {selectedOrder.table.tableno})
-          </span>
+        <div className="flex items-start justify-between gap-4 border-b border-[#DEC0BA] p-5 text-[#57423D]">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-xl font-semibold text-[#171717]">
+                Order #{selectedOrder.id.toString().slice(30)}
+              </h2>
+              <select
+                value={selectedOrder.OrderStatus}
+                onChange={(event) => onStatusChange(event.target.value as OrderStatus)}
+                aria-label="Change order status"
+                className="rounded-lg border border-[#DEC0BA] bg-[#FFF8F5] px-2 py-1 text-sm font-bold text-[#A13924] outline-none transition hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
+              >
+                {Object.values(OrderStatus).map((status) => (
+                  <option key={status} value={status}>
+                    {status.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="mt-2 flex flex-wrap items-center text-sm text-[#735B53]">
+              Placed at {convertime(selectedOrder.OrderTime)}
+              <Dot size={20} strokeWidth={3} />
+              Dine-in (Table no {selectedOrder.table.tableno})
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close order details"
+            title="Close order details"
+            className="rounded-lg p-2 text-[#735B53] transition hover:bg-[#FFF1ED] hover:text-[#A13924] focus:outline-none focus:ring-2 focus:ring-[#A13924]/20"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <div className="bg-[#f5f3f0] p-5 m-10 w-fit rounded-2xl border-[#DEC0BA] ">
-          <span className="flex flex-row justify-center items-center gap-4">
+        <div className="min-h-0 flex-1 overflow-y-auto p-5">
+        <div className="mb-6 flex w-full items-center gap-4 rounded-xl border border-[#EAD8D2] bg-[#FFF8F5] p-4">
             <UserRound
-              size={65}
-              strokeWidth={3}
-              className="bg-[#b1aeab] p-2 rounded-4xl "
+              size={52}
+              strokeWidth={1.8}
+              className="shrink-0 rounded-full bg-[#F3DDD5] p-3 text-[#A13924]"
             />
-            <span>
-              <span className="flex flex-col text-[30px]">
+            <div className="min-w-0">
+              <p className="truncate text-lg font-semibold text-[#2F2724]">
                 {selectedOrder.customerName}
-              </span>
-              <span className="flex flex-row gap-2 items-center">
-                <PhoneOutgoing size={20} color="blue" />
+              </p>
+              <span className="mt-1 flex items-center gap-2 text-sm text-[#735B53]">
+                <PhoneOutgoing size={15} />
                 <a
-                  className="hover:text-blue-700"
+                  className="transition hover:text-[#A13924]"
                   href={`tel:${selectedOrder.customerPhone}`}
                 >
                   {selectedOrder.customerPhone}
                 </a>
               </span>
-            </span>
-          </span>
+            </div>
         </div>
 
-        <div className="pl-10 ">
-          <div>ORDER ITEMS ({selectedOrder.orderitems.length}) <span onClick={()=>{setMore(!more)}} className="text-[15px] cursor-pointer font-bold text-[#A13924]">add more items</span>
+        <div>
+          <div className="flex items-center justify-between gap-3 text-xs font-semibold tracking-wide text-[#735B53]">
+            <span>ORDER ITEMS ({selectedOrder.orderitems.length})</span>
+            <button
+              type="button"
+              aria-expanded={more}
+              onClick={() => setMore(!more)}
+              className="text-sm font-semibold normal-case tracking-normal text-[#A13924] hover:underline"
+            >
+              Add more items
+            </button>
           </div>
-          <br />
-          <span>
+          <div className="mt-3">
           { selectedOrder.orderitems?.map((e) => (
             <Items key={e.id} items = {e} />
           ))}
-          </span>
+          </div>
         </div>
         <div>
             <hr className="border-[#b1aeab] w-[90%] ml-[5%] mt-5"/>
@@ -517,6 +590,7 @@ function OrderDetailsprofile({ selectedOrder, onStatusChange }: order) {
                 <span> Payable amount</span>
                 <span> {selectedOrder.payable - selectedOrder.payment.amount} BDT</span>
             </div>
+        </div>
         </div>
       </motion.div>
       <span onClick={()=>{console.log("peep peep")}} className= {`${!more? "hidden":""}`} >

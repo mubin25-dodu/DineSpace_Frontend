@@ -111,7 +111,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
             <OwnerNav handleDefaultRestaurant={setDefaultRestaurant} socConnect = {socConnect} />
             {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
             {servererror && <ServerError error={servererror} setservererror={() => setservererror("")}  />}
-            <main className="relative z-0 ml-[max(16%,12.5rem)] mt-25 min-w-0">{children}</main>
+            <main className="relative z-0 ml-[max(16%,12.5rem)] mt-25 min-w-0 mr-[25]">{children}</main>
         </restaurantContext.Provider>
     );
 }
