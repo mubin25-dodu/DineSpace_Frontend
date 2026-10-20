@@ -12,7 +12,9 @@
 
 # testing
 /coverage
-
+.lean-ctx
+.taste-skill
+.gitignore
 # next.js
 /.next/
 /out/
