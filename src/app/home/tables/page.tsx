@@ -5,6 +5,7 @@ import { restaurantContext } from "@/lib/context/Context";
 import { TableStatus } from "@/lib/Enums";
 import { OrderTable } from "@/lib/interfaces/order";
 import Result from "@/lib/Result";
+import { motion } from "motion/react";
 import {
     Armchair,
     Edit3,
@@ -489,190 +490,133 @@ export default function TablesPage() {
                 </span>
             </div>
 
-            {/* Table list */}
+            {/* Table cards */}
 
-            <div className="mt-5 h-[58vh] overflow-auto rounded-xl border border-[#dec0ba] bg-white scrollbar-none">
-                <table className="w-full min-w-[850px] table-fixed text-left">
-                    <thead className="sticky top-0 z-10 border-b border-[#dec0ba] bg-white text-[14px] uppercase tracking-wide text-[#654f48]">
-                        <tr>
-                            <th className="px-5 py-4 font-semibold">
-                                Table No.
-                            </th>
+            {loading ? (
+                <div className="mt-5 rounded-xl border border-[#dec0ba] bg-white px-5 py-12 text-center text-gray-500">
+                    Loading tables...
+                </div>
+            ) : filteredTables.length === 0 ? (
+                <div className="mt-5 rounded-xl border border-dashed border-[#dec0ba] bg-white px-5 py-12 text-center text-gray-500">
+                    No tables found
+                </div>
+            ) : (
+                <div className="mt-5 grid grid-cols-1 gap-3 pb-8 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    {filteredTables.map((table, index) => (
+                        <motion.article
+                            key={table.id}
+                            initial={{ opacity: 0, y: 18, scale: 0.96 }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                            viewport={{ once: true, amount: 0.15 }}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.99 }}
+                            transition={{
+                                duration: 0.45,
+                                delay: Math.min(index * 0.06, 0.36),
+                                type: "spring",
+                                stiffness: 130,
+                                damping: 16,
+                            }}
+                            className="group relative overflow-hidden rounded-2xl border border-[#dec0ba] bg-white p-4 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-[#A13924] hover:shadow-xl motion-reduce:transition-none"
+                        >
+                            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#A13924] via-[#d68163] to-[#f0c3b9]" />
 
-                            <th className="px-5 py-4 font-semibold">
-                                Seats
-                            </th>
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex min-w-0 items-center gap-3">
+                                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#fff1ee] text-[#A13924] transition-transform duration-300 group-hover:rotate-[-4deg] group-hover:scale-105 motion-reduce:transition-none">
+                                        <Armchair size={23} strokeWidth={1.8} />
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#8b7168]">
+                                            Table
+                                        </p>
+                                        <h2 className="truncate text-xl font-bold leading-6 text-[#28211e]">
+                                            {table.tableno}
+                                        </h2>
+                                    </div>
+                                </div>
+                                <StatusBadge status={table.status} />
+                            </div>
 
-                            <th className="px-5 py-4 font-semibold">
-                                Status
-                            </th>
-
-                            <th className="px-5 py-4 font-semibold">
-                                Reservation
-                            </th>
-
-                            <th className="px-5 py-4 text-right font-semibold">
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td
-                                    colSpan={5}
-                                    className="px-5 py-12 text-center text-gray-500"
-                                >
-                                    Loading tables...
-                                </td>
-                            </tr>
-                        ) : filteredTables.length ===
-                          0 ? (
-                            <tr>
-                                <td
-                                    colSpan={5}
-                                    className="px-5 py-12 text-center text-gray-500"
-                                >
-                                    No tables found
-                                </td>
-                            </tr>
-                        ) : (
-                            filteredTables.map(
-                                (table) => (
-                                    <tr
-                                        key={table.id}
-                                        className="border-b border-[#ead9d4] transition last:border-0 hover:bg-[#fcf7f4]"
+                            <div className="mt-4 grid grid-cols-2 gap-2">
+                                <div className="rounded-xl bg-[#fcf7f4] px-3 py-2.5">
+                                    <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8b7168]">
+                                        Seating
+                                    </p>
+                                    <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-[#413a34]">
+                                        <Users size={15} className="text-[#A13924]" />
+                                        {table.seatCapacity}{" "}
+                                        {table.seatCapacity === 1 ? "seat" : "seats"}
+                                    </div>
+                                </div>
+                                <div className="rounded-xl bg-[#fcf7f4] px-3 py-2.5">
+                                    <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8b7168]">
+                                        Reservation
+                                    </p>
+                                    <p
+                                        className={`mt-1 truncate text-sm font-semibold ${
+                                            table.reservationId
+                                                ? "text-[#8b6100]"
+                                                : "text-[#9a8b84]"
+                                        }`}
                                     >
-                                        <td className="px-5 py-4">
-                                            <div className="font-semibold text-[#28211e]">
-                                                Table{" "}
-                                                {
-                                                    table.tableno
-                                                }
-                                            </div>
-                                        </td>
+                                        {table.reservationId
+                                            ? "Reserved"
+                                            : "None"}
+                                    </p>
+                                </div>
+                            </div>
 
-                                        <td className="px-5 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <Users
-                                                    size={
-                                                        17
-                                                    }
-                                                    className="text-[#A13924]"
-                                                />
+                            <div className="mt-3 flex items-center justify-between gap-2 border-t border-[#ead9d4] pt-3">
+                                <label
+                                    className="sr-only"
+                                    htmlFor={`table-status-${table.id}`}
+                                >
+                                    Change status for table {table.tableno}
+                                </label>
+                                <select
+                                    id={`table-status-${table.id}`}
+                                    value={table.status}
+                                    onChange={(event) =>
+                                        changeStatus(
+                                            table,
+                                            event.target.value as TableStatus,
+                                        )
+                                    }
+                                    className="min-w-0 flex-1 rounded-lg border border-[#dec0ba] bg-white px-2.5 py-2 text-xs font-medium text-[#554742] outline-none transition-colors hover:border-[#A13924] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/10"
+                                >
+                                    {Object.values(TableStatus).map(
+                                        (status) => (
+                                            <option key={status} value={status}>
+                                                {status}
+                                            </option>
+                                        ),
+                                    )}
+                                </select>
 
-                                                <span>
-                                                    {
-                                                        table.seatCapacity
-                                                    }{" "}
-                                                    seats
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            <div className="flex flex-col gap-2">
-                                                <StatusBadge
-                                                    status={
-                                                        table.status
-                                                    }
-                                                />
-
-                                                <select
-                                                    value={
-                                                        table.status
-                                                    }
-                                                    onChange={(
-                                                        event
-                                                    ) =>
-                                                        changeStatus(
-                                                            table,
-                                                            event
-                                                                .target
-                                                                .value as TableStatus
-                                                        )
-                                                    }
-                                                    className="w-36 rounded-lg border border-[#dec0ba] bg-white px-2 py-1.5 text-xs outline-none focus:border-[#A13924]"
-                                                >
-                                                    {Object.values(
-                                                        TableStatus
-                                                    ).map(
-                                                        (
-                                                            status
-                                                        ) => (
-                                                            <option
-                                                                key={
-                                                                    status
-                                                                }
-                                                                value={
-                                                                    status
-                                                                }
-                                                            >
-                                                                {
-                                                                    status
-                                                                }
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-                                            </div>
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            {table.reservationId ? (
-                                                <span className="rounded-md bg-[#fff0cf] px-3 py-1 text-xs font-medium text-[#8b6100]">
-                                                    Reserved
-                                                </span>
-                                            ) : (
-                                                <span className="text-sm text-gray-400">
-                                                    —
-                                                </span>
-                                            )}
-                                        </td>
-
-                                        <td className="px-5 py-4">
-                                            <div className="flex justify-end gap-3">
-                                                <button
-                                                    onClick={() =>
-                                                        openEditForm(
-                                                            table
-                                                        )
-                                                    }
-                                                    title="Edit table"
-                                                    className="cursor-pointer text-[#A13924] transition hover:scale-90"
-                                                >
-                                                    <Edit3
-                                                        size={
-                                                            20
-                                                        }
-                                                    />
-                                                </button>
-
-                                                <button
-                                                    onClick={() =>
-                                                        deleteTable(
-                                                            table
-                                                        )
-                                                    }
-                                                    title="Delete table"
-                                                    className="cursor-pointer text-red-600 transition hover:scale-90"
-                                                >
-                                                    <Trash2
-                                                        size={
-                                                            20
-                                                        }
-                                                    />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )
-                            )
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        type="button"
+                                        onClick={() => openEditForm(table)}
+                                        aria-label={`Edit table ${table.tableno}`}
+                                        className="rounded-lg p-2 text-[#A13924] transition-colors hover:bg-[#fff1ee] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A13924]"
+                                    >
+                                        <Edit3 size={18} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => deleteTable(table)}
+                                        aria-label={`Delete table ${table.tableno}`}
+                                        className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.article>
+                    ))}
+                </div>
+            )}
 
             {/* Add / Edit Modal */}
 
@@ -850,8 +794,9 @@ function StatusBadge({
 
     return (
         <span
-            className={`w-fit rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}
+            className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${styles[status]}`}
         >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
             {status}
         </span>
     );
