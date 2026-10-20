@@ -1,6 +1,9 @@
 "use client";
 import {
+  useCallback,
   useContext,
+  useEffect,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction,
@@ -34,8 +37,14 @@ interface LoginResponse {
   id: string;
 }
 
+const demoOwnerCredentials = {
+  email: "mubin9516@gmail.com",
+  password: "Mubin@11",
+} satisfies loginForm;
+
 export default function Auth() {
   const router = useRouter();
+  const demoLoginStartedRef = useRef(false);
   const [showForm, setShowform] = useState(false);
   const [serverError, setServerError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -56,15 +65,15 @@ export default function Auth() {
     mode: "onBlur",
   });
 
-  const loginBtnClicked = () => {
+  const loginBtnClicked = useCallback(() => {
     // console.log("loginBtnClicked");
     setbuttons((e) => ({ ...e, login: true }));
     setTimeout(() => {
       setbuttons((e) => ({ ...e, login: false }));
     }, 15000); //15sec
-  };
+  }, []);
 
-  const login = async (payload: loginForm) => {
+  const login = useCallback(async (payload: loginForm) => {
     loginBtnClicked();
     try {
       const { data } = await api.post<Result<LoginResponse>>(
@@ -104,7 +113,15 @@ export default function Auth() {
       });
       setbuttons((e) => ({ ...e, login: false }));
     }
-  };
+  }, [form, loginBtnClicked, router]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("demo") !== "owner" || demoLoginStartedRef.current) return;
+
+    demoLoginStartedRef.current = true;
+    void login(demoOwnerCredentials);
+  }, [login]);
 
   const verifybtnClicked = () => {
     // console.log("loginBtnClicked");
@@ -261,12 +278,9 @@ export default function Auth() {
                   type="button"
                   disabled={btns.login}
                   onClick={() => {
-                    form.setValue("email", "mubin9516@gmail.com");
-                    form.setValue("password", "Mubin@11");
-                    login({
-                      email: "mubin9516@gmail.com",
-                      password: "Mubin@11",
-                    });
+                    form.setValue("email", demoOwnerCredentials.email);
+                    form.setValue("password", demoOwnerCredentials.password);
+                    void login(demoOwnerCredentials);
                   }}
                   className="flex h-8 items-center justify-center rounded border border-[#DEC0BA] bg-[#FFF8F6] text-xs font-semibold text-[#A13924] cursor-pointer hover:bg-[#FBECE8] transition-all hover:scale-98"
                 >

@@ -17,12 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://dinespace.mu-bin.dev"),
   title: {
-    default:
-      "DineSpace:Contactless Restaurant Ordering & Table-Side Dining Platform",
+    default: "DineSpace | Restaurant ordering from the table",
     template: "%s | DineSpace",
   },
   description:
-    "Order food directly from your table without waiting for a waiter. DineSpace connects diners with restaurants through QR code menus, real-time order tracking, and contactless dining. Browse menus, place orders, and enjoy a better restaurant experience.",
+    "DineSpace connects restaurant table QR menus and diner orders with the team managing each meal. Browse restaurants, place an order, and follow its progress.",
   keywords: [
     "contactless dining",
     "QR code restaurant ordering",
@@ -59,24 +58,24 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://dinespace.mu-bin.dev",
     siteName: "DineSpace",
-    title: "DineSpace — Contactless Restaurant Ordering Platform",
+    title: "DineSpace | Restaurant ordering from the table",
     description:
-      "Order food directly from your table. QR code menus, real-time order tracking, and seamless restaurant operations — all in one platform.",
+      "Connect table QR menus and diner orders with the restaurant team managing each meal.",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "DineSpace — Contactless Dining Platform with QR Code Menu Ordering",
+        url: "/Diner/table-qr-scan.jpg",
+        width: 2000,
+        height: 1000,
+        alt: "A diner scanning a restaurant table QR code",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "DineSpace — Contactless Restaurant Ordering Platform",
+    title: "DineSpace | Restaurant ordering from the table",
     description:
-      "Order food directly from your table without waiting for a waiter. QR code menus & real-time order tracking.",
-    images: ["/og-image.jpg"],
+      "Connect table QR menus and diner orders with the restaurant team managing each meal.",
+    images: ["/Diner/table-qr-scan.jpg"],
   },
   manifest: "/manifest.json",
   category: "Food & Dining",
@@ -92,7 +91,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <JsonLd />
         {children}
         <Analytics />
