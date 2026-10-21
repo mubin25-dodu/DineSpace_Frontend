@@ -12,13 +12,13 @@
 
 # testing
 /coverage
+/.agents
 .lean-ctx
 .taste-skill
 .gitignore
 # next.js
 /.next/
 /out/
-
 # production
 /build
 

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | DineSpace",
   },
   description:
-    "DineSpace connects restaurant table QR menus and diner orders with the team managing each meal. Browse restaurants, place an order, and follow its progress.",
+    "DineSpace connects restaurant digital menus and diner table orders with the team managing each meal. Browse restaurants, place an order, and follow its progress.",
   keywords: [
     "contactless dining",
     "QR code restaurant ordering",
@@ -60,13 +60,13 @@ export const metadata: Metadata = {
     siteName: "DineSpace",
     title: "DineSpace | Restaurant ordering from the table",
     description:
-      "Connect table QR menus and diner orders with the restaurant team managing each meal.",
+      "Connect restaurant digital menus and diner table orders with the team managing each meal.",
     images: [
       {
         url: "/Diner/table-qr-scan.jpg",
         width: 2000,
         height: 1000,
-        alt: "A diner scanning a restaurant table QR code",
+        alt: "A diner scanning a restaurant table QR code stand",
       },
     ],
   },
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "DineSpace | Restaurant ordering from the table",
     description:
-      "Connect table QR menus and diner orders with the restaurant team managing each meal.",
+      "Connect restaurant digital menus and diner table orders with the team managing each meal.",
     images: ["/Diner/table-qr-scan.jpg"],
   },
   manifest: "/manifest.json",

@@ -3,9 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { ArrowDownRight, ArrowRight, ChefHat, Utensils } from "lucide-react";
+import { ArrowRight, ChefHat, Utensils } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
+import HeroProductStory from "@/components/landing/HeroProductStory";
+import MetricsBar from "@/components/landing/MetricsBar";
+import OperationsSuite from "@/components/landing/OperationsSuite";
+import Plasma from "@/components/Plasma/Plasma";
 
 type FlowItem = {
   image: string;
@@ -23,9 +27,9 @@ const dinerFlow: FlowItem[] = [
   },
   {
     image: "/Diner/table-qr-scan.jpg",
-    alt: "A diner scanning a QR code at a restaurant table",
-    title: "Open the table menu",
-    description: "Scan the restaurant's table QR code to connect your order to the table.",
+    alt: "A diner scanning the restaurant QR code on a table stand",
+    title: "Open the restaurant menu",
+    description: "Scan the restaurant QR code on your table to open the live digital menu instantly.",
   },
   {
     image: "/Diner/mobile-ordering.jpg",
@@ -74,9 +78,9 @@ const restaurantFlow: FlowItem[] = [
   },
   {
     image: "/Restaurant/Manager_managing_table_QR_codes_20261004172521.jpg",
-    alt: "A restaurant manager organizing table QR codes",
-    title: "Connect tables to orders",
-    description: "Manage table QR codes so an order can be associated with the right table.",
+    alt: "A restaurant manager organizing dining tables and seating",
+    title: "Organize dining tables",
+    description: "Manage table seating capacity and layout so every order maps to the right table.",
   },
   {
     image: "/Restaurant/Manager_using_restaurant_workflo…_20261004172529.jpg",
@@ -92,17 +96,17 @@ const faqs = [
   {
     question: "What does DineSpace do?",
     answer:
-      "DineSpace connects restaurant table QR menus and diner orders with the restaurant team's order management workflow.",
+      "DineSpace connects restaurant digital menus and table orders directly with the kitchen's live order management workflow in real time.",
   },
   {
     question: "How do I start an order?",
     answer:
-      "Browse restaurants, open a restaurant menu, and scan its table QR code when you are dining there to connect your order to a table.",
+      "Scan the restaurant QR code on your table to open the live digital menu on your phone. Browse dishes, add items to your bowl, choose your table at review, and submit your order directly to the kitchen.",
   },
   {
     question: "Can I follow my order?",
     answer:
-      "Yes. The diner experience includes an order history and status view so you can check the latest status available for your order.",
+      "Yes. The diner experience includes real-time order tracking so you can see when the kitchen confirms, prepares, and completes your meal.",
   },
   {
     question: "Which payment methods are available?",
@@ -112,7 +116,7 @@ const faqs = [
   {
     question: "What can restaurant teams manage?",
     answer:
-      "Restaurant teams can review orders and manage restaurant information, menus, and table QR codes through the owner workspace.",
+      "Restaurant teams can review live orders, update kitchen preparation stages, manage menus and pricing, track seating capacity, and oversee daily sales through the owner workspace.",
   },
   {
     question: "How does a restaurant get started?",
@@ -352,9 +356,28 @@ export default function Home() {
 
         <section
           aria-labelledby="hero-title"
-          className="relative flex min-h-svh flex-col overflow-hidden bg-[#fbf9f6] text-[#171717]"
+          className="relative flex min-h-svh flex-col overflow-hidden bg-[#fbf9f6] pt-16 text-[#171717]"
           id="top"
         >
+          <Plasma
+            aria-hidden="true"
+            className="pointer-events-none !absolute inset-0 z-0 !h-auto"
+            color="#a13924"
+            speed={0.16}
+            scale={1.15}
+            twist={0.7}
+            wave={0.22}
+            softness={0.88}
+            shine={0.25}
+            brightness={0.34}
+            grain={0}
+            quality={0.45}
+            mouseInteractive={false}
+            fade={0.72}
+            opacity={0.28}
+            lightMode
+            paused={Boolean(shouldReduceMotion)}
+          />
           <motion.header
             animate={{ opacity: 1, transform: "scale(1)" }}
             className="fixed inset-x-0 top-0 z-30 border-b border-[#ead8d3] bg-[#fbf9f6]/95 shadow-sm backdrop-blur-md"
@@ -442,93 +465,76 @@ export default function Home() {
             </div>
           </motion.header>
 
-          <div className="grid flex-1 grid-cols-1 items-center gap-9 px-5 pb-20 pt-24 sm:px-8 md:grid-cols-[0.9fr_1.1fr] md:gap-8 md:pb-8 md:pt-28 lg:grid-cols-[0.78fr_1.22fr] lg:gap-24 lg:px-20">
-            <motion.div
-              className="relative z-1 max-w-xl"
-              initial={{ y: 14 }}
-              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true }}
-              whileInView={{ y: 0 }}
-            >
-              <h1
-                className="max-w-[14ch] text-4xl font-medium leading-[0.98] tracking-[-0.065em] text-[#171717] text-balance sm:text-5xl lg:text-7xl"
-                id="hero-title"
-              >
-                <span className="block whitespace-nowrap">Good food.</span>
-                <span className="block whitespace-nowrap">Better flow.</span>
-              </h1>
-              <p className="mt-6 max-w-[37ch] text-base leading-relaxed text-[#735b53] sm:text-lg">
-                DineSpace connects table QR menus and diner orders with the
-                restaurant team looking after each meal.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <Link
-                  className="inline-flex min-h-13 items-center justify-center gap-2 rounded-xl bg-[#a13924] px-5 text-base font-semibold text-white no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#842f1e] active:translate-y-px active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                  href="/user"
-                >
-                  Browse restaurants
-                  <ArrowRight aria-hidden="true" size={18} />
-                </Link>
-                <a
-                  className="inline-flex min-h-11 items-center gap-2 text-[0.9375rem] font-medium text-[#735b53] no-underline transition-colors hover:text-[#a13924]"
-                  href="#how-it-works"
-                >
-                  See how it works
-                  <ArrowDownRight aria-hidden="true" size={17} />
-                </a>
-              </div>
-              <p className="mt-10 max-w-[35ch] text-sm leading-relaxed text-[#735b53]">
-                For diners at the table and the teams behind the service
-              </p>
-            </motion.div>
-
-            <figure className="relative m-0 w-full pb-11 pl-6 md:pl-10">
+          <div className="flex w-full flex-1 items-center justify-center px-6 py-16">
+            <div className="relative z-10 mx-auto max-w-4xl text-center">
               <motion.div
-                animate={shouldReduceMotion ? { scale: 1 } : { scale: [1, 1.035, 1] }}
-                className="relative aspect-[1.45] overflow-hidden rounded-2xl bg-[#e9e4dc] shadow-[0_28px_50px_-26px_rgba(33,27,24,0.45)] max-md:aspect-[1.2]"
-                transition={{
-                  duration: 16,
-                  ease: [0.33, 1, 0.68, 1],
-                  repeat: shouldReduceMotion ? 0 : Infinity,
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Image
-                  alt="A diner scanning a table QR code to open the restaurant menu"
-                  className="object-cover object-[53%_50%]"
-                  fill
-                  priority
-                  sizes="(max-width: 760px) 100vw, 57vw"
-                  src="/Diner/table-qr-scan.jpg"
-                />
+                <h1
+                  className="m-0 text-6xl font-medium leading-[0.95] tracking-[-0.065em] text-[#171717] text-balance sm:text-7xl xl:text-8xl"
+                  id="hero-title"
+                >
+                  Good food.
+                  <br />
+                  Better flow.
+                </h1>
+                <p className="mx-auto mt-8 max-w-[48ch] text-lg leading-relaxed text-[#655950] text-pretty sm:text-xl">
+                  Guests order at the table. Their orders go straight to the kitchen team.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                  <Link
+                    className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#a13924] px-5 text-sm font-semibold text-white no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#842f1e] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
+                    href="/user"
+                  >
+                    Browse restaurants
+                    <ArrowRight aria-hidden="true" size={16} />
+                  </Link>
+                  <Link
+                    className="inline-flex min-h-12 items-center rounded-xl border border-[#dec0ba] bg-white px-4 text-sm font-semibold text-[#a13924] no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#f8efec] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
+                    href="/auth?demo=owner"
+                  >
+                    Demo owner sign in
+                  </Link>
+                </div>
               </motion.div>
-              <figcaption className="mt-3 flex flex-wrap justify-between gap-x-4 gap-y-1 text-sm leading-snug text-[#735b53]">
-                <span>At the table</span>
-                <span>Scan. Browse. Order.</span>
-              </figcaption>
-              <div
-                aria-hidden="true"
-                className="absolute bottom-0 left-0 aspect-square w-[31%] overflow-hidden rounded-2xl bg-[#76634e]"
-              >
-                <Image
-                  alt=""
-                  className="object-cover"
-                  fill
-                  sizes="(max-width: 760px) 38vw, 15vw"
-                  src="/Diner/restaurant-browsing.jpg"
-                />
-              </div>
-            </figure>
+            </div>
           </div>
 
           <a
-            aria-label="Scroll to the dining journey"
-            className="absolute bottom-5 right-5 inline-flex items-center gap-2 text-[0.8125rem] text-[#735b53] no-underline transition-colors hover:text-[#a13924] sm:right-8 lg:right-20"
-            href="#journey"
+            aria-label="Scroll to the order flow"
+            className="absolute bottom-5 right-5 hidden sm:inline-flex items-center gap-2 text-[0.8125rem] text-[#735b53] no-underline transition-colors hover:text-[#a13924] sm:right-8 lg:right-20"
+            href="#how-it-works"
           >
-            Follow the order
-            <ArrowDownRight aria-hidden="true" size={18} />
+            See the order flow
+            <ArrowRight aria-hidden="true" size={18} />
           </a>
         </section>
+
+        <section
+          aria-labelledby="order-flow-title"
+          className="bg-[#f2ece6] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+          id="how-it-works"
+        >
+          <div className="mx-auto w-full max-w-[1600px]">
+            <div className="mb-10 grid items-end gap-5 md:grid-cols-[minmax(0,1fr)_minmax(18rem,0.6fr)] md:gap-10">
+              <h2
+                className="m-0 max-w-[16ch] text-4xl font-medium leading-[1.02] tracking-[-0.055em] text-[#171717] text-balance sm:text-5xl"
+                id="order-flow-title"
+              >
+                Watch an order move.
+              </h2>
+              <p className="m-0 max-w-[42ch] text-base leading-relaxed text-[#655950]">
+                Follow a diner order as it moves from a table QR scan to the live kitchen board.
+              </p>
+            </div>
+            <HeroProductStory />
+          </div>
+        </section>
+
+        {/* Real-time Performance Metrics Bar */}
+        <MetricsBar />
 
         <section
           aria-labelledby="journey-title"
@@ -552,7 +558,7 @@ export default function Home() {
         <section
           aria-labelledby="flow-title"
           className="px-6 py-20 sm:px-8 md:px-[8vw] md:py-32"
-          id="how-it-works"
+          id="diner-journey"
         >
           <motion.div
             className="mb-12 grid items-end gap-6 md:mb-16 md:grid-cols-[1fr_0.6fr] md:gap-8"
@@ -605,11 +611,10 @@ export default function Home() {
                 whileInView={{ y: 0 }}
               >
                 <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Scan the table
+                  Scan the restaurant QR
                 </h3>
                 <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Open the restaurant menu through its table QR code and
-                  connect the order to where you are sitting.
+                  Scan the restaurant QR stand on your table to open the live digital menu directly on your phone—no app install required.
                 </p>
               </motion.li>
               <motion.li
@@ -620,11 +625,10 @@ export default function Home() {
                 whileInView={{ y: 0 }}
               >
                 <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Build your order
+                  Build your bowl
                 </h3>
                 <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Browse available dishes, choose what you want, and add it to
-                  your bowl before checkout.
+                  Browse dishes, customize options, view dietary details, and add items to your bowl with live pricing.
                 </p>
               </motion.li>
               <motion.li
@@ -635,85 +639,88 @@ export default function Home() {
                 whileInView={{ y: 0 }}
               >
                 <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Send it to the team
+                  Pick your table & send
                 </h3>
                 <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Choose a table and payment option, then place the order with
-                  the restaurant.
+                  Confirm your table number, select Cash, bKash, or Nagad, and dispatch the ticket straight to the kitchen.
                 </p>
               </motion.li>
             </ol>
           </div>
         </section>
 
+        {/* Restaurant Operations Architecture Suite */}
+        <OperationsSuite />
+
         <section
           aria-labelledby="status-title"
-          className="grid grid-cols-1 items-center gap-14 bg-[#211916] px-6 py-20 text-[#fbf6ef] sm:px-8 md:grid-cols-[0.95fr_1.05fr] md:gap-24 md:px-[8vw] md:py-32"
+          className="border-y border-[#ebdcd3] bg-[#f5ede7]/60 px-6 py-20 sm:px-8 md:px-[8vw] md:py-28"
         >
-          <motion.div
-            initial={{ y: 14 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.12 }}
-            whileInView={{ y: 0 }}
-          >
-            <h2
-              className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl"
-              id="status-title"
+          <div className="mx-auto max-w-7xl">
+            <motion.div
+              className="max-w-3xl mb-12"
+              initial={{ y: 14 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              viewport={{ once: true, amount: 0.12 }}
+              whileInView={{ y: 0 }}
             >
-              Know what comes next.
-            </h2>
-            <p className="mt-5 max-w-[43ch] text-base leading-relaxed text-[#d2c5b9]">
-              Orders move through clear service states. Diners can check their
-              order history while restaurant staff update progress from their
-              workspace.
-            </p>
-            <figure className="relative m-0 mt-8">
-              <div className="relative aspect-[1.38] overflow-hidden rounded-2xl bg-[#47382f]">
-                <Image
-                  alt="Restaurant staff reviewing orders and coordinating preparation"
-                  className="object-cover"
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 760px) 90vw, 38vw"
-                  src="/Restaurant/Staff_managing_restaurant_orders…_20261004172446.jpg"
-                />
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#dec9bd] bg-white px-3.5 py-1 text-xs font-bold text-[#a13924] mb-3 shadow-2xs">
+                <span>Deterministic Service States</span>
               </div>
-              <figcaption className="mt-3 text-sm leading-snug text-[#d2c5b9]">
-                Order oversight for the restaurant team
-              </figcaption>
-            </figure>
-          </motion.div>
-
-          <motion.div
-            initial={{ y: 14 }}
-            transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.12 }}
-            whileInView={{ y: 0 }}
-          >
-            <h3 className="mb-8 text-2xl font-medium tracking-[-0.035em]">
-              From the first update to the last
-            </h3>
-            <ol
-              aria-label="Order status sequence"
-              className="m-0 grid list-none grid-cols-5 gap-2 p-0"
-            >
-              {orderSteps.map((step) => (
-                <li className="grid justify-items-start gap-3 text-[0.8125rem] leading-snug text-[#d2c5b9] sm:text-sm" key={step}>
-                  <span aria-hidden="true" className="size-3 rounded-full bg-[#c68a69]" />
-                  {step}
-                </li>
-              ))}
-            </ol>
-            <div className="mt-14 grid grid-cols-[auto_1fr] items-start gap-4 rounded-2xl bg-[#302621] p-4 sm:p-6">
-              <span className="grid size-10 place-items-center rounded-xl bg-[#48382e] text-[#e6c4a7]">
-                <Utensils aria-hidden="true" size={18} />
-              </span>
-              <p className="m-0 max-w-[41ch] text-[0.9375rem] leading-relaxed text-[#fbf6ef]">
-                Checkout lists Cash, bKash, and Nagad. Digital payment is
-                simulated in the current product.
+              <h2
+                className="m-0 text-3xl font-medium tracking-tight text-[#171717] sm:text-4xl lg:text-5xl"
+                id="status-title"
+              >
+                Know what comes next, every step of the meal.
+              </h2>
+              <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-[#655950]">
+                Orders advance through clear, verifiable service stages. Guests track live progress on their phone while kitchen staff update tickets directly from the POS workspace.
               </p>
+            </motion.div>
+
+            {/* Stepper Cards */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+              {[
+                { step: "01", name: "Pending", desc: "Order sent via restaurant QR" },
+                { step: "02", name: "Confirmed", desc: "Kitchen acknowledges ticket" },
+                { step: "03", name: "Preparing", desc: "Chef fires dishes on the line" },
+                { step: "04", name: "Ready", desc: "Plated & runner dispatched" },
+                { step: "05", name: "Completed", desc: "Delivered to dining table" },
+              ].map((st, idx) => (
+                <div
+                  key={st.name}
+                  className="flex flex-col justify-between rounded-2xl border border-[#dec9bd] bg-white p-4 shadow-2xs"
+                >
+                  <div>
+                    <span className="text-[11px] font-extrabold text-[#a13924]">
+                      STEP {st.step}
+                    </span>
+                    <h3 className="mt-1 text-base font-bold text-[#1f1614]">
+                      {st.name}
+                    </h3>
+                  </div>
+                  <p className="mt-3 text-xs leading-relaxed text-[#735e56]">
+                    {st.desc}
+                  </p>
+                </div>
+              ))}
             </div>
-          </motion.div>
+
+            {/* Payment Reassurance Pill */}
+            <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-[#dec9bd] bg-white p-4 sm:p-5 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <span className="grid size-9 place-items-center rounded-xl bg-[#f5ede7] text-[#a13924]">
+                  <Utensils size={17} />
+                </span>
+                <p className="m-0 text-xs sm:text-sm text-[#45342d]">
+                  Flexible checkout: Supports <strong>Cash at table</strong> alongside simulated mobile payment with <strong>bKash</strong> and <strong>Nagad</strong>.
+                </p>
+              </div>
+              <span className="rounded-lg bg-[#f5ede7] px-3 py-1 text-xs font-bold text-[#a13924] shrink-0">
+                Zero Friction
+              </span>
+            </div>
+          </div>
         </section>
 
         <section
@@ -742,8 +749,8 @@ export default function Home() {
             </div>
             <div>
               <p className="m-0 max-w-[39ch] text-base leading-relaxed text-[#655950]">
-                Orders arrive in the restaurant workspace, where teams can review
-                service, update progress, and manage menus and table QR codes.
+                Orders arrive directly in the restaurant workspace, where teams can review
+                service, update progress, and manage live menus and dining tables.
               </p>
               <Link
                 className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#a13924] no-underline transition-[color,transform] duration-200 hover:translate-x-1 hover:text-[#842f1e] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a13924]"
