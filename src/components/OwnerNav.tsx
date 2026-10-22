@@ -10,20 +10,25 @@ import {
     Table2,
     Utensils,
     Wallet,
+    X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import RestaurantNav from "./RestaurantNav";
+import { usePathname, useRouter } from "next/navigation";
+import { useContext, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useContext, useRef } from "react";
 import { restaurantContext } from "@/lib/context/Context";
 import DinespaceLogo from "./DinespaceLogo";
+import RestaurantNav from "./RestaurantNav";
 
 interface OwnerNavProps {
-    handleDefaultRestaurant: (id:string)=> void;
-    socConnect:boolean;
-};
+    handleDefaultRestaurant: (id: string) => void;
+    socConnect: boolean;
+    sidebarCollapsed: boolean;
+    mobileNavOpen: boolean;
+    onToggleSidebar: () => void;
+    onToggleMobileNav: () => void;
+    onCloseMobileNav: () => void;
+}
 
 const navItems = [
     { name: "Overview", href: "/home", icon: LayoutDashboard },
@@ -37,41 +42,135 @@ const navItems = [
     { name: "Notification", href: "/home/notifications", icon: Bell },
 ];
 
-export default function OwnerNav({ handleDefaultRestaurant , socConnect}: OwnerNavProps) {
+export default function OwnerNav({
+    handleDefaultRestaurant,
+    socConnect,
+    sidebarCollapsed,
+    mobileNavOpen,
+    onToggleSidebar,
+    onToggleMobileNav,
+    onCloseMobileNav,
+}: OwnerNavProps) {
     const pathname = usePathname();
-    const {defaultRestaurant} = useContext(restaurantContext)
+    const router = useRouter();
+    const { defaultRestaurant } = useContext(restaurantContext);
     const constraintsRef = useRef<HTMLDivElement>(null);
 
-    return <>
-    <RestaurantNav handleDefaultRestaurant={handleDefaultRestaurant} socConnect ={socConnect} />
-    <div className="fixed left-0 top-0 z-30 flex h-full min-w-50 w-[14%] flex-col items-start gap-2 border-r-2 border-[#DEC0BA] bg-[#F5F3F0] p-7 font-semibold text-[#646468]" >
-    <div className="ml-2 mb-10"> <DinespaceLogo/></div> 
+    useEffect(() => {
+        if (!mobileNavOpen) return;
 
-    {navItems.map((item ,index)=><motion.span key={item.href} className="w-full" initial={{ x: index !== 0 ? -220 * index : -200}} animate={{  x: 0 }} transition={{ delay: 0.1 * index, duration: 0.45 ,type:"spring" }}><Link
-        href={item.href}
-        type="button"
-        className={`${(item.href === "/home" ? pathname === item.href : pathname.startsWith(item.href)) ? "bg-[#EAE8E5] border-r-5 border-[#A13924] text-[#A13924] ml-2" : ""} hover:bg-[#EAE8E5] rounded hover:border-r-5 hover:border-[#A13924] hover:text-[#A13924] hover:ml-2 w-full p-2 h-auto transition-all duration-200 flex flex-row gap-2 items-center cursor-pointer`}
-    > <item.icon size={20} strokeWidth={2} aria-hidden="true" /> {item.name}</Link></motion.span>
-    )}
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") onCloseMobileNav();
+        };
 
-        {!pathname.includes("home/orders") ? <div ref={constraintsRef} className="pointer-events-none fixed inset-0 z-40">
-        <motion.button
-            // href={`../user/Restaurant/${defaultRestaurant}`}
-            drag
-            dragConstraints={constraintsRef}
-            dragElastic={0.15}
-            // dragMomentum={false}
-            // dragTransition={{ bounceStiffness: 500, bounceDamping: 20 }}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5 , type:"spring" }}
-            onDoubleClick={() =>window.location.href=`../user/Restaurant/${defaultRestaurant}` }
-            className="pointer-events-auto absolute bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] right-4 flex h-fit p-2 mb-1 min-w-16 items-center justify-center rounded-full bg-[#A13924] px-4 text-sm font-bold text-white shadow-lg sm:text-base md:bottom-4"
-            title="Double click to place order"
-        >
-            Place an order
-        </motion.button></div>:""}
-    </div>
-    </>
+        window.addEventListener("keydown", closeOnEscape);
+        return () => window.removeEventListener("keydown", closeOnEscape);
+    }, [mobileNavOpen, onCloseMobileNav]);
 
+    return (
+        <>
+            <RestaurantNav
+                handleDefaultRestaurant={handleDefaultRestaurant}
+                socConnect={socConnect}
+                sidebarCollapsed={sidebarCollapsed}
+                mobileNavOpen={mobileNavOpen}
+                onToggleSidebar={onToggleSidebar}
+                onToggleMobileNav={onToggleMobileNav}
+            />
+            {mobileNavOpen && (
+                <button
+                    type="button"
+                    aria-label="Close navigation menu"
+                    onClick={onCloseMobileNav}
+                    className="fixed inset-0 z-40 bg-[#2F2724]/35 backdrop-blur-[1px] md:hidden"
+                />
+            )}
+            <aside
+                id="owner-sidebar"
+                aria-label="Restaurant navigation"
+                className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-[#E7D9D2] bg-[#FBF9F6] px-3 pb-5 pt-5 font-semibold text-[#64534D] shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-[width,transform] duration-200 md:px-4 md:translate-x-0 ${
+                    sidebarCollapsed ? "md:w-20" : "md:w-64"
+                } ${mobileNavOpen ? "translate-x-0" : "-translate-x-full"}`}
+            >
+                <div className={`mb-8 flex h-11 items-center justify-between ${sidebarCollapsed ? "md:justify-center" : "px-1"}`}>
+                    <div className={sidebarCollapsed ? "md:hidden" : ""}>
+                        <DinespaceLogo />
+                    </div>
+                    <Link
+                        href="/"
+                        aria-label="DineSpace home"
+                        title="DineSpace"
+                        className={`hidden size-10 shrink-0 items-center justify-center rounded-xl bg-[#A13924] text-white ${
+                            sidebarCollapsed ? "md:flex" : ""
+                        }`}
+                    >
+                        <Utensils size={19} aria-hidden="true" />
+                    </Link>
+                    <button
+                        type="button"
+                        onClick={onCloseMobileNav}
+                        aria-label="Close navigation menu"
+                        className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-[#E7D9D2] bg-white text-[#584840] hover:text-[#A13924] focus:outline-none focus:ring-2 focus:ring-[#A13924]/20 md:hidden"
+                    >
+                        <X size={18} aria-hidden="true" />
+                    </button>
+                </div>
+                <p className={`mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9A8880] ${sidebarCollapsed ? "md:hidden" : ""}`}>
+                    Workspace
+                </p>
+
+                <nav className="flex w-full flex-col gap-1">
+                    {navItems.map((item, index) => {
+                        const isActive = item.href === "/home" ? pathname === item.href : pathname.startsWith(item.href);
+
+                        return (
+                            <motion.span
+                                key={item.href}
+                                className="w-full"
+                                initial={{ opacity: 0, x: -8 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.025 * index, duration: 0.2 }}
+                            >
+                                <Link
+                                    href={item.href}
+                                    aria-current={isActive ? "page" : undefined}
+                                    title={sidebarCollapsed ? item.name : undefined}
+                                    onClick={onCloseMobileNav}
+                                    className={`flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
+                                        sidebarCollapsed ? "md:justify-center md:px-0" : ""
+                                    } ${
+                                        isActive
+                                            ? "bg-[#F3E8E2] text-[#A13924] shadow-sm"
+                                            : "text-[#64534D] hover:bg-[#F3EDE8] hover:text-[#A13924]"
+                                    }`}
+                                >
+                                    <item.icon size={19} strokeWidth={2} aria-hidden="true" />
+                                    <span className={sidebarCollapsed ? "md:hidden" : ""}>{item.name}</span>
+                                    {isActive && <span className="ml-auto size-1.5 rounded-full bg-[#A13924] md:hidden" />}
+                                </Link>
+                            </motion.span>
+                        );
+                    })}
+                </nav>
+
+            </aside>
+            {!pathname.includes("home/orders") && (
+                    <div ref={constraintsRef} className={`pointer-events-none fixed inset-0 z-[60] ${mobileNavOpen ? "max-md:hidden" : ""}`}>
+                        <motion.button
+                            drag
+                            dragConstraints={constraintsRef}
+                            dragElastic={0.15}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.5, type: "spring" }}
+                            onDoubleClick={() => router.push(`/user/Restaurant/${defaultRestaurant}`)}
+                            className="pointer-events-auto absolute bottom-[calc(3.75rem+max(0.75rem,env(safe-area-inset-bottom)))] right-4 mb-1 flex h-fit min-w-16 items-center justify-center rounded-full bg-[#A13924] p-2 px-4 text-sm font-bold text-white shadow-lg sm:text-base md:bottom-4"
+                            title="Double click to place order"
+                        >
+                            Place an order
+                        </motion.button>
+                    </div>
+                )}
+        </>
+    );
 }

@@ -53,9 +53,9 @@ export default function Orders() {
         setOrders(data.Data);
         const totalOrders = data.TotalOrders ?? 0;
         setAvailableOrders(totalOrders);
-        setSelectedOrder(
-          data.Data.length > 0 ? data.Data[0] : null,
-        );
+        // setSelectedOrder(
+        //   data.Data.length > 0 ? data.Data[0] : null,
+        // );
         setDisabled({
           prev: page <= 1,
           next: totalOrders > 0
@@ -226,8 +226,9 @@ export default function Orders() {
           </div>
           <div className="mb-5 flex items-center justify-between gap-3 px-1">
             <motion.label
-              initial={{ scale: 0, width: 0 }}
-              animate={{ scale: 1, width: 220 }}
+              initial={{  width: 0 }}
+              animate={{  width: "20%" }}
+              whileTap={{ width: "22%" }}
               transition={{ duration: 0.5, type: "spring" }}
               className="relative block w-full max-w-[28rem]"
             >
@@ -241,7 +242,7 @@ export default function Orders() {
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search orders..."
                 aria-label="Search orders"
-                className="w-full rounded-lg border border-[#DEC0BA] bg-white py-2.5 pl-9 pr-3 text-sm text-[#514947] outline-none transition placeholder:text-[#A58D85] hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
+                className="w-full rounded-lg  focus:w-[130%] border border-[#DEC0BA] bg-white py-2.5 pl-9 pr-3 text-sm text-[#514947] outline-none transition placeholder:text-[#A58D85] duration-500 hover:border-[#C77A6A] focus:border-[#A13924] focus:ring-2 focus:ring-[#A13924]/15"
               />
             </motion.label>
             <OrderFilter
@@ -258,7 +259,7 @@ export default function Orders() {
               Database Lookup
             </button>
           </div>
-          <div className="h-[65vh] overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#FFFCFA] shadow-sm">
+          <motion.div initial={{ opacity: 0 , scale: 0.95 }} animate={{ opacity: 1 , scale: 1 }} transition={{ duration: 0.5 }} className="h-[65vh] overflow-hidden rounded-2xl border border-[#DEC0BA] bg-[#FFFCFA] shadow-sm">
             <div className="flex h-full flex-col ">
               <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto scrollbar-none mt-2">
                 <table className="w-full min-w-[760px] table-fixed text-left">
@@ -318,6 +319,7 @@ export default function Orders() {
                     ) : visibleOrders.length ? (
                       visibleOrders.map((e, i) => (
                         <motion.tr
+                        key={e.id}
                           initial={{ y: i !== 0 ? 20 * i : 20, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           viewport={{ once: true }}
@@ -325,7 +327,6 @@ export default function Orders() {
                           onClick={() => {
                             handleselection(e);
                           }}
-                          key={e.id}
                           className={`border-b border-[#EAD8D2] transition-colors ${
                             selectedOrder?.id === e.id
                               ? "bg-[#FFF3EE]"
@@ -424,14 +425,15 @@ export default function Orders() {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {selectedOrder !== null && isDetailsOpen ? (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            initial={{ opacity: 0, scale: 0.98 , transformOrigin: "top right" }}
+            key={selectedOrder.id}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-full lg:w-[40%]"
           >
             <OrderDetailsprofile

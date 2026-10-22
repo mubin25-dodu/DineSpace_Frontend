@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api/axios";
 import Result from "@/lib/Result";
 import { Restaurant } from "@/lib/interfaces/order";
@@ -17,6 +17,9 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     const [Today , settoday] = useState<Date>();
     const [refreshOrders, setRefreshOrders] = useState(0);
     const [socConnect, setSocConnect] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+    const closeMobileNav = useCallback(() => setMobileNavOpen(false), []);
     const [restaurants, setRestaurants] = useState<{ id: string; resturantName?: string }[]>([]);
     // for fetching users data
     useEffect(() => {
@@ -108,10 +111,24 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
 
     return (
         <restaurantContext.Provider value={{ defaultRestaurant, setpopup: setPopup , setservererror , refreshOrders , restaurants }}>
-            <OwnerNav handleDefaultRestaurant={setDefaultRestaurant} socConnect = {socConnect} />
+            <OwnerNav
+                handleDefaultRestaurant={setDefaultRestaurant}
+                socConnect={socConnect}
+                sidebarCollapsed={sidebarCollapsed}
+                mobileNavOpen={mobileNavOpen}
+                onToggleSidebar={() => setSidebarCollapsed((collapsed) => !collapsed)}
+                onToggleMobileNav={() => setMobileNavOpen((open) => !open)}
+                onCloseMobileNav={closeMobileNav}
+            />
             {popup && <AlerPopup setpopup={() => setPopup("")} Message={popup} />}
             {servererror && <ServerError error={servererror} setservererror={() => setservererror("")}  />}
-            <main className="relative z-0 ml-[max(16%,12.5rem)] mt-25 min-w-0 mr-[25]">{children}</main>
+            <main
+                className={`relative z-0 mt-20 min-w-0 px-3 pb-8 pt-4 transition-[margin] duration-200 sm:px-5 md:mt-20 md:px-6 ${
+                    sidebarCollapsed ? "md:ml-20" : "md:ml-64"
+                }`}
+            >
+                {children}
+            </main>
         </restaurantContext.Provider>
     );
 }

@@ -147,122 +147,202 @@ useEffect(()=>{
 
 
     return dataload ? (
-        <div className="mx-auto w-full max-w-[1600px] space-y-3 px-3 pb-8 sm:px-3 lg:px-6">
-            <header className="flex flex-col gap-3 rounded-3xl border border-[#EAD8D2] bg-gradient-to-r from-[#FFF9F6] via-white to-[#F8EEE8] p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-6">
-                <div>
-                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#A13924]">Restaurant dashboard</p>
-                    <h1 className="text-3xl font-bold tracking-tight text-[#2F2724] sm:text-4xl">Today&apos;s Overview</h1>
-                    <p className="mt-2 text-sm text-[#806D65]">A live snapshot of orders, tables, and revenue.</p>
-                </div>
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#E6D7D1] bg-white/80 px-3 py-2 text-xs font-semibold text-[#64534D]">
-                    <span className="size-2 rounded-full bg-emerald-500" />
-                    Live dashboard
-                </div>
-            </header>
+      <div className="">
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex mb-5 flex-col gap-3 rounded-3xl border border-[#EAD8D2] bg-gradient-to-r from-[#FFF9F6] via-white to-[#F8EEE8] p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-6"
+        >
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#A13924]">
+              Restaurant dashboard
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-[#2F2724] sm:text-4xl">
+              Today&apos;s Overview
+            </h1>
+            <p className="mt-2 text-sm text-[#806D65]">
+              A live snapshot of orders, tables, and revenue.
+            </p>
+          </div>
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#E6D7D1] bg-white/80 px-3 py-2 text-xs font-semibold text-[#64534D]">
+            <span className="size-2 rounded-full bg-emerald-500" />
+            Live dashboard
+          </div>
+        </motion.header>
 
-            <section aria-label="Restaurant performance" className="flex flex-wrap items-stretch gap-6 mt-0 mb-2">
-                {kpicards?.length ? kpicards.map((card, index) => (
-                    <motion.div
-                        drag
-                        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                        dragElastic={0.2}
-                        key={card.title}
-                        initial={{ y: 16, opacity: 0 }}
+        <section
+          aria-label="Restaurant performance"
+          className="flex flex-wrap items-stretch gap-6 mt-0 mb-2"
+        >
+          {kpicards?.length ? (
+            kpicards.map((card, index) => (
+              <motion.div
+                drag
+                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                dragElastic={0.2}
+                key={card.title}
+                initial={{ y: 16, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{
+                  duration: 0.35,
+                  delay: index * 0.05,
+                  ease: "easeOut",
+                }}
+              >
+                <KPICard {...card} />
+              </motion.div>
+            ))
+          ) : (
+            <p className="rounded-2xl border border-dashed border-[#DEC0BA] bg-white p-5 text-sm text-[#806D65]">
+              No performance data found.
+            </p>
+          )}
+        </section>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid min-w-0 grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(16rem,0.72fr)]"
+        >
+          <section
+            aria-labelledby="live-orders-heading"
+            className="min-w-0 overflow-hidden rounded-3xl border border-[#E8E2DA] bg-white shadow-sm"
+          >
+            <div className="flex flex-col gap-4 border-b border-[#F0E8E3] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+              <div>
+                <h2
+                  id="live-orders-heading"
+                  className="text-xl font-bold text-[#2F2724]"
+                >
+                  Live Orders
+                </h2>
+                <p className="mt-1 text-sm text-[#8A7971]">
+                  Track each order through the kitchen.
+                </p>
+              </div>
+              <label className="relative block w-full sm:max-w-xs">
+                <span className="sr-only">Search orders</span>
+                <input
+                  onChange={(event) => searchOrder(event.target.value)}
+                  type="search"
+                  placeholder="Search orders or customers"
+                  className="w-full rounded-xl border border-[#E6D7D1] bg-[#FFFCFA] px-4 py-2.5 text-sm text-[#352C29] outline-none transition placeholder:text-[#A9958D] focus:border-[#A13924] focus:ring-4 focus:ring-[#A13924]/10"
+                />
+              </label>
+            </div>
+            <div className="p-3 sm:p-5">
+              <LiveOrders sendorders={sendorders} handleChange={handleChange} />
+            </div>
+          </section>
+
+          <aside className="grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-1">
+            <section
+              aria-labelledby="table-status-heading"
+              className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h2
+                    id="table-status-heading"
+                    className="text-lg font-bold text-[#2F2724]"
+                  >
+                    Table status
+                  </h2>
+                  <p className="mt-1 text-xs text-[#8A7971]">
+                    {getTables.length} tables at your restaurant
+                  </p>
+                </div>
+                <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]">
+                  <Table size={20} />
+                </span>
+              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="max-h-64 space-y-1.5 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none"
+              >
+                {getTables.length ? (
+                  [...getTables]
+                    .sort((a, b) => a.tableno - b.tableno)
+                    .map((table, index) => (
+                      <motion.div
+                        key={table.id}
+                        initial={{ y: 12, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.35, delay: index * 0.07, ease: "easeOut" }}
-                    >
-                        <KPICard {...card} />
-                    </motion.div>
-                )) : (
-                    <p className="rounded-2xl border border-dashed border-[#DEC0BA] bg-white p-5 text-sm text-[#806D65]">No performance data found.</p>
+                        transition={{
+                          duration: 0.3,
+                          delay: Math.min(index * 0.04, 0.4),
+                        }}
+                        className="w-full sticky top-0 "
+                      >
+                        <Tables
+                          handlesTableState={handlesTableState}
+                          table={table}
+                        />
+                      </motion.div>
+                    ))
+                ) : (
+                  <p className="rounded-xl bg-[#FFFCFA] p-4 text-sm text-[#8A7971]">
+                    No tables found.
+                  </p>
                 )}
+              </motion.div>
             </section>
 
-            <div className="grid min-w-0 grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(16rem,0.72fr)]">
-                <section aria-labelledby="live-orders-heading" className="min-w-0 overflow-hidden rounded-3xl border border-[#E8E2DA] bg-white shadow-sm">
-                    <div className="flex flex-col gap-4 border-b border-[#F0E8E3] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                        <div>
-                            <h2 id="live-orders-heading" className="text-xl font-bold text-[#2F2724]">Live Orders</h2>
-                            <p className="mt-1 text-sm text-[#8A7971]">Track each order through the kitchen.</p>
-                        </div>
-                        <label className="relative block w-full sm:max-w-xs">
-                            <span className="sr-only">Search orders</span>
-                            <input
-                                onChange={(event) => searchOrder(event.target.value)}
-                                type="search"
-                                placeholder="Search orders or customers"
-                                className="w-full rounded-xl border border-[#E6D7D1] bg-[#FFFCFA] px-4 py-2.5 text-sm text-[#352C29] outline-none transition placeholder:text-[#A9958D] focus:border-[#A13924] focus:ring-4 focus:ring-[#A13924]/10"
-                            />
-                        </label>
-                    </div>
-                    <div className="p-3 sm:p-5">
-                        <LiveOrders sendorders={sendorders} handleChange={handleChange} />
-                    </div>
-                </section>
-
-                <aside className="grid min-w-0 gap-6 sm:grid-cols-2 xl:grid-cols-1">
-                    <section aria-labelledby="table-status-heading" className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                            <div>
-                                <h2 id="table-status-heading" className="text-lg font-bold text-[#2F2724]">Table status</h2>
-                                <p className="mt-1 text-xs text-[#8A7971]">{getTables.length} tables at your restaurant</p>
-                            </div>
-                            <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]"><Table size={20} /></span>
-                        </div>
-                        <div className="max-h-64 space-y-1.5 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none">
-                            {getTables.length ? [...getTables].sort((a, b) => a.tableno - b.tableno).map((table, index) => (
-                                <motion.div
-                                    key={table.id}
-                                    initial={{ y: 12, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.4) }}
-                                    className="w-full sticky top-0 "
-                                >
-                                    <Tables handlesTableState={handlesTableState} table={table} />
-                                </motion.div>
-                            )) : <p className="rounded-xl bg-[#FFFCFA] p-4 text-sm text-[#8A7971]">No tables found.</p>}
-                        </div>
-                    </section>
-
-                    <section aria-labelledby="transactions-heading" className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5">
-                        <div className="mb-3 flex items-center justify-between gap-3">
-                            <div>
-                                <h2 id="transactions-heading" className="text-lg font-bold text-[#2F2724]">Live transactions</h2>
-                                <p className="mt-1 text-xs text-[#8A7971]">Recent payment activity</p>
-                            </div>
-                            <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]"><CreditCard size={20} /></span>
-                        </div>
-                        <div className="max-h-64 space-y-2 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none">
-                            <Transactions />
-                        </div>
-                    </section>
-                </aside>
-            </div>
-        </div>
+            <section
+              aria-labelledby="transactions-heading"
+              className="min-w-0 rounded-3xl border border-[#E8E2DA] bg-white p-4 shadow-sm sm:p-5"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h2
+                    id="transactions-heading"
+                    className="text-lg font-bold text-[#2F2724]"
+                  >
+                    Live transactions
+                  </h2>
+                  <p className="mt-1 text-xs text-[#8A7971]">
+                    Recent payment activity
+                  </p>
+                </div>
+                <span className="flex size-10 items-center justify-center rounded-xl bg-[#F8EEE8] text-[#A13924]">
+                  <CreditCard size={20} />
+                </span>
+              </div>
+              <div className="max-h-64 space-y-2 overflow-y-auto overflow-x-hidden pr-1 scrollbar-none">
+                <Transactions />
+              </div>
+            </section>
+          </aside>
+        </motion.div>
+      </div>
     ) : (
-        <div className="flex min-h-[60vh] w-full items-center justify-center px-4 py-12">
-            <LatticeLoader
-                className="min-h-29"
-                status="working"
-                label="Loading Today's Key Performance Indicators..."
-                doneLabel="Done in"
-                errorLabel="Failed after"
-                pattern="arrow"
-                grid={3}
-                shape="round"
-                doneColor="#22c55e"
-                errorColor="#ef4444"
-                cellSize={6}
-                gap={2}
-                fontSize={14}
-                step={90}
-                idleOpacity={0.15}
-                glow={false}
-                glowColor="#f5f5f5"
-                showTimer
-                color="#A13924"
-            />
-        </div>
+      <div className="flex min-h-[60vh] w-full items-center justify-center px-4 py-12">
+        <LatticeLoader
+          className="min-h-29"
+          status="working"
+          label="Loading Today's Key Performance Indicators..."
+          doneLabel="Done in"
+          errorLabel="Failed after"
+          pattern="arrow"
+          grid={3}
+          shape="round"
+          doneColor="#22c55e"
+          errorColor="#ef4444"
+          cellSize={6}
+          gap={2}
+          fontSize={14}
+          step={90}
+          idleOpacity={0.15}
+          glow={false}
+          glowColor="#f5f5f5"
+          showTimer
+          color="#A13924"
+        />
+      </div>
     );
 }
 

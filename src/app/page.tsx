@@ -363,18 +363,18 @@ export default function Home() {
             aria-hidden="true"
             className="pointer-events-none !absolute inset-0 z-0 !h-auto"
             color="#a13924"
-            speed={0.16}
+            speed={0.3}
             scale={1.15}
             twist={0.7}
-            wave={0.22}
+            wave={0.52}
             softness={0.88}
             shine={0.25}
-            brightness={0.34}
+            brightness={0.4}
             grain={0}
             quality={0.45}
             mouseInteractive={false}
             fade={0.72}
-            opacity={0.28}
+            opacity={0.5}
             lightMode
             paused={Boolean(shouldReduceMotion)}
           />
