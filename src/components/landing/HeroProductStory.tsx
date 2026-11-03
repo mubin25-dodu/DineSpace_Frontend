@@ -148,112 +148,119 @@ export default function HeroProductStory() {
 
   const currentStageIndex = STAGES.findIndex((s) => s.id === currentStage);
 
-  return (
-    <div className="grid w-full items-center gap-10 xl:grid-cols-[minmax(20rem,0.72fr)_minmax(0,1.28fr)] xl:gap-12 2xl:gap-16">
-      <div className="min-w-0">
-        <div>
-          <div className="mb-3">
-            <div aria-label="Choose a demo step" className="flex flex-wrap items-center gap-1.5" role="group">
-              {STAGES.map((st, idx) => {
-                const isActive = st.id === currentStage;
-                const isPassed = idx < currentStageIndex;
-                const Icon = st.icon;
+  const controlsAndNarration = (
+    <div className="flex w-full flex-col gap-3">
+      {/* Stage Selector Pills & Playback Controls */}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div aria-label="Choose a demo step" className="flex flex-wrap items-center gap-1.5" role="group">
+          {STAGES.map((st, idx) => {
+            const isActive = st.id === currentStage;
+            const isPassed = idx < currentStageIndex;
+            const Icon = st.icon;
 
-                return (
-                  <button
-                    key={st.id}
-                    type="button"
-                    aria-label={`${idx + 1}. ${st.label}`}
-                    aria-pressed={isActive}
-                    onClick={() => handleManualStageSelect(st.id)}
-                    className={`relative flex min-h-9 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] ${
-                      isActive
-                        ? "bg-[#211714] text-white shadow-xs"
-                        : isPassed
-                          ? "bg-[#f5ede7] text-[#a13924] hover:bg-[#ebdcd4]"
-                          : "border border-[#ebdcd3] bg-white text-[#78645c] hover:bg-[#fbf7f4]"
-                    }`}
-                  >
-                    <Icon size={12} className={isActive ? "text-[#f5a18a]" : ""} />
-                    <span>{st.label}</span>
-
-                    {isActive && isPlaying && !shouldReduceMotion && (
-                      <motion.div
-                        className="absolute bottom-0 left-2 h-0.5 rounded-full bg-[#d77858]"
-                        style={{ width: `${progress}%` }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mb-4 flex items-center gap-1.5">
-            <button
-              type="button"
-              aria-label={isPlaying ? "Pause demonstration" : "Play demonstration"}
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="inline-flex h-9 items-center gap-1 rounded-full border border-[#dec9bd] bg-white px-2.5 text-xs font-semibold text-[#30231e] shadow-2xs transition-colors hover:bg-[#f6eee9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause size={11} className="text-[#a13924]" />
-                  <span className="hidden sm:inline">Pause</span>
-                </>
-              ) : (
-                <>
-                  <Play size={11} className="fill-[#a13924] text-[#a13924]" />
-                  <span className="hidden sm:inline">Play</span>
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              aria-label="Restart demonstration"
-              onClick={handleReplay}
-              className="inline-flex h-9 items-center gap-1 rounded-full border border-[#dec9bd] bg-white px-2.5 text-xs font-semibold text-[#30231e] shadow-2xs transition-colors hover:bg-[#f6eee9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
-            >
-              <RotateCcw size={11} />
-              <span className="hidden sm:inline">Replay</span>
-            </button>
-          </div>
-
-          <div
-            aria-live={isPlaying ? "off" : "polite"}
-            className="relative min-h-28 overflow-hidden rounded-2xl border border-[#ead8d3] bg-white/80 p-4 shadow-[0_8px_30px_rgba(33,27,24,0.06)] sm:p-5"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`narration-${currentStage}`}
-                initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
-                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-start gap-4"
+            return (
+              <button
+                key={st.id}
+                type="button"
+                aria-label={`${idx + 1}. ${st.label}`}
+                aria-pressed={isActive}
+                onClick={() => handleManualStageSelect(st.id)}
+                className={`relative flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] ${
+                  isActive
+                    ? "bg-[#211714] text-white shadow-xs"
+                    : isPassed
+                      ? "bg-[#f5ede7] text-[#a13924] hover:bg-[#ebdcd4]"
+                      : "border border-[#ebdcd3] bg-white text-[#78645c] hover:bg-[#fbf7f4]"
+                }`}
               >
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#a13924] text-xs font-bold tabular-nums text-white shadow-xs">
-                  {currentStageIndex + 1}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-lg font-semibold leading-tight tracking-tight text-[#171717] text-balance">
-                    {STAGE_NARRATION[currentStage].headline}
-                  </p>
-                  <p className="mt-2 max-w-[42ch] text-sm leading-relaxed text-[#735b53] text-pretty">
-                    {STAGE_NARRATION[currentStage].body}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                <Icon size={12} className={isActive ? "text-[#f5a18a]" : ""} />
+                <span>{st.label}</span>
+
+                {isActive && isPlaying && !shouldReduceMotion && (
+                  <motion.div
+                    className="absolute bottom-0 left-2.5 right-2.5 h-0.5 rounded-full bg-[#d77858]"
+                    style={{ width: `${progress}%` }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            aria-label={isPlaying ? "Pause demonstration" : "Play demonstration"}
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#dec9bd] bg-white px-3 text-xs font-semibold text-[#30231e] shadow-2xs transition-colors hover:bg-[#f6eee9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
+          >
+            {isPlaying ? (
+              <>
+                <Pause size={11} className="text-[#a13924]" />
+                <span>Pause</span>
+              </>
+            ) : (
+              <>
+                <Play size={11} className="fill-[#a13924] text-[#a13924]" />
+                <span>Play</span>
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            aria-label="Restart demonstration"
+            onClick={handleReplay}
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#dec9bd] bg-white px-3 text-xs font-semibold text-[#30231e] shadow-2xs transition-colors hover:bg-[#f6eee9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
+          >
+            <RotateCcw size={11} />
+            <span>Replay</span>
+          </button>
         </div>
       </div>
 
-      {/* Dual Theater: Smartphone + Kitchen POS Direct Canvas Display */}
-      <div className="relative grid select-none grid-cols-1 items-center gap-5 xl:grid-cols-[280px_minmax(0,1fr)] xl:gap-6 2xl:grid-cols-[300px_minmax(0,1fr)]">
-        {/* Smartphone Frame */}
-        <div className="relative mx-auto w-full max-w-[280px] sm:max-w-[290px] xl:mx-0 xl:max-w-[280px] 2xl:max-w-[300px]">
+      {/* Live Stage Narration Card */}
+      <div
+        aria-live={isPlaying ? "off" : "polite"}
+        className="relative min-h-[4.5rem] overflow-hidden rounded-2xl border border-[#ead8d3] bg-white/85 p-3.5 sm:p-4 shadow-[0_8px_30px_rgba(33,27,24,0.06)]"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`narration-${currentStage}`}
+            initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-start gap-3.5 sm:gap-4"
+          >
+            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#a13924] text-xs font-bold tabular-nums text-white shadow-xs">
+              {currentStageIndex + 1}
+            </span>
+            <div className="min-w-0">
+              <p className="text-base font-semibold leading-tight tracking-tight text-[#171717]">
+                {STAGE_NARRATION[currentStage].headline}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-[#735b53]">
+                {STAGE_NARRATION[currentStage].body}
+              </p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full select-none">
+      {/* Mobile-only Top Controls: placed above screens on smaller viewports */}
+      <div className="mb-6 lg:hidden">
+        {controlsAndNarration}
+      </div>
+
+      {/* Dual Theater: Smartphone on left, Controls (in red marked spot) + Kitchen POS on right */}
+      <div className="relative grid grid-cols-1 items-start gap-6 lg:grid-cols-[290px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[300px_minmax(0,1fr)] xl:gap-10">
+        {/* Left Column: Smartphone Frame */}
+        <div className="relative mx-auto w-full max-w-[280px] sm:max-w-[290px] lg:mx-0 lg:max-w-[290px] xl:max-w-[300px]">
           {/* Subtle Ambient Device Glow */}
           <div className="pointer-events-none absolute -inset-1 rounded-[46px] bg-[#a13924]/10 blur-md" />
 
@@ -353,33 +360,40 @@ export default function HeroProductStory() {
           </div>
         </div>
 
-        {/* Kitchen POS Terminal View */}
-        <div className="relative flex flex-col justify-center w-full">
-          {/* Animated SVG Connector Line (Visible on Desktop) */}
-          <div className="hidden xl:block absolute -left-6 top-1/2 -translate-y-1/2 w-6 pointer-events-none">
-            <svg viewBox="0 0 30 20" fill="none" className="w-full">
-              <path
-                d="M0 10 H30"
-                stroke="#a13924"
-                strokeWidth="2"
-                strokeDasharray="4 4"
-                className="animate-pulse"
-              />
-              <circle cx="15" cy="10" r="3" fill="#a13924" />
-            </svg>
+        {/* Right Column: Upper Controls Deck (in the red marked place) + Kitchen POS Screen */}
+        <div className="flex w-full flex-col gap-4">
+          {/* Desktop Controls (Placed in the red marked empty space above the KDS screen) */}
+          <div className="hidden lg:block">
+            {controlsAndNarration}
           </div>
 
-          {/* Kitchen Display System */}
-          <div className="w-full min-h-[350px] xl:min-h-[420px] flex flex-col">
-            <KitchenDashboardDemo
-              orderStage={kitchenOrderStage}
-              onAdvanceStage={handleKitchenAdvance}
-              reducedMotion={shouldReduceMotion ?? false}
-            />
+          {/* Kitchen POS Terminal View */}
+          <div className="relative flex flex-col justify-center w-full">
+            {/* Animated SVG Connector Line (pointing from phone to POS) */}
+            <div className="hidden lg:block absolute -left-8 top-1/2 -translate-y-1/2 w-8 pointer-events-none xl:-left-10 xl:w-10">
+              <svg viewBox="0 0 40 20" fill="none" className="w-full">
+                <path
+                  d="M0 10 H40"
+                  stroke="#a13924"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
+                  className="animate-pulse"
+                />
+                <circle cx="20" cy="10" r="3" fill="#a13924" />
+              </svg>
+            </div>
+
+            {/* Kitchen Display System */}
+            <div className="w-full min-h-[350px] xl:min-h-[400px] flex flex-col">
+              <KitchenDashboardDemo
+                orderStage={kitchenOrderStage}
+                onAdvanceStage={handleKitchenAdvance}
+                reducedMotion={shouldReduceMotion ?? false}
+              />
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

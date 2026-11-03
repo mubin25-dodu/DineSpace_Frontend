@@ -5,11 +5,18 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { ArrowRight, ChefHat, Utensils } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DepthCarousel from "@/components/DepthCarousel/DepthCarousel";
 import HeroProductStory from "@/components/landing/HeroProductStory";
 import MetricsBar from "@/components/landing/MetricsBar";
 import OperationsSuite from "@/components/landing/OperationsSuite";
 import Plasma from "@/components/Plasma/Plasma";
+import SmoothScroll from "@/components/SmoothScroll";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 type FlowItem = {
   image: string;
@@ -90,8 +97,6 @@ const restaurantFlow: FlowItem[] = [
   },
 ];
 
-const orderSteps = ["Pending", "Confirmed", "Preparing", "Ready", "Completed"];
-
 const faqs = [
   {
     question: "What does DineSpace do?",
@@ -160,7 +165,7 @@ function FAQItem({
   const duration = shouldReduceMotion ? 0.16 : 0.28;
 
   return (
-    <div className="border-b border-[#d4c9bd]">
+    <div className="border-b border-[#d4c9bd] gsap-stagger-item">
       <button
         aria-controls={answerId}
         aria-expanded={isOpen}
@@ -317,6 +322,7 @@ export default function Home() {
   const shouldReduceMotion = useReducedMotion();
   const roadmapTriggerRef = useRef<HTMLButtonElement>(null);
   const roadmapCloseRef = useRef<HTMLButtonElement>(null);
+  const pageRef = useRef<HTMLElement>(null);
   const activeFlow = selectedFlow === "diner" ? dinerFlow : restaurantFlow;
 
   useEffect(() => {
@@ -335,6 +341,117 @@ export default function Home() {
     };
   }, [showRoadmap]);
 
+  // GSAP ScrollTrigger reveal animations
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      // Titles reveal
+      gsap.utils.toArray<HTMLElement>(".gsap-reveal-title").forEach((el) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.85,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 86%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+
+      // Descriptions reveal
+      gsap.utils.toArray<HTMLElement>(".gsap-reveal-desc").forEach((el) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 22 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 86%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+
+      // Stagger items (cards, list steps, FAQ items)
+      gsap.utils.toArray<HTMLElement>(".gsap-stagger-group").forEach((group) => {
+        const items = group.querySelectorAll(".gsap-stagger-item");
+        if (!items.length) return;
+        gsap.fromTo(
+          items,
+          { opacity: 0, y: 28 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            stagger: 0.09,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: group,
+              start: "top 82%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+
+      // Interactive Demo box reveal
+      const demoBox = document.querySelector(".gsap-demo-box");
+      if (demoBox) {
+        gsap.fromTo(
+          demoBox,
+          { opacity: 0, y: 36, scale: 0.985 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.95,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: demoBox,
+              start: "top 82%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Parallax figures reveal
+      gsap.utils.toArray<HTMLElement>(".gsap-parallax-img").forEach((fig) => {
+        gsap.fromTo(
+          fig,
+          { opacity: 0, y: 30, scale: 0.97 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: fig,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      });
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, [shouldReduceMotion]);
+
   const chooseFlow = (flow: "diner" | "restaurant") => {
     setSelectedFlow(flow);
     setActiveFlowStep(0);
@@ -345,8 +462,11 @@ export default function Home() {
       <main
         className="min-h-svh overflow-x-clip bg-[#fbf9f6] text-[#171717]"
         id="main-content"
+        ref={pageRef}
         tabIndex={-1}
       >
+        <SmoothScroll />
+
         <a
           className="absolute left-2 top-2 z-100 translate-y-[-180%] bg-[#fbf9f6] px-4 py-3 font-semibold text-[#171717] focus:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924]"
           href="#main-content"
@@ -384,7 +504,7 @@ export default function Home() {
             initial={{ opacity: 0, transform: "scale(0.99)" }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:h-18 lg:px-10">
+            <div className="mx-auto grid h-16 w-full max-w-7xl grid-cols-[auto_1fr] items-center gap-3 px-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] lg:h-18 lg:px-8">
               <Link
                 aria-label="DineSpace home"
                 className="inline-flex shrink-0 items-center gap-2.5 text-lg font-semibold tracking-tight text-[#171717] no-underline sm:text-xl"
@@ -398,7 +518,7 @@ export default function Home() {
 
               <nav
                 aria-label="Main navigation"
-                className="hidden flex-1 items-center justify-center gap-1 text-sm md:flex"
+                className="hidden items-center justify-center gap-1 text-sm md:flex"
               >
                 <a className="rounded-xl px-4 py-2.5 font-semibold text-[#806f6b] transition-colors hover:bg-[#f8efec] hover:text-[#a13924]" href="#how-it-works">
                   The flow
@@ -411,7 +531,7 @@ export default function Home() {
                 </a>
               </nav>
 
-              <div className="ml-auto hidden shrink-0 items-center gap-2 md:flex">
+              <div className="ml-auto hidden shrink-0 items-center justify-end gap-2 md:flex">
                 <Link
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#dec0ba] bg-white px-3 text-sm font-semibold text-[#a13924] no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#f8efec] active:translate-y-px active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] lg:px-4"
                   href="/auth?demo=owner"
@@ -465,7 +585,7 @@ export default function Home() {
             </div>
           </motion.header>
 
-          <div className="flex w-full flex-1 items-center justify-center px-6 py-16">
+          <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
             <div className="relative z-10 mx-auto max-w-4xl text-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -500,16 +620,16 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
-          </div>
 
-          <a
-            aria-label="Scroll to the order flow"
-            className="absolute bottom-5 right-5 hidden sm:inline-flex items-center gap-2 text-[0.8125rem] text-[#735b53] no-underline transition-colors hover:text-[#a13924] sm:right-8 lg:right-20"
-            href="#how-it-works"
-          >
-            See the order flow
-            <ArrowRight aria-hidden="true" size={18} />
-          </a>
+            <a
+              aria-label="Scroll to the order flow"
+              className="absolute bottom-6 right-4 hidden items-center gap-2 text-[0.8125rem] text-[#735b53] no-underline transition-colors hover:text-[#a13924] sm:right-6 sm:inline-flex lg:right-8"
+              href="#how-it-works"
+            >
+              See the order flow
+              <ArrowRight aria-hidden="true" size={18} />
+            </a>
+          </div>
         </section>
 
         <section
@@ -517,19 +637,21 @@ export default function Home() {
           className="bg-[#f2ece6] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
           id="how-it-works"
         >
-          <div className="mx-auto w-full max-w-[1600px]">
+          <div className="mx-auto w-full max-w-7xl">
             <div className="mb-10 grid items-end gap-5 md:grid-cols-[minmax(0,1fr)_minmax(18rem,0.6fr)] md:gap-10">
               <h2
-                className="m-0 max-w-[16ch] text-4xl font-medium leading-[1.02] tracking-[-0.055em] text-[#171717] text-balance sm:text-5xl"
+                className="m-0 max-w-[16ch] text-4xl font-medium leading-[1.02] tracking-[-0.055em] text-[#171717] text-balance sm:text-5xl gsap-reveal-title"
                 id="order-flow-title"
               >
                 Watch an order move.
               </h2>
-              <p className="m-0 max-w-[42ch] text-base leading-relaxed text-[#655950]">
+              <p className="m-0 max-w-[42ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
                 Follow a diner order as it moves from a table QR scan to the live kitchen board.
               </p>
             </div>
-            <HeroProductStory />
+            <div className="gsap-demo-box">
+              <HeroProductStory />
+            </div>
           </div>
         </section>
 
@@ -538,114 +660,88 @@ export default function Home() {
 
         <section
           aria-labelledby="journey-title"
-          className="grid min-h-96 grid-cols-1 items-center gap-6 bg-[#e9e4dc] px-6 py-20 md:grid-cols-[1.2fr_0.5fr] md:gap-12 md:px-[12vw] md:py-28"
+          className="bg-[#e9e4dc] px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28"
           id="journey"
         >
-          <h2
-            className="m-0 max-w-[30ch] text-3xl font-medium leading-[1.14] tracking-[-0.045em] text-balance md:text-4xl"
-            id="journey-title"
-          >
-            <WordsReveal
-              text="From table to kitchen."
-            />
-          </h2>
-          <p className="m-0 max-w-[27ch] text-base leading-relaxed text-[#655950]">
-            One connected journey, from the menu in your hand to the order in
-            the kitchen.
-          </p>
+          <div className="mx-auto grid min-h-96 w-full max-w-7xl grid-cols-1 items-center gap-6 md:grid-cols-[1.2fr_0.5fr] md:gap-12">
+            <h2
+              className="m-0 max-w-[30ch] text-3xl font-medium leading-[1.14] tracking-[-0.045em] text-balance md:text-4xl gsap-reveal-title"
+              id="journey-title"
+            >
+              <WordsReveal
+                text="From table to kitchen."
+              />
+            </h2>
+            <p className="m-0 max-w-[27ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
+              One connected journey, from the menu in your hand to the order in
+              the kitchen.
+            </p>
+          </div>
         </section>
 
         <section
           aria-labelledby="flow-title"
-          className="px-6 py-20 sm:px-8 md:px-[8vw] md:py-32"
+          className="px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32"
           id="diner-journey"
         >
-          <motion.div
-            className="mb-12 grid items-end gap-6 md:mb-16 md:grid-cols-[1fr_0.6fr] md:gap-8"
-            initial={{ y: 14 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.12 }}
-            whileInView={{ y: 0 }}
-          >
-            <h2
-              className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl"
-              id="flow-title"
-            >
-              The table becomes the starting point.
-            </h2>
-            <p className="m-0 min-w-0 max-w-[39ch] text-base leading-relaxed text-[#655950]">
-              The diner flow keeps choosing, ordering, and checking progress
-              together in one place.
-            </p>
-          </motion.div>
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mb-12 grid items-end gap-6 md:mb-16 md:grid-cols-[1fr_0.6fr] md:gap-8">
+              <h2
+                className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl gsap-reveal-title"
+                id="flow-title"
+              >
+                The table becomes the starting point.
+              </h2>
+              <p className="m-0 min-w-0 max-w-[39ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
+                The diner flow keeps choosing, ordering, and checking progress
+                together in one place.
+              </p>
+            </div>
 
-          <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr] md:gap-20">
-            <motion.figure
-              className="relative m-0 pb-5 pr-6 pt-6 sm:pb-8 sm:pr-12 sm:pt-8"
-              initial={{ y: 14 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true, amount: 0.12 }}
-              whileInView={{ y: 0 }}
-            >
-              <div className="relative aspect-[1.1] overflow-hidden rounded-2xl bg-[#e4d8ca]">
-                <Image
-                  alt="A diner browsing the restaurant menu on a phone"
-                  className="object-cover"
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 760px) 100vw, 48vw"
-                  src="/Diner/mobile-ordering.jpg"
-                />
-              </div>
-              <figcaption className="mt-3 text-sm leading-snug text-[#655950]">
-                Choose from the menu at your own pace
-              </figcaption>
-            </motion.figure>
+            <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr] md:gap-20">
+              <figure className="relative m-0 pb-5 pr-6 pt-6 sm:pb-8 sm:pr-12 sm:pt-8 gsap-parallax-img">
+                <div className="relative aspect-[1.1] overflow-hidden rounded-2xl bg-[#e4d8ca]">
+                  <Image
+                    alt="A diner browsing the restaurant menu on a phone"
+                    className="object-cover"
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 760px) 100vw, 48vw"
+                    src="/Diner/mobile-ordering.jpg"
+                  />
+                </div>
+                <figcaption className="mt-3 text-sm leading-snug text-[#655950]">
+                  Choose from the menu at your own pace
+                </figcaption>
+              </figure>
 
-            <ol className="m-0 grid list-none gap-8 p-0">
-              <motion.li
-                className="grid gap-2"
-                initial={{ y: 12 }}
-                transition={{ duration: 0.65, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true, amount: 0.12 }}
-                whileInView={{ y: 0 }}
-              >
-                <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Scan the restaurant QR
-                </h3>
-                <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Scan the restaurant QR stand on your table to open the live digital menu directly on your phone—no app install required.
-                </p>
-              </motion.li>
-              <motion.li
-                className="grid gap-2"
-                initial={{ y: 12 }}
-                transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true, amount: 0.12 }}
-                whileInView={{ y: 0 }}
-              >
-                <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Build your bowl
-                </h3>
-                <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Browse dishes, customize options, view dietary details, and add items to your bowl with live pricing.
-                </p>
-              </motion.li>
-              <motion.li
-                className="grid gap-2"
-                initial={{ y: 12 }}
-                transition={{ duration: 0.65, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true, amount: 0.12 }}
-                whileInView={{ y: 0 }}
-              >
-                <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
-                  Pick your table & send
-                </h3>
-                <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
-                  Confirm your table number, select Cash, bKash, or Nagad, and dispatch the ticket straight to the kitchen.
-                </p>
-              </motion.li>
-            </ol>
+              <ol className="m-0 grid list-none gap-8 p-0 gsap-stagger-group">
+                <li className="grid gap-2 gsap-stagger-item">
+                  <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
+                    Scan the restaurant QR
+                  </h3>
+                  <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
+                    Scan the restaurant QR stand on your table to open the live digital menu directly on your phone—no app install required.
+                  </p>
+                </li>
+                <li className="grid gap-2 gsap-stagger-item">
+                  <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
+                    Build your bowl
+                  </h3>
+                  <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
+                    Browse dishes, customize options, view dietary details, and add items to your bowl with live pricing.
+                  </p>
+                </li>
+                <li className="grid gap-2 gsap-stagger-item">
+                  <h3 className="m-0 text-2xl font-medium tracking-[-0.04em]">
+                    Pick your table & send
+                  </h3>
+                  <p className="m-0 max-w-[38ch] text-base leading-relaxed text-[#655950]">
+                    Confirm your table number, select Cash, bKash, or Nagad, and dispatch the ticket straight to the kitchen.
+                  </p>
+                </li>
+              </ol>
+            </div>
           </div>
         </section>
 
@@ -654,42 +750,36 @@ export default function Home() {
 
         <section
           aria-labelledby="status-title"
-          className="border-y border-[#ebdcd3] bg-[#f5ede7]/60 px-6 py-20 sm:px-8 md:px-[8vw] md:py-28"
+          className="border-y border-[#ebdcd3] bg-[#f5ede7]/60 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28"
         >
-          <div className="mx-auto max-w-7xl">
-            <motion.div
-              className="max-w-3xl mb-12"
-              initial={{ y: 14 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true, amount: 0.12 }}
-              whileInView={{ y: 0 }}
-            >
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="max-w-3xl mb-12">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#dec9bd] bg-white px-3.5 py-1 text-xs font-bold text-[#a13924] mb-3 shadow-2xs">
                 <span>Deterministic Service States</span>
               </div>
               <h2
-                className="m-0 text-3xl font-medium tracking-tight text-[#171717] sm:text-4xl lg:text-5xl"
+                className="m-0 text-3xl font-medium tracking-tight text-[#171717] sm:text-4xl lg:text-5xl gsap-reveal-title"
                 id="status-title"
               >
                 Know what comes next, every step of the meal.
               </h2>
-              <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-[#655950]">
+              <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
                 Orders advance through clear, verifiable service stages. Guests track live progress on their phone while kitchen staff update tickets directly from the POS workspace.
               </p>
-            </motion.div>
+            </div>
 
             {/* Stepper Cards */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4 gsap-stagger-group">
               {[
                 { step: "01", name: "Pending", desc: "Order sent via restaurant QR" },
                 { step: "02", name: "Confirmed", desc: "Kitchen acknowledges ticket" },
                 { step: "03", name: "Preparing", desc: "Chef fires dishes on the line" },
                 { step: "04", name: "Ready", desc: "Plated & runner dispatched" },
                 { step: "05", name: "Completed", desc: "Delivered to dining table" },
-              ].map((st, idx) => (
+              ].map((st) => (
                 <div
                   key={st.name}
-                  className="flex flex-col justify-between rounded-2xl border border-[#dec9bd] bg-white p-4 shadow-2xs"
+                  className="flex flex-col justify-between rounded-2xl border border-[#dec9bd] bg-white p-4 shadow-2xs gsap-stagger-item"
                 >
                   <div>
                     <span className="text-[11px] font-extrabold text-[#a13924]">
@@ -707,7 +797,7 @@ export default function Home() {
             </div>
 
             {/* Payment Reassurance Pill */}
-            <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-[#dec9bd] bg-white p-4 sm:p-5 shadow-2xs">
+            <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-[#dec9bd] bg-white p-4 sm:p-5 shadow-2xs gsap-reveal-desc">
               <div className="flex items-center gap-3">
                 <span className="grid size-9 place-items-center rounded-xl bg-[#f5ede7] text-[#a13924]">
                   <Utensils size={17} />
@@ -725,236 +815,233 @@ export default function Home() {
 
         <section
           aria-labelledby="restaurants-title"
-          className="px-6 py-20 sm:px-8 md:px-[8vw] md:py-32"
+          className="px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32"
           id="restaurants"
         >
-          <motion.div
-            className="grid items-end gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,0.6fr)] md:gap-8"
-            initial={{ y: 14 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.12 }}
-            whileInView={{ y: 0 }}
-          >
-            <div>
-              <p className="mb-4 flex items-center gap-2 text-[0.9375rem] font-semibold text-[#a13924]">
-                <ChefHat aria-hidden="true" size={19} />
-                The restaurant side
-              </p>
-              <h2
-                className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl"
-                id="restaurants-title"
-              >
-                The other side of every order.
-              </h2>
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="grid items-end gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,0.6fr)] md:gap-8">
+              <div>
+                <p className="mb-4 flex items-center gap-2 text-[0.9375rem] font-semibold text-[#a13924]">
+                  <ChefHat aria-hidden="true" size={19} />
+                  The restaurant side
+                </p>
+                <h2
+                  className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl gsap-reveal-title"
+                  id="restaurants-title"
+                >
+                  The other side of every order.
+                </h2>
+              </div>
+              <div>
+                <p className="m-0 max-w-[39ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
+                  Orders arrive directly in the restaurant workspace, where teams can review
+                  service, update progress, and manage live menus and dining tables.
+                </p>
+                <Link
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#a13924] no-underline transition-[color,transform] duration-200 hover:translate-x-1 hover:text-[#842f1e] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a13924] gsap-reveal-desc"
+                  href="/auth?demo=owner"
+                >
+                  Demo owner sign in
+                  <ArrowRight aria-hidden="true" size={16} />
+                </Link>
+              </div>
             </div>
-            <div>
-              <p className="m-0 max-w-[39ch] text-base leading-relaxed text-[#655950]">
-                Orders arrive directly in the restaurant workspace, where teams can review
-                service, update progress, and manage live menus and dining tables.
-              </p>
-              <Link
-                className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#a13924] no-underline transition-[color,transform] duration-200 hover:translate-x-1 hover:text-[#842f1e] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a13924]"
-                href="/auth?demo=owner"
-              >
-                Demo owner sign in
-                <ArrowRight aria-hidden="true" size={16} />
-              </Link>
-            </div>
-          </motion.div>
 
-          <div aria-label="Choose a product journey" className="relative z-20 mt-12 grid w-full max-w-md grid-cols-2 gap-2 rounded-2xl bg-[#f5f3f0] p-2" role="group">
-            <button
-              aria-pressed={selectedFlow === "diner"}
-              className={`min-h-11 min-w-0 whitespace-nowrap rounded-xl px-2 text-[0.8125rem] transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] sm:px-4 sm:text-sm ${
-                selectedFlow === "diner"
-                  ? "bg-[#f5ded7] font-semibold text-[#842f1e]"
-                  : "text-[#655950] hover:bg-[#f5f3f0] hover:text-[#171717]"
-              }`}
-              onClick={() => chooseFlow("diner")}
-              type="button"
-            >
-              Diner flow
-            </button>
-            <button
-              aria-pressed={selectedFlow === "restaurant"}
-              className={`min-h-11 min-w-0 whitespace-nowrap rounded-xl px-2 text-[0.8125rem] transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] sm:px-4 sm:text-sm ${
-                selectedFlow === "restaurant"
-                  ? "bg-[#f5ded7] font-semibold text-[#842f1e]"
-                  : "text-[#655950] hover:bg-[#f5f3f0] hover:text-[#171717]"
-              }`}
-              onClick={() => chooseFlow("restaurant")}
-              type="button"
-            >
-              Restaurant flow
-            </button>
-          </div>
-
-          <div
-            aria-label={`${selectedFlow === "diner" ? "Diner" : "Restaurant"} journey gallery`}
-            aria-live="polite"
-            className="relative z-0 mt-20 grid min-w-0 items-center gap-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(20rem,0.7fr)] xl:gap-16"
-          >
-            <div className="min-h-80 min-w-0 sm:min-h-120">
-              <DepthCarousel
-                key={selectedFlow}
-                autoplay={!shouldReduceMotion}
-                autoplayDelay={4200}
-                blur={0}
-                cardHeight={480}
-                cardWidth={760}
-                depth={115}
-                duration={900}
-                ease="power3.out"
-                falloff={0.16}
-                items={activeFlow}
-                loop
-                onChange={(index) => setActiveFlowStep(index)}
-                perspective={1300}
-                radius={16}
-                showCaptions={false}
-                showControls
-                showIndicators
-                spread={18}
-                tilt={4}
-                tiltDirection={selectedFlow === "diner" ? "right" : "left"}
-                visibleCards={1}
-              />
-            </div>
-            <div className="min-w-0 max-w-lg px-2">
-              <h3 className="m-0 max-w-[12ch] text-4xl font-medium leading-[1.04] tracking-[-0.055em] text-balance">
-                {activeFlow[activeFlowStep].title}
-              </h3>
-              <p className="mt-4 max-w-[37ch] text-base leading-relaxed text-[#655950]">
-                {activeFlow[activeFlowStep].description}
-              </p>
-              <Link
-                className="mt-5 inline-flex min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-[#a13924] no-underline transition-[color,transform] duration-200 hover:translate-x-1 hover:text-[#842f1e]"
-                href={selectedFlow === "diner" ? "/user" : "/auth"}
+            <div aria-label="Choose a product journey" className="relative z-20 mt-12 grid w-full max-w-md grid-cols-2 gap-2 rounded-2xl bg-[#f5f3f0] p-2 gsap-reveal-desc" role="group">
+              <button
+                aria-pressed={selectedFlow === "diner"}
+                className={`min-h-11 min-w-0 whitespace-nowrap rounded-xl px-2 text-[0.8125rem] transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] sm:px-4 sm:text-sm ${
+                  selectedFlow === "diner"
+                    ? "bg-[#f5ded7] font-semibold text-[#842f1e]"
+                    : "text-[#655950] hover:bg-[#f5f3f0] hover:text-[#171717]"
+                }`}
+                onClick={() => chooseFlow("diner")}
+                type="button"
               >
-                {selectedFlow === "diner" ? "Browse restaurants" : "Owner sign in"}
-                <ArrowRight aria-hidden="true" size={16} />
-              </Link>
+                Diner flow
+              </button>
+              <button
+                aria-pressed={selectedFlow === "restaurant"}
+                className={`min-h-11 min-w-0 whitespace-nowrap rounded-xl px-2 text-[0.8125rem] transition-[background-color,color,transform] duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a13924] sm:px-4 sm:text-sm ${
+                  selectedFlow === "restaurant"
+                    ? "bg-[#f5ded7] font-semibold text-[#842f1e]"
+                    : "text-[#655950] hover:bg-[#f5f3f0] hover:text-[#171717]"
+                }`}
+                onClick={() => chooseFlow("restaurant")}
+                type="button"
+              >
+                Restaurant flow
+              </button>
+            </div>
+
+            <div
+              aria-label={`${selectedFlow === "diner" ? "Diner" : "Restaurant"} journey gallery`}
+              aria-live="polite"
+              className="relative z-0 mt-20 grid min-w-0 items-center gap-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(20rem,0.7fr)] xl:gap-16 gsap-reveal-desc"
+            >
+              <div className="min-h-80 min-w-0 sm:min-h-120">
+                <DepthCarousel
+                  key={selectedFlow}
+                  autoplay={!shouldReduceMotion}
+                  autoplayDelay={4200}
+                  blur={0}
+                  cardHeight={480}
+                  cardWidth={760}
+                  depth={115}
+                  duration={900}
+                  ease="power3.out"
+                  falloff={0.16}
+                  items={activeFlow}
+                  loop
+                  onChange={(index) => setActiveFlowStep(index)}
+                  perspective={1300}
+                  radius={16}
+                  showCaptions={false}
+                  showControls
+                  showIndicators
+                  spread={18}
+                  tilt={4}
+                  tiltDirection={selectedFlow === "diner" ? "right" : "left"}
+                  visibleCards={1}
+                />
+              </div>
+              <div className="min-w-0 max-w-lg px-2">
+                <h3 className="m-0 max-w-[12ch] text-4xl font-medium leading-[1.04] tracking-[-0.055em] text-balance">
+                  {activeFlow[activeFlowStep].title}
+                </h3>
+                <p className="mt-4 max-w-[37ch] text-base leading-relaxed text-[#655950]">
+                  {activeFlow[activeFlowStep].description}
+                </p>
+                <Link
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 text-[0.9375rem] font-semibold text-[#a13924] no-underline transition-[color,transform] duration-200 hover:translate-x-1 hover:text-[#842f1e]"
+                  href={selectedFlow === "diner" ? "/user" : "/auth"}
+                >
+                  {selectedFlow === "diner" ? "Browse restaurants" : "Owner sign in"}
+                  <ArrowRight aria-hidden="true" size={16} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         <section
           aria-labelledby="questions-title"
-          className="grid grid-cols-1 gap-10 bg-[#e9e4dc] px-6 py-20 sm:px-8 md:grid-cols-[0.75fr_1.25fr] md:gap-28 md:px-[8vw] md:py-32"
+          className="bg-[#e9e4dc] px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32"
           id="questions"
         >
-          <motion.div
-            initial={{ y: 14 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, amount: 0.12 }}
-            whileInView={{ y: 0 }}
-          >
-            <h2
-              className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl"
-              id="questions-title"
-            >
-              Questions, answered.
-            </h2>
-            <p className="mt-5 max-w-[39ch] text-base leading-relaxed text-[#655950]">
-              A clear picture of what works today, including the payment
-              experience still in development.
-            </p>
-          </motion.div>
-          <div className="grid content-start border-t border-[#d4c9bd]">
-            {faqs.map((faq, index) => (
-              <FAQItem faq={faq} index={index} key={faq.question} />
-            ))}
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 md:grid-cols-[0.75fr_1.25fr] md:gap-20">
+            <div>
+              <h2
+                className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl gsap-reveal-title"
+                id="questions-title"
+              >
+                Questions, answered.
+              </h2>
+              <p className="mt-5 max-w-[39ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
+                A clear picture of what works today, including the payment
+                experience still in development.
+              </p>
+            </div>
+            <div className="grid content-start border-t border-[#d4c9bd] gsap-stagger-group">
+              {faqs.map((faq, index) => (
+                <FAQItem faq={faq} index={index} key={faq.question} />
+              ))}
+            </div>
           </div>
         </section>
 
         <section
           aria-labelledby="closing-title"
-          className="grid items-center gap-10 px-6 py-20 sm:px-8 md:grid-cols-[1.05fr_0.95fr] md:gap-28 md:px-[8vw] md:py-32"
+          className="px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32"
         >
-          <figure className="relative m-0">
-            <div className="relative aspect-[1.32] overflow-hidden rounded-2xl bg-[#d8c9ba]">
-              <Image
-                alt="Diners sharing a meal around a restaurant table"
-                className="object-cover"
-                fill
-                loading="lazy"
-                sizes="(max-width: 760px) 100vw, 46vw"
-                src="/Diner/diner-journeys.jpg"
-              />
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-10 md:grid-cols-[1.05fr_0.95fr] md:gap-20">
+            <figure className="relative m-0 gsap-parallax-img">
+              <div className="relative aspect-[1.32] overflow-hidden rounded-2xl bg-[#d8c9ba]">
+                <Image
+                  alt="Diners sharing a meal around a restaurant table"
+                  className="object-cover"
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 760px) 100vw, 46vw"
+                  src="/Diner/diner-journeys.jpg"
+                />
+              </div>
+              <figcaption className="mt-3 text-sm leading-snug text-[#655950]">
+                Make more room for the meal
+              </figcaption>
+            </figure>
+            <div>
+              <h2
+                className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl gsap-reveal-title"
+                id="closing-title"
+              >
+                Order from your table.
+              </h2>
+              <p className="mt-5 max-w-[39ch] text-base leading-relaxed text-[#655950] gsap-reveal-desc">
+                Browse a restaurant, open its menu, and start your next table
+                order with DineSpace.
+              </p>
+              <Link
+                className="mt-7 inline-flex min-h-13 items-center justify-center gap-2 rounded-xl bg-[#a13924] px-5 text-base font-semibold text-white no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#842f1e] active:translate-y-px active:scale-[0.98] gsap-reveal-desc"
+                href="/user"
+              >
+                Browse restaurants
+                <ArrowRight aria-hidden="true" size={18} />
+              </Link>
+              <Link
+                className="mt-4 block w-fit text-[0.9375rem] font-medium text-[#a13924] underline decoration-1 underline-offset-4 gsap-reveal-desc"
+                href="/auth"
+              >
+                Run a restaurant? Sign in here
+              </Link>
             </div>
-            <figcaption className="mt-3 text-sm leading-snug text-[#655950]">
-              Make more room for the meal
-            </figcaption>
-          </figure>
-          <div>
-            <h2
-              className="m-0 max-w-[18ch] text-4xl font-medium leading-[1.02] tracking-[-0.06em] text-balance md:text-5xl"
-              id="closing-title"
-            >
-              Order from your table.
-            </h2>
-            <p className="mt-5 max-w-[39ch] text-base leading-relaxed text-[#655950]">
-              Browse a restaurant, open its menu, and start your next table
-              order with DineSpace.
-            </p>
-            <Link
-              className="mt-7 inline-flex min-h-13 items-center justify-center gap-2 rounded-xl bg-[#a13924] px-5 text-base font-semibold text-white no-underline transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#842f1e] active:translate-y-px active:scale-[0.98]"
-              href="/user"
-            >
-              Browse restaurants
-              <ArrowRight aria-hidden="true" size={18} />
-            </Link>
-            <Link
-              className="mt-4 block w-fit text-[0.9375rem] font-medium text-[#a13924] underline decoration-1 underline-offset-4"
-              href="/auth"
-            >
-              Run a restaurant? Sign in here
-            </Link>
           </div>
         </section>
 
-        <footer className="grid grid-cols-1 gap-6 bg-[#211916] px-6 py-8 text-[#fbf6ef] sm:px-8 md:grid-cols-[auto_1fr] md:items-center md:px-20">
-          <Link
-            aria-label="DineSpace home"
-            className="inline-flex w-fit items-center gap-2.5 text-lg font-semibold tracking-tight text-white no-underline"
-            href="/"
-          >
-            <span className="grid size-9 place-items-center rounded-lg bg-[#a13924] text-white">
-              <Utensils aria-hidden="true" size={17} strokeWidth={1.8} />
-            </span>
-            DineSpace
-          </Link>
-          <nav
-            aria-label="Footer navigation"
-            className="flex flex-wrap justify-start gap-x-6 gap-y-3 text-sm md:justify-end"
-          >
-            <Link className="text-white no-underline hover:text-[#e7b99e]" href="/user">
-              Browse restaurants
-            </Link>
-            <Link className="text-white no-underline hover:text-[#e7b99e]" href="/auth">
-              Restaurant owners
-            </Link>
-            <a
-              className="text-white no-underline hover:text-[#e7b99e]"
-              href="https://mu-bin.dev"
-              rel="noreferrer"
-              target="_blank"
+        <footer className="bg-[#211916] px-4 py-8 text-[#fbf6ef] sm:px-6 lg:px-8">
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 md:grid-cols-[auto_1fr] md:items-center">
+            <Link
+              aria-label="DineSpace home"
+              className="inline-flex w-fit items-center gap-2.5 text-lg font-semibold tracking-tight text-white no-underline"
+              href="/"
             >
-              About the maker
-            </a>
-            <button
-              className="rounded-lg border-0 bg-transparent px-2 py-1 text-left text-sm text-white transition-colors hover:bg-white/10 hover:text-[#e7b99e]"
-              onClick={() => setShowRoadmap(true)}
-              ref={roadmapTriggerRef}
-              type="button"
+              <span className="grid size-9 place-items-center rounded-lg bg-[#a13924] text-white">
+                <Utensils aria-hidden="true" size={17} strokeWidth={1.8} />
+              </span>
+              DineSpace
+            </Link>
+            <nav
+              aria-label="Footer navigation"
+              className="flex flex-wrap justify-start gap-x-6 gap-y-3 text-sm md:justify-end"
             >
-              Project roadmap
-            </button>
-          </nav>
-          <p className="m-0 text-sm leading-relaxed text-[#d2c5b9] md:col-span-2">
-            © {new Date().getFullYear()} DineSpace. Made for better dining
-            experiences.
-          </p>
+              <Link className="text-white no-underline hover:text-[#e7b99e]" href="/user">
+                Browse restaurants
+              </Link>
+              <Link className="text-white no-underline hover:text-[#e7b99e]" href="/auth">
+                Restaurant owners
+              </Link>
+              <a
+                className="text-white no-underline hover:text-[#e7b99e]"
+                href="https://mu-bin.dev"
+                rel="noreferrer"
+                target="_blank"
+              >
+                About the maker
+              </a>
+              <button
+                className="rounded-lg border-0 bg-transparent px-2 py-1 text-left text-sm text-white transition-colors hover:bg-white/10 hover:text-[#e7b99e]"
+                onClick={() => setShowRoadmap(true)}
+                ref={roadmapTriggerRef}
+                type="button"
+              >
+                Project roadmap
+              </button>
+            </nav>
+            <p className="m-0 text-sm leading-relaxed text-[#d2c5b9] md:col-span-2">
+              © {new Date().getFullYear()} DineSpace. Made for better dining
+              experiences.
+            </p>
+          </div>
         </footer>
 
         {showRoadmap && (

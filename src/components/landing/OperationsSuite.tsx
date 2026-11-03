@@ -219,9 +219,9 @@ export default function OperationsSuite() {
   return (
     <section
       aria-labelledby="operations-title"
-      className="px-6 py-20 sm:px-8 md:px-[8vw] md:py-28 bg-[#fbf9f6]"
+      className="bg-[#fbf9f6] px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Section Header */}
         <div className="mb-12 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#f6eee9] px-3.5 py-1 text-xs font-bold text-[#a13924] mb-3">

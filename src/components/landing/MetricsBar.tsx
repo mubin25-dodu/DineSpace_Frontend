@@ -34,9 +34,9 @@ export default function MetricsBar() {
   return (
     <section
       aria-label="Performance highlights"
-      className="border-y border-[#ebdcd3] bg-[#f5ede7]/60 py-10 px-6 sm:px-8 lg:px-12"
+      className="border-y border-[#ebdcd3] bg-[#f5ede7]/60 px-4 py-10 sm:px-6 lg:px-8"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full max-w-7xl">
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
           {metrics.map((m, idx) => {
             const Icon = m.icon;
